@@ -1,0 +1,389 @@
+{
+  "inputs": [
+    {
+      "type": "text",
+      "name": "search",
+      "id": "mat-input-serverApp0",
+      "placeholder": "Search on all columns...",
+      "formcontrolname": "",
+      "aria_label": "",
+      "class": "mat-mdc-input-element ng-untouched ng-pristine ng-valid mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored",
+      "visible": true
+    },
+    {
+      "type": "",
+      "name": "",
+      "id": "mat-input-serverApp1",
+      "placeholder": "",
+      "formcontrolname": "",
+      "aria_label": "",
+      "class": "mat-mdc-input-element ng-untouched ng-pristine ng-valid mat-mdc-form-field-input-control mdc-text-field__input cdk-text-field-autofill-monitored",
+      "visible": true
+    }
+  ],
+  "buttons": [
+    {
+      "text": "search",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger px-2 ng-tns-c1842521232-0 mat-unthemed",
+      "visible": true
+    },
+    {
+      "text": "notifications",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-mdc-tooltip-trigger pb-3 mat-unthemed",
+      "visible": true
+    },
+    {
+      "text": "dashboard",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger pr-5 pl-2 mb-1 ng-tns-c1842521232-0 mat-unthemed",
+      "visible": true
+    },
+    {
+      "text": "account_circle",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-menu-trigger pr-5 pl-2 ng-tns-c1842521232-0 mat-unthemed",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nApplications",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nInspections",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nSearch",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nInvoices",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nReports",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "expand_more\nAccount",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mat-mdc-menu-trigger mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "map\nMap",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mx-1 white mat-mdc-button mat-white ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "help\nHelp Documentation",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mdc-button--raised mat-mdc-raised-button mat-primary",
+      "visible": true
+    },
+    {
+      "text": "Name",
+      "type": "",
+      "id": "",
+      "class": "mat-sort-header-container mat-focus-indicator mat-sort-header-ascending mat-sort-header-sorted",
+      "visible": true
+    },
+    {
+      "text": "Type",
+      "type": "",
+      "id": "",
+      "class": "mat-sort-header-container mat-focus-indicator mat-sort-header-ascending",
+      "visible": true
+    },
+    {
+      "text": "Curated",
+      "type": "",
+      "id": "",
+      "class": "mat-sort-header-container mat-focus-indicator mat-sort-header-ascending",
+      "visible": true
+    },
+    {
+      "text": "ios_share",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-primary ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "more_vert",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-primary",
+      "visible": true
+    },
+    {
+      "text": "ios_share",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-primary ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "more_vert",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-primary",
+      "visible": true
+    },
+    {
+      "text": "ios_share",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-primary ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "more_vert",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-primary",
+      "visible": true
+    },
+    {
+      "text": "ios_share",
+      "type": "",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-primary ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "more_vert",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-menu-trigger mat-primary",
+      "visible": true
+    },
+    {
+      "text": "",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-paginator-navigation-first mat-mdc-button-disabled mat-mdc-button-disabled-interactive mat-unthemed mat-mdc-tooltip-disabled ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-paginator-navigation-previous mat-mdc-button-disabled mat-mdc-button-disabled-interactive mat-unthemed mat-mdc-tooltip-disabled",
+      "visible": true
+    },
+    {
+      "text": "",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-paginator-navigation-next mat-mdc-button-disabled mat-mdc-button-disabled-interactive mat-unthemed mat-mdc-tooltip-disabled",
+      "visible": true
+    },
+    {
+      "text": "",
+      "type": "button",
+      "id": "",
+      "class": "mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-paginator-navigation-last mat-mdc-button-disabled mat-mdc-button-disabled-interactive mat-unthemed mat-mdc-tooltip-disabled ng-star-inserted",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp0-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp1-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp2-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp3-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp4-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp5-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp6-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp7-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp8-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp9-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp10-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp11-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp12-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp13-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_upward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp14-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "arrow_downward",
+      "type": "button",
+      "id": "mat-button-toggle-serverApp15-button",
+      "class": "mat-button-toggle-button mat-focus-indicator",
+      "visible": true
+    },
+    {
+      "text": "add\nAdd Filter",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mdc-button--raised mat-mdc-raised-button mat-primary",
+      "visible": true
+    },
+    {
+      "text": "save\nSave New Search",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mx-2 mdc-button--raised mat-mdc-raised-button mat-primary mat-mdc-button-disabled",
+      "visible": true
+    },
+    {
+      "text": "save\nUpdate Search",
+      "type": "",
+      "id": "",
+      "class": "mdc-button mat-mdc-button-base mx-2 mdc-button--raised mat-mdc-raised-button mat-primary mat-mdc-button-disabled",
+      "visible": true
+    },
+    {
+      "text": "search\nSearch",
+      "type": "",
+      "id": "searchButton",
+      "class": "mdc-button mat-mdc-button-base mx-2 mdc-button--raised mat-mdc-raised-button mat-primary mat-mdc-button-disabled",
+      "visible": true
+    }
+  ],
+  "selects": [
+    {
+      "name": "",
+      "id": "mat-select-serverApp0",
+      "text": "Permits",
+      "visible": true
+    },
+    {
+      "name": "",
+      "id": "mat-select-serverApp1",
+      "text": "10",
+      "visible": true
+    }
+  ],
+  "radio_buttons": [],
+  "tabs": [],
+  "labels": [
+    {
+      "text": "Search For",
+      "for": "",
+      "visible": true
+    },
+    {
+      "text": "Search",
+      "for": "mat-input-serverApp0",
+      "visible": true
+    },
+    {
+      "text": "Filter",
+      "for": "mat-input-serverApp1",
+      "visible": true
+    }
+  ],
+  "permit_links": []
+}

@@ -1,0 +1,87 @@
+{
+  "address": "8319 SPRINGTREE RD",
+  "response": {
+    "success": true,
+    "data": {
+      "values": [
+        {
+          "FullPermitNumber": "B-02-32207.000",
+          "FullPermitNumber_Click": "Permit/View/19664C",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Building Permit",
+          "ProposedUseDescription": "Residential",
+          "StructureTypeDescription": "Single Family",
+          "WorkTypeDescription": "New Building",
+          "StatusDescription": "Finalized",
+          "DateIssued": "6/28/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        },
+        {
+          "FullPermitNumber": "E-02-32207.002",
+          "FullPermitNumber_Click": "Permit/View/19664B",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Electrical Permit",
+          "ProposedUseDescription": "Residential",
+          "StructureTypeDescription": "Single Family",
+          "WorkTypeDescription": "New Building",
+          "StatusDescription": "Finalized",
+          "DateIssued": "8/1/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        },
+        {
+          "FullPermitNumber": "M-02-32207.003",
+          "FullPermitNumber_Click": "Permit/View/10581B",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Mechanical Permit",
+          "ProposedUseDescription": "Residential",
+          "StructureTypeDescription": "NOT SET",
+          "WorkTypeDescription": "New Building",
+          "StatusDescription": "Finalized",
+          "DateIssued": "8/9/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        },
+        {
+          "FullPermitNumber": "M-02-32207.004",
+          "FullPermitNumber_Click": "Permit/View/10581A",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Mechanical Permit",
+          "ProposedUseDescription": "Residential",
+          "StructureTypeDescription": "NOT SET",
+          "WorkTypeDescription": "New Building",
+          "StatusDescription": "Finalized-NIF",
+          "DateIssued": "8/13/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        },
+        {
+          "FullPermitNumber": "P-02-32207.001",
+          "FullPermitNumber_Click": "Permit/View/4393A",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Plumbing Permit",
+          "ProposedUseDescription": "Residential",
+          "StructureTypeDescription": "Single Family",
+          "WorkTypeDescription": "New Building",
+          "StatusDescription": "Finalized",
+          "DateIssued": "7/1/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        },
+        {
+          "FullPermitNumber": "W-02-48003.000",
+          "FullPermitNumber_Click": "Permit/View/2682AB",
+          "FullPermitNumber_Clickable": true,
+          "PermitTypeDescription": "Right Of Way Permit",
+          "ProposedUseDescription": "",
+          "StructureTypeDescription": "NOT SET",
+          "WorkTypeDescription": "NOT SET",
+          "StatusDescription": "Finalized",
+          "DateIssued": "6/13/2002 12:00:00 AM",
+          "Address": "8319 SPRINGTREE RD"
+        }
+      ],
+      "count": 6,
+      "page": 1,
+      "pageSize": 200,
+      "sortActive": "FullPermitNumber",
+      "sortDirection": "asc"
+    }
+  }
+}

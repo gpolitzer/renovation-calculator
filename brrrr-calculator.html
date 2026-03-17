@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="he" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRRRR Renovation Cost Calculator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--card:#16213e;--card2:#0f3460;--orange:#e94560;--orange2:#ff6b35;--text:#eee;--muted:#888;--border:#2a2a4a;--input-bg:#0d1b2a;--yes:#00c853;--no:#ff5252}
+html{overflow-x:hidden}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;overflow-x:hidden;max-width:100vw}
+header{background:linear-gradient(135deg,#0f3460,#1a1a2e);padding:24px 20px 18px;text-align:center;border-bottom:3px solid var(--orange)}
+header h1{font-size:1.6rem;font-weight:800;letter-spacing:1px}
+header h1 span{color:var(--orange)}
+header p{color:var(--muted);font-size:.85rem;margin-top:4px}
+.container{max-width:1400px;width:100%;margin:0 auto;padding:16px 24px}
+
+.prop-card{background:var(--card);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--border)}
+.prop-card h2{font-size:1.05rem;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.field input{width:100%;padding:10px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;transition:border .2s}
+.field input:focus{outline:none;border-color:var(--orange)}
+
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:4px;max-width:100%}
+table{width:100%;border-collapse:collapse;min-width:520px}
+thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:center;position:sticky;top:0;border-bottom:2px solid var(--orange);z-index:2}
+thead th:first-child{text-align:left}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover:not(.disabled):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
+tbody td{padding:8px;text-align:center;font-size:.88rem;vertical-align:middle}
+tbody td:first-child{text-align:left}
+
+/* Category header */
+tr.cat-header{background:var(--card2)}
+tr.cat-header td{padding:0}
+.cat-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 8px}
+.cat-bar .cat-name{font-weight:700;font-size:.85rem;color:var(--orange);letter-spacing:.5px}
+.cat-bar .cat-actions{display:flex;gap:6px;align-items:center}
+.cat-add-btn{background:none;border:1px solid rgba(233,69,96,.3);color:var(--orange);padding:3px 10px;border-radius:12px;cursor:pointer;font-size:.7rem;font-weight:600;transition:all .15s}
+.cat-add-btn:hover{background:rgba(233,69,96,.15);border-color:var(--orange)}
+.cat-del-btn{background:none;border:none;color:var(--no);cursor:pointer;font-size:.75rem;opacity:.4;transition:opacity .15s;padding:3px 6px}
+.cat-del-btn:hover{opacity:1}
+
+/* Disabled */
+tr.disabled td{opacity:.35}
+tr.disabled td:nth-child(2){opacity:1}
+tr.disabled .money-input{pointer-events:none;opacity:.3}
+
+/* Toggle */
+.toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 14px;border-radius:20px;border:none;cursor:pointer;font-size:.78rem;font-weight:700;transition:all .2s}
+.toggle-btn.yes{background:rgba(0,200,83,.2);color:var(--yes);border:2px solid rgba(0,200,83,.5)}
+.toggle-btn.no{background:rgba(255,82,82,.2);color:var(--no);border:2px solid rgba(255,82,82,.5)}
+.toggle-btn:hover{transform:scale(1.05);filter:brightness(1.2)}
+
+/* Money inputs */
+.money-input{width:84px;padding:6px 8px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;text-align:right;transition:border .2s;font-variant-numeric:tabular-nums}
+.money-input:focus{outline:none;border-color:var(--orange);background:#101d30}
+.money-input.user-edited{border-color:var(--orange2);background:#1a1510}
+.money-input::-webkit-inner-spin-button{opacity:0;width:0}
+.total-cell{font-weight:700;color:var(--orange2);font-variant-numeric:tabular-nums}
+
+/* Item cell */
+.item-cell{display:flex;align-items:center;gap:6px}
+.item-info{display:flex;flex-direction:column;min-width:0}
+.item-hint{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.3;font-style:italic;letter-spacing:.1px}
+.expand-btn{background:none;border:1px solid var(--border);color:var(--muted);width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:.65rem;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-weight:700}
+.expand-btn:hover,.expand-btn.open{color:var(--orange);border-color:var(--orange);background:rgba(233,69,96,.1)}
+.expand-btn.open{transform:rotate(90deg)}
+.reset-btn{background:none;border:none;color:var(--orange2);cursor:pointer;font-size:.72rem;padding:2px 6px;border-radius:4px;transition:color .2s;font-weight:600;white-space:nowrap}
+.reset-btn:hover{color:var(--orange)}
+.del-btn{background:none;border:none;color:var(--no);cursor:pointer;font-size:.8rem;opacity:.4;transition:opacity .15s;padding:2px;flex-shrink:0}
+.del-btn:hover{opacity:1}
+
+/* Formula panel */
+.formula-row td{padding:0!important;border:none!important}
+.formula-panel{background:#0d1b2a;border-left:3px solid var(--orange);margin:0 8px 6px 30px;border-radius:0 8px 8px 0;padding:12px 16px;display:none;animation:slideDown .2s ease;max-width:100%;overflow:hidden;box-sizing:border-box}
+.formula-panel.open{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.fp-layout{display:flex;gap:14px;align-items:stretch}
+.fp-left{flex:1;min-width:0;overflow:hidden}
+.fp-right{width:380px;flex-shrink:0;display:flex;flex-direction:column;min-width:0}
+.fp-right .fp-label{margin-bottom:6px}
+.fp-notes{flex:1;min-height:80px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:vertical;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-y:auto;box-sizing:border-box}
+.fp-notes:focus{outline:none;border-color:var(--orange);background:rgba(0,0,0,.35)}
+.fp-notes::placeholder{color:var(--muted);font-style:italic}
+.fp-desc{color:var(--muted);font-size:.78rem;margin-bottom:8px}
+.fp-section{margin-bottom:10px}
+.fp-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange);margin-bottom:4px;font-weight:700}
+.fp-formula{font-family:'Courier New',monospace;font-size:.82rem;color:var(--orange2);background:rgba(0,0,0,.25);padding:8px 12px;border-radius:6px;line-height:1.9;white-space:pre-wrap;overflow-wrap:break-word;word-break:break-word;overflow:hidden}
+
+/* Param inputs inside formula panels */
+.param-input{min-width:6ch;width:auto;padding:2px 6px;background:rgba(233,69,96,.12);border:1px solid var(--orange);border-radius:4px;color:var(--orange2);font-family:'Courier New',monospace;font-size:.82rem;text-align:center;transition:all .2s}
+.param-input:focus{outline:none;border-color:var(--orange2);background:rgba(233,69,96,.25);box-shadow:0 0 6px rgba(233,69,96,.3)}
+.param-input::-webkit-inner-spin-button{opacity:0;width:0}
+/* Tree size select */
+.tree-size-sel{padding:4px 10px;background:#0d2137;border:1px solid #2d5070;border-radius:4px;color:#c8e8ff;font-family:'Segoe UI',system-ui,sans-serif;font-size:.83rem;cursor:pointer;transition:all .2s}
+.tree-size-sel:focus{outline:none;border-color:var(--orange2);background:#102840}
+.tree-size-sel option{background:#0d2137;color:#c8e8ff}
+.tree-breakdown{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;margin-top:6px}
+.tree-breakdown .tb-label{font-size:.8rem;color:var(--muted)}
+.tree-breakdown .tb-range{font-size:.75rem;color:var(--muted);font-style:italic}
+
+/* Custom row */
+tr.custom-row{background:rgba(233,69,96,.03)}
+.custom-name-input{background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 8px;font-size:.85rem;width:100%;min-width:100px}
+.custom-name-input:focus{outline:none;border-color:var(--orange)}
+.custom-cat-name{background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--orange);padding:4px 10px;font-size:.82rem;font-weight:700;min-width:80px}
+.custom-cat-name:focus{outline:none;border-color:var(--orange)}
+
+/* Add new category */
+.new-cat-area{text-align:center;padding:12px 0 4px}
+.add-cat-btn{background:rgba(233,69,96,.08);border:1px dashed var(--orange);color:var(--orange);padding:8px 24px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+.add-cat-btn:hover{background:rgba(233,69,96,.18);border-style:solid}
+
+/* Summary */
+.summary-card{background:linear-gradient(135deg,var(--card),var(--card2));border-radius:12px;padding:20px;border:1px solid var(--orange);margin-top:8px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.summary-row:last-child{border:none;padding-top:14px;margin-top:6px;border-top:2px solid var(--orange)}
+.summary-row span:first-child{font-size:.9rem}
+.summary-row span:last-child{font-weight:700;font-size:1rem;font-variant-numeric:tabular-nums}
+.summary-row:last-child span{font-size:1.2rem;color:var(--orange)}
+.summary-row .pct{font-size:.75rem;color:var(--muted);margin-left:6px}
+.toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.toggle-row label{font-size:.85rem;color:var(--muted)}
+
+/* Permits table */
+.permits-section{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}
+.permits-section h3{font-size:.9rem;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.permits-table{width:100%;border-collapse:collapse}
+.permits-table thead th{background:var(--card2);padding:8px 10px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left;border-bottom:2px solid var(--orange)}
+.permits-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+.permits-table tbody tr:hover{background:rgba(233,69,96,.04)}
+.permits-table td{padding:6px 8px;vertical-align:middle}
+.permit-input{width:100%;padding:7px 10px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;transition:border .2s}
+.permit-input:focus{outline:none;border-color:var(--orange)}
+.permit-name{color:var(--text);font-size:.85rem;font-weight:600}
+.permit-hint{font-size:.7rem;color:var(--muted);margin-top:2px}
+.permit-status{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;margin-top:3px}
+.permit-status.ok{background:rgba(0,200,83,.15);color:var(--yes)}
+.permit-status.warn{background:rgba(255,165,0,.15);color:#ffa500}
+.permit-status.na{background:rgba(136,136,136,.15);color:var(--muted)}
+
+@media(max-width:768px){
+  .container{padding:12px 14px}
+  .money-input{width:76px;font-size:.82rem}
+  .fp-layout{flex-direction:column}
+  .fp-right{width:100%;min-width:0}
+  .fp-notes{min-height:50px;width:100%}
+}
+@media(max-width:600px){
+  header h1{font-size:1.2rem}
+  .container{padding:10px 12px}
+  .prop-grid{grid-template-columns:1fr 1fr}
+  .money-input{width:70px;font-size:.8rem;padding:5px 6px}
+  table{min-width:360px}
+  tbody td,thead th{padding:6px 4px;font-size:.78rem}
+  .formula-panel{margin-left:10px;margin-right:4px}
+  .fp-layout{flex-direction:column}
+  .fp-right{width:100%;min-width:0}
+  .fp-notes{min-height:50px;width:100%}
+  .param-input{width:55px;font-size:.78rem}
+  /* Hide Mat/Labor columns on small phones — show only Total */
+  thead th:nth-child(3),thead th:nth-child(4),
+  tbody td:nth-child(3),tbody td:nth-child(4){display:none}
+}
+@media(max-width:400px){
+  .container{padding:8px}
+  table{min-width:300px}
+  thead th,tbody td{padding:5px 3px;font-size:.74rem}
+  .money-input{width:62px;font-size:.76rem;padding:4px 5px}
+  .toggle-btn{padding:3px 8px;font-size:.72rem}
+}
+
+/* Edit-defaults banner */
+.edit-banner{display:flex;background:linear-gradient(90deg,rgba(22,33,62,.95),rgba(15,52,96,.6));border-bottom:1px solid var(--border);padding:6px 20px;font-size:.82rem;color:var(--muted);font-weight:700;letter-spacing:.2px;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;transition:all .3s}
+.edit-banner.active{background:linear-gradient(90deg,rgba(255,165,0,.12),rgba(255,165,0,.06));border-bottom:2px solid #ffa500;color:#ffa500;padding:9px 20px}
+.edit-banner .edit-details{display:none}
+.edit-banner.active .edit-details{display:contents}
+.edit-banner .ebtn{background:rgba(255,165,0,.2);border:1px solid #ffa500;color:#ffa500;padding:3px 12px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:700;transition:background .2s}
+.edit-banner .ebtn:hover{background:rgba(255,165,0,.38)}
+.edit-banner .ebtn.exit{background:rgba(255,82,82,.15);border-color:var(--no);color:var(--no)}
+.edit-banner .ebtn.exit:hover{background:rgba(255,82,82,.3)}
+.edit-banner .ebtn.enter{background:none;border:1px solid var(--border);color:var(--muted);font-size:.72rem;padding:4px 10px;transition:all .2s}
+.edit-banner .ebtn.enter:hover{border-color:var(--orange2);color:var(--orange2);background:rgba(255,165,0,.08)}
+.edit-banner.active .ebtn.enter{display:none}
+/* Folder tag */
+.folder-tag{font-size:.7rem;color:var(--muted);display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid var(--border);border-radius:12px;cursor:pointer;background:none;transition:all .2s;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.folder-tag:hover{border-color:var(--orange);color:var(--orange2)}
+
+/* ── City Permits (fetched live from JAX EPICS API) ─────────────────────── */
+.fetch-btn{background:none;border:1px solid rgba(233,69,96,.45);color:var(--orange);padding:3px 13px;border-radius:12px;cursor:pointer;font-size:.72rem;font-weight:700;transition:all .2s;vertical-align:middle;margin-left:6px}
+.fetch-btn:hover:not(:disabled){background:rgba(233,69,96,.15);border-color:var(--orange)}
+.fetch-btn:disabled{opacity:.45;cursor:not-allowed}
+.city-permits-wrap{margin-top:16px;border-top:1px dashed var(--border);padding-top:12px}
+.city-permits-status{font-size:.82rem;padding:5px 2px;display:flex;align-items:center;gap:8px;color:var(--muted)}
+.city-permits-status.loading{color:var(--orange2)}
+.city-permits-status.error{color:var(--no)}
+.city-permits-status.success{color:var(--yes)}
+.city-permits-table{width:100%;border-collapse:collapse;margin-top:10px}
+.city-permits-table thead th{background:var(--card2);padding:8px 10px;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left;border-bottom:2px solid var(--orange)}
+.city-permits-table thead th:last-child{text-align:center}
+.city-permits-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+.city-permits-table tbody tr:hover{background:rgba(233,69,96,.04)}
+.city-permits-table td{padding:7px 10px;font-size:.84rem;vertical-align:middle}
+.city-permits-table .pnum{font-family:'Consolas','Courier New',monospace;font-size:.8rem;font-weight:600;color:var(--text)}
+.city-permits-table .ptype{color:var(--text)}
+.city-permits-table .pyear{color:var(--muted);text-align:center;font-size:.82rem}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,107,53,.25);border-top-color:var(--orange2);border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.zoom-ctrl{display:flex;align-items:center;gap:6px;margin-left:auto}
+.zoom-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;width:28px;height:28px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.zoom-btn:hover{background:rgba(255,255,255,.22)}
+.zoom-lbl{font-size:.78rem;color:rgba(255,255,255,.75);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 <span>BRRRR</span> Renovation Calculator</h1>
+  <p>Buy · Rehab · Rent · Refinance · Repeat</p>
+</header>
+<div class="edit-banner" id="edit-banner">
+  <button class="ebtn enter" onclick="toggleEditDefaults()" id="edit-defaults-btn" title="Unlock editing of default formula values">⚙️ Edit Calculator</button>
+  <span class="edit-details">⚙️ Edit Calculator Defaults Mode — changes to formula parameters are saved as new defaults</span>
+  <span class="edit-details"><button class="ebtn" onclick="saveAsDefaults()">💾 Save as Defaults</button></span>
+  <span class="edit-details"><button class="ebtn exit" onclick="toggleEditDefaults()">✕ Exit Edit Mode</button></span>
+  <div class="zoom-ctrl" title="Adjust display size">
+    <button class="zoom-btn" onclick="zoomAdj(-1)" title="Decrease font size">A−</button>
+    <span class="zoom-lbl" id="zoom-lbl">100%</span>
+    <button class="zoom-btn" onclick="zoomAdj(+1)" title="Increase font size">A+</button>
+  </div>
+</div>
+<div class="container">
+  <div class="prop-card">
+    <h2>📋 Property Details</h2>
+    <div class="field" style="margin-bottom:12px"><label>Address</label><input type="text" id="address" placeholder="8319 Springtree Road, Jacksonville, FL 32210" style="font-size:1rem;padding:12px 14px"></div>
+    <div class="prop-grid">
+      <div class="field"><label>SqFt</label><input type="number" id="sqft" value="1500" min="0"></div>
+      <div class="field"><label>Bedrooms</label><input type="number" id="bed" value="3" min="0" max="10"></div>
+      <div class="field"><label>Bathrooms</label><input type="number" id="bath" value="2" min="0" max="10"></div>
+      <div class="field">
+        <label>Listing Link</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="url" id="listingUrl" placeholder="https://www.zillow.com/..." oninput="updateListingBtn()" style="flex:1;min-width:0">
+          <a id="listing-open-btn" href="#" target="_blank" onclick="return openListing()" title="Open in browser" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(233,69,96,.08);border:1px solid var(--border);color:var(--muted);font-size:1rem;text-decoration:none;transition:all .2s;flex-shrink:0;cursor:not-allowed;opacity:.35">🔗</a>
+        </div>
+      </div>
+    </div>
+    <div class="permits-section">
+      <h3>📜 Property Permits &nbsp;<a href="https://jaxepics.coj.net/Search/SearchResults" target="_blank" style="font-size:.72rem;color:var(--orange);text-decoration:none;font-weight:700;border:1px solid rgba(233,69,96,.35);padding:2px 9px;border-radius:10px;letter-spacing:.3px;transition:all .2s;vertical-align:middle" onmouseover="this.style.background='rgba(233,69,96,.15)';this.style.borderColor='var(--orange)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(233,69,96,.35)'">JAXPICS 🔗</a><button class="fetch-btn" id="fetch-btn" onclick="fetchCityPermits()" title="Search Jacksonville city permit records for this property">🔍 Fetch City Permits</button></h3>
+      <div class="table-wrap">
+        <table class="permits-table">
+          <thead><tr>
+            <th style="width:28%">Permit Name</th>
+            <th style="width:18%">Date</th>
+            <th>Notes</th>
+          </tr></thead>
+          <tbody id="permits-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- City-fetched permits (live from JAX EPICS API) -->
+      <div class="city-permits-wrap" id="city-permits-wrap" style="display:none">
+        <div class="city-permits-status" id="city-permits-status"></div>
+        <div class="table-wrap" id="city-permits-table-wrap" style="display:none">
+          <table class="city-permits-table">
+            <thead><tr>
+              <th style="width:28%">Permit Number</th>
+              <th>Permit Type</th>
+              <th>Work Type</th>
+              <th style="width:13%">Status</th>
+              <th style="width:10%">Year</th>
+            </tr></thead>
+            <tbody id="city-permits-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prop-card" style="padding:12px">
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Item</th>
+          <th style="width:72px">Include</th>
+          <th style="width:88px">Materials</th>
+          <th style="width:88px">Labor</th>
+          <th style="width:88px">Total</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="new-cat-area">
+      <button class="add-cat-btn" onclick="addCategory()">+ New Category</button>
+    </div>
+  </div>
+
+  <div class="summary-card" id="summary"></div>
+
+  <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;align-items:center">
+    <!-- Row 1: main actions -->
+    <div style="display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap">
+      <button onclick="exportData()" style="background:rgba(233,69,96,.12);border:1px solid var(--orange);color:var(--orange);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:700;transition:all .2s" onmouseover="this.style.background='rgba(233,69,96,.25)'" onmouseout="this.style.background='rgba(233,69,96,.12)'" title="Save current work as an HTML file">📥 Save Project</button>
+      <button onclick="importFile()" style="background:none;border:1px solid var(--border);color:var(--orange);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.8rem;transition:all .2s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'" title="Open a saved project file">📂 Open Project</button>
+      <input type="file" id="importFileInput" accept=".html,.json" style="display:none" onchange="importDataFromEvent(event)">
+      <button onclick="compareProjects()" style="background:rgba(233,69,96,.1);border:1px solid var(--orange);color:var(--orange);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:700;transition:all .2s" onmouseover="this.style.background='rgba(233,69,96,.22)'" onmouseout="this.style.background='rgba(233,69,96,.1)'" title="Compare multiple saved projects side by side">📊 Compare Projects</button>
+    </div>
+    <!-- Row 2: settings + edit calculator -->
+    <div style="display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap">
+      <button id="folder-tag" class="folder-tag" onclick="pickProjectFolder()" title="Set default save/open folder">📁 <span id="folder-name">Set project folder…</span></button>
+      <button onclick="if(confirm('Reset to saved defaults?')){loadState();build();buildPermits();}" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:.72rem;transition:all .2s" onmouseover="this.style.borderColor='var(--no)';this.style.color='var(--no)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'" title="Reset to saved defaults">↺ Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
+
+function updateListingBtn(){
+  const url=$('listingUrl').value.trim();
+  const btn=$('listing-open-btn');
+  if(!btn)return;
+  if(url&&(url.startsWith('http://')||url.startsWith('https://'))){
+    btn.href=url;
+    btn.style.cursor='pointer';
+    btn.style.opacity='1';
+    btn.style.borderColor='var(--orange)';
+    btn.style.color='var(--orange)';
+    btn.style.background='rgba(233,69,96,.15)';
+    btn.title='Open: '+url;
+  }else{
+    btn.href='#';
+    btn.style.cursor='not-allowed';
+    btn.style.opacity='.35';
+    btn.style.borderColor='var(--border)';
+    btn.style.color='var(--muted)';
+    btn.style.background='rgba(233,69,96,.08)';
+    btn.title='Open in browser';
+  }
+}
+function openListing(){
+  const url=$('listingUrl').value.trim();
+  if(!url||(!url.startsWith('http://')&&!url.startsWith('https://')))return false;
+  window.open(url,'_blank');
+  return false;
+}
+const val=id=>{const v=parseFloat($(id).value);return isNaN(v)?0:v};
+function getP(){return{sqft:val('sqft'),bed:val('bed'),bath:val('bath')};}
+
+/* ═══════ PARAM INPUT HELPER ═══════ */
+function pIn(i,name,val,w){
+  return `<input class="param-input" id="fp-${i}-${name}" type="number" value="${val}" style="width:${w||65}px" oninput="eP(${i},'${name}',this.value)" onfocus="this.select()" step="any">`;
+}
+
+/* ═══════ BUILT-IN CATEGORIES & ROWS ═══════ */
+const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','FLOORING','DOORS','APPLIANCES','GENERAL'];
+
+const ROWS=[
+  {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,
+    dp:{r:7,lab:2000},
+    cM:(p,k)=>p.sqft*k.r, cL:(p,k)=>k.lab,
+    fM:(p,k,i)=>`SqFt × $${pIn(i,'r',k.r)}<br>= ${p.sqft} × ${k.r} = ${fmt(p.sqft*k.r)}`,
+    fL:(p,k,i)=>`Fixed = $${pIn(i,'lab',k.lab)}`,
+    d:'Roofing materials by sqft + fixed labor',
+    defNote:'Replacing a Tiled Roof (החלפת גג רעפים) cost.\nCalculated by: house square footage × material rate per sqft + fixed labor fee.\nBigger house = more materials. Labor is a flat fee regardless of size.\nTypical rate: $5–$9 per sqft for materials.'},
+
+  {cat:'EXTERIOR',item:'Sealing a Metal Roof (GacoRoof)',split:0,on:false,
+    dp:{rfac:1.15,pailCost:320,cov:250,anc:0.175,labType:0,labRate:2.0,labHrRate:65,labHrs:10},
+    cT:(p,k)=>{
+      const rsqft=Math.round(p.sqft*(k.rfac||1.15));
+      const pails=Math.ceil(rsqft/(k.cov||250));
+      const mat=Math.round(pails*(k.pailCost||320)+rsqft*(k.anc||0.175));
+      const isHrly=Math.round(k.labType||0)===1;
+      const lab=isHrly?Math.round((k.labHrRate||65)*(k.labHrs||10)):Math.round(rsqft*(k.labRate||2));
+      return mat+lab;
+    },
+    fT:(p,k,i)=>{
+      const rsqft=Math.round(p.sqft*(k.rfac||1.15));
+      const pails=Math.ceil(rsqft/(k.cov||250));
+      const matGaco=pails*(k.pailCost||320);
+      const matAnc=Math.round(rsqft*(k.anc||0.175));
+      const mat=Math.round(matGaco+matAnc);
+      const isHrly=Math.round(k.labType||0)===1;
+      const lab=isHrly?Math.round((k.labHrRate||65)*(k.labHrs||10)):Math.round(rsqft*(k.labRate||2));
+      const total=mat+lab;
+      const labSel=`<select class="tree-size-sel" id="fp-${i}-labType" onchange="ePSel(${i},'labType',this.value)"><option value="0"${!isHrly?' selected':''}>Per Sqft (contractor)</option><option value="1"${isHrly?' selected':''}>Hourly (handyman)</option></select>`;
+      const labDetail=isHrly
+        ?`$${pIn(i,'labHrRate',k.labHrRate||65,55)}/hr × ${pIn(i,'labHrs',k.labHrs||10,50)} hrs = <strong>${fmt(lab)}</strong>`
+        :`$${pIn(i,'labRate',k.labRate||2,55)}/sqft × ${rsqft} sqft = <strong>${fmt(lab)}</strong>`;
+      return `<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">ROOF FACTOR</span>&nbsp; ${pIn(i,'rfac',k.rfac||1.15,50)} &nbsp;×&nbsp; ${p.sqft} sqft = <strong>${rsqft} sqft roof</strong></div>`+
+        `🪣 GacoRoof pails: ⌈${rsqft} ÷ ${pIn(i,'cov',k.cov||250,55)}⌉ = <strong>${pails} pails</strong> × $${pIn(i,'pailCost',k.pailCost||320,60)} = ${fmt(matGaco)}<br>`+
+        `⚙️ Ancillary (GacoWash / seam tape / primer): $${pIn(i,'anc',k.anc||0.175,55)}/sqft × ${rsqft} = ${fmt(matAnc)}<br>`+
+        `<strong>Materials total: ${fmt(mat)}</strong><br><br>`+
+        `<div style="margin-bottom:6px"><span style="color:var(--muted);font-size:.8rem">LABOR TYPE</span>&nbsp; ${labSel}</div>`+
+        `⚒️ Labor: ${labDetail}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem">${isHrly?'Range: $50–$80/hr (handyman)':'Range: $1.00–$3.00/sqft (contractor, incl. prep: power wash + seam sealing)'}</span><br><br>`+
+        `<strong style="color:var(--orange2)">Total: ${fmt(total)}</strong>`;
+    },
+    h:(p,k)=>`Est. roof: ${Math.round(p.sqft*(k.rfac||1.15))} sqft`,
+    d:'GacoRoof 100% silicone coating (2 coats) on metal roof — materials + labor',
+    defNote:'Sealing a Metal Roof (GacoRoof) (איטום גג מתכת בסיליקון).\nGacoRoof is a 100% silicone roof coating (ציפוי גג סיליקון) applied in 2 coats.\n\nROOF SIZE ESTIMATE: House sqft × 1.15 factor = roof sqft (accounts for overhangs and eaves).\nAdjust the factor if your roof footprint differs significantly from the living area.\n\nMaterials:\n• GacoRoof 5-gallon pails: $320/pail · 1 pail covers 250 sqft (full 2-coat process)\n• Pails needed = ⌈roof sqft ÷ 250⌉\n• Ancillary (cleaning agents / GacoWash, seam tape, primers): $0.10–$0.25/sqft → default $0.175/sqft\n  Increases if roof has significant rust or oil bleed-through.\n\nDROPDOWN — Labor Type:\n• Per Sqft (לפי מ"ר) — professional contractor in Jacksonville: $1.00–$3.00/sqft → default $2.00/sqft.\n  Includes prep work: power washing, manual scrubbing, sealing fasteners and seams.\n• Hourly (לפי שעה) — local handyman: $50–$80/hr → default $65/hr.\n  Best for smaller roofs or detailed repair sections. Set the number of hours manually.\n\n⚠️ This row is OFF by default — metal roofs are less common than tiled roofs in Jacksonville residential properties.'},
+
+  {cat:'EXTERIOR',item:'Tree Removal',split:0,
+    dp:{trees:1,size:1,
+        rem0:325,stu0:104,deb0:100,
+        rem1:1100,stu1:180,deb1:220,
+        rem2:1675,stu2:300,deb2:400},
+    cT:(p,k)=>{const s=Math.min(2,Math.max(0,Math.round(k.size)));return k.trees*((k['rem'+s]||0)+(k['stu'+s]||0)+(k['deb'+s]||0));},
+    fT:(p,k,i)=>{
+      const s=Math.min(2,Math.max(0,Math.round(k.size)));
+      const sNames=["Small (Under 30')","Medium (30'–60')","Large (60'–80')"];
+      const sRanges=[
+        {r:'$150–$500',st:'$76–$133',d:'$50–$150',tot:'$276–$783'},
+        {r:'$500–$1,500',st:'$136–$220',d:'$150–$300',tot:'$786–$2,020'},
+        {r:'$850–$2,500+',st:'$200–$400+',d:'$300–$500+',tot:'$1,350–$3,400+'}
+      ];
+      const rem=k['rem'+s]||0, stu=k['stu'+s]||0, deb=k['deb'+s]||0;
+      const perTree=rem+stu+deb;
+      const rng=sRanges[s];
+      const sel=`<select class="tree-size-sel" id="fp-${i}-size" onchange="ePSel(${i},'size',this.value)"><option value="0"${s===0?' selected':''}>Small (Under 30')</option><option value="1"${s===1?' selected':''}>Medium (30'–60')</option><option value="2"${s===2?' selected':''}>Large (60'–80')</option></select>`;
+      return `<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">TREE SIZE</span>&nbsp; ${sel} &nbsp;&nbsp; <span style="color:var(--muted);font-size:.8rem">TREES</span>&nbsp; ${pIn(i,'trees',k.trees,55)}</div>`+
+        `<div class="tree-breakdown">`+
+        `<span class="tb-label">🪚 Tree Removal</span><span>$${pIn(i,'rem'+s,rem,75)}</span><span class="tb-range">range: ${rng.r}</span>`+
+        `<span class="tb-label">⚙️ Stump Grinding</span><span>$${pIn(i,'stu'+s,stu,75)}</span><span class="tb-range">range: ${rng.st}</span>`+
+        `<span class="tb-label">🚛 Debris Haul Off</span><span>$${pIn(i,'deb'+s,deb,75)}</span><span class="tb-range">range: ${rng.d}</span>`+
+        `</div>`+
+        `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">Per tree: ${fmt(perTree)} &nbsp;×&nbsp; ${k.trees} tree${k.trees!==1?'s':''} = <strong style="color:var(--orange2)">${fmt(perTree*k.trees)}</strong> &nbsp;<span class="tb-range">(total range: ${rng.tot} per tree)</span></div>`;
+    },
+    h:(p,k)=>{const s=Math.min(2,Math.max(0,Math.round(k.size)));return`Tree size: ${["Small (under 30')","Medium (30'–60')","Large (60'–80')"][s]}  ·  ${k.trees} tree${k.trees!==1?'s':''}`;},
+    d:"Tree removal, stump grinding & debris haul off — priced by tree size",
+    defNote:'Tree removal (כריתת עצים) cost.\nIncludes: cutting the tree (כריתה), stump grinding (שחיקת גדם), and debris haul off (פינוי פסולת).\n\nDROPDOWN — Tree Size: pick Small/Medium/Large based on tree height. Larger trees cost significantly more.\nTREES field: set the number of trees to remove. Cost multiplies per tree.'},
+
+  {cat:'TERMITE',item:'Termite Treatment',split:0,
+    dp:{method:0,tent:0,base0:1500,rate0:1.33,base1:-175,rate1:1.50,tbase:750,trate:3.00,annual:425},
+    cT:(p,k)=>{
+      const m=Math.min(1,Math.max(0,Math.round(k.method)));
+      const sqft=p.sqft||1500;
+      const prev=Math.round(k['base'+m]+k['rate'+m]*sqft);
+      const tent=k.tent?Math.round(k.tbase+k.trate*sqft):0;
+      return prev+tent;
+    },
+    fT:(p,k,i)=>{
+      const m=Math.min(1,Math.max(0,Math.round(k.method)));
+      const sqft=p.sqft||1500;
+      const hasTent=!!k.tent;
+      const bracket=sqft<1600?0:sqft<=2300?1:2;
+      const bLabel=['Small (<1,600 sqft)','Medium (1,600–2,300 sqft)','Large (>2,300 sqft)'][bracket];
+      const prevRanges=[['$3,000–$3,500','$1,500–$2,200'],['$3,800–$4,500','$2,300–$3,200'],['$4,800–$6,000','$3,500–$5,000']];
+      const tentRanges=['$4,000–$5,500','$5,500–$7,500','$8,000–$11,000+'];
+      /* calc */
+      const prevBase=k['base'+m], prevRate=k['rate'+m];
+      const prevFromRate=Math.round(prevRate*sqft), prevTotal=Math.round(prevBase+prevRate*sqft);
+      const tentFromRate=Math.round(k.trate*sqft), tentTotal=Math.round(k.tbase+k.trate*sqft);
+      const grandTotal=prevTotal+(hasTent?tentTotal:0);
+      /* selectors */
+      const mSel=`<select class="tree-size-sel" id="fp-${i}-method" onchange="ePSel(${i},'method',this.value)"><option value="0"${m===0?' selected':''}>🟢 Sentricon (Green Stations)</option><option value="1"${m===1?' selected':''}>💉 Liquid Injection (Termidor)</option></select>`;
+      const tSel=`<select class="tree-size-sel" id="fp-${i}-tent" onchange="ePSel(${i},'tent',this.value)"><option value="0"${!hasTent?' selected':''}>✓ No — Prevention only</option><option value="1"${hasTent?' selected':''}>⚠ Yes — Add Tent first</option></select>`;
+      /* ── ledger table helper ───────────────────────────────────────
+         Each row = [label, middleExpr, rightAmount, optionalSubtext]
+         Pass the string 'hr' to insert a divider row.
+      ────────────────────────────────────────────────────────────── */
+      const td=(s,style='')=>`<td style="padding:4px 6px;vertical-align:middle;overflow-wrap:break-word;word-break:break-word;${style}">${s}</td>`;
+      const ledger=(rows)=>`<table style="width:100%;border-collapse:collapse;font-size:.82rem;font-family:'Courier New',monospace;table-layout:fixed">${
+        rows.map(r=>{
+          if(r==='hr') return `<tr><td colspan="3"><div style="border-top:1px solid rgba(255,255,255,.12);margin:3px 0"></div></td></tr>`;
+          const[lbl,mid,right,sub]=r;
+          return `<tr>`+
+            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted)">${lbl}</span>`,'width:22%')+
+            td(mid||'','text-align:center;color:var(--muted);width:50%')+
+            td(`${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}`,'text-align:right;width:28%')+
+          `</tr>`;
+        }).join('')
+      }</table>`;
+      /* card helper */
+      const card=(bcolor,title,rows,tip)=>
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid ${bcolor};border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:10px;color:${bcolor}">${title}</div>`+
+        ledger(rows)+
+        (tip?`<div style="font-size:.73rem;color:var(--muted);margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,.07)">${tip}</div>`:'')+
+        `</div>`;
+      /* tent card */
+      const tentCard=card('var(--no)','⛺ STEP 1 — Tent Fumigation  <span style="opacity:.7;font-weight:400">(pre-treatment for active Drywood infestation)</span>',
+        [
+          ['Base cost',   '',   `$${pIn(i,'tbase',k.tbase,70)}`],
+          ['Rate',        `$${pIn(i,'trate',k.trate,55)} /sqft  ×  ${sqft.toLocaleString()} sqft`,  `= &nbsp;${fmt(tentFromRate)}`],
+          'hr',
+          ['Tent subtotal','', `<strong style="color:var(--orange2)">${fmt(tentTotal)}</strong>`, `market range: ${tentRanges[bracket]}`]
+        ],
+        'Vikane gas — tenants must vacate 2–3 days. Only option that kills Drywood termites living inside wood (bait &amp; injection can\'t reach them).'
+      );
+      /* prevention card */
+      const prevColor=m===0?'var(--yes)':'#4fc3f7';
+      const prevTip=m===0?'Transferrable Termite Bond — best for BRRRR appraisal. Stations buried every 10 ft around perimeter. Annual renewal required.':'Termidor injected into trench dug around foundation. Immediate kill, no visible stations in yard. Lasts 5–10 years.';
+      const prevCard=card(prevColor,`${m===0?'🟢':'💉'} STEP ${hasTent?'2':'1'} — ${m===0?'Sentricon (Bait Stations)':'Liquid Injection (Termidor)'}`,
+        [
+          ['Base cost',   '',   `$${pIn(i,'base'+m,prevBase,70)}`],
+          ['Rate',        `$${pIn(i,'rate'+m,prevRate,55)} /sqft  ×  ${sqft.toLocaleString()} sqft`,  `= &nbsp;${fmt(prevFromRate)}`],
+          'hr',
+          ['Prevention subtotal','', `<strong style="color:var(--orange2)">${fmt(prevTotal)}</strong>`, `market range: ${prevRanges[bracket][m]}`]
+        ],
+        prevTip
+      );
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Prevention Method</div>${mSel}</div>`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Active Infestation?</div>${tSel}</div>`+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:10px">📐 House: <strong style="color:var(--text)">${sqft} sqft</strong> — ${bLabel}</div>`+
+        (hasTent?tentCard:'')+prevCard+
+        `<div style="border-top:1px solid var(--border);padding-top:8px">`+
+        (hasTent
+          ?`<div style="font-size:.85rem">Tent ${fmt(tentTotal)} &nbsp;+&nbsp; Prevention ${fmt(prevTotal)} &nbsp;= &nbsp;<strong style="color:var(--orange2);font-size:.95rem">${fmt(grandTotal)}</strong></div>`
+          :`<div style="font-size:.85rem">Total &nbsp;= &nbsp;<strong style="color:var(--orange2);font-size:.95rem">${fmt(grandTotal)}</strong></div>`)+
+        `</div>`+
+        `<div style="border-top:1px solid var(--border);padding-top:8px;margin-top:8px">`+
+        `<div style="font-size:.8rem;color:var(--orange);font-weight:700;margin-bottom:4px">⚠️ Annual Bond Renewal — recurring, not included in total</div>`+
+        `<div style="font-size:.82rem">$${pIn(i,'annual',k.annual,65)} /year &nbsp;<span style="color:var(--muted);font-size:.75rem">range $350–$500/yr — required to keep warranty active</span></div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-top:4px">📋 Jacksonville: No termite bond = "high-risk" for lenders. Bond is transferrable to buyer — adds appraisal confidence.</div>`+
+        `</div>`;
+    },
+    h:(p,k)=>{const m=Math.min(1,Math.max(0,Math.round(k.method)));return`${m===0?'Sentricon (Green Stations)':'Liquid Injection (Termidor)'}  ·  ${k.tent?'+ Tent fumigation':'Prevention only'}`;},
+    d:'Termite protection — Jacksonville 2026 | SQF-based formula | Sentricon default | annual renewal $350–$500/yr',
+    defNote:'Termite treatment (טיפול בטרמיטים) cost.\nProtects the property from termite damage (נזקי טרמיטים).\n\nDROPDOWN — Prevention Method:\n• Sentricon (תחנות פיתיון) — green bait stations around the house. More common, transferable to new owner.\n• Liquid Injection (הזרקה נוזלית) — Termidor chemical injected into the soil.\n\nDROPDOWN — Active Infestation:\n• No — prevention only (מניעה בלבד).\n• Yes — adds tent fumigation (חיטוי באוהל) with Vikane gas first, then prevention.\n\nNote: Annual bond renewal (חידוש ערבות) of ~$425/yr is shown for reference — this is a recurring yearly cost.'},
+
+  {cat:'PLUMBING',item:'Water Heater',split:1,
+    dp:{mat:700,lab:350},
+    cM:(p,k)=>k.mat, cL:(p,k)=>k.lab,
+    fM:(p,k,i)=>`Fixed = $${pIn(i,'mat',k.mat)}`,
+    fL:(p,k,i)=>`Fixed = $${pIn(i,'lab',k.lab)}`,
+    d:'Standard water heater replacement',
+    defNote:'Water heater replacement (החלפת דוד חם).\nFixed cost: materials (the unit itself) + labor (installation).\nThis covers a standard tank water heater, not tankless.'},
+
+  {cat:'PLUMBING',item:'Plumbing Repipe',split:0,
+    dp:{fc:750,lc:150,df:0.8,dc:400},
+    cT:(p,k)=>{const f=3*p.bath+6,l=p.bath+4;return f*k.fc+l*k.lc+k.df*f*k.dc;},
+    fT:(p,k,i)=>{const f=3*p.bath+6,l=p.bath+4;
+      return`Plumbing Points: 3×bath+6 = <strong>${f}</strong> &nbsp;×&nbsp; $${pIn(i,'fc',k.fc)} = ${fmt(f*k.fc)}<br>Faucet Replacement: bath+4 = <strong>${l}</strong> &nbsp;×&nbsp; $${pIn(i,'lc',k.lc)} = ${fmt(l*k.lc)}<br>Drywall Repair: ${pIn(i,'df',k.df,50)}×(3×bath+6) = <strong>${(k.df*(3*p.bath+6)).toFixed(1)}</strong> &nbsp;×&nbsp; $${pIn(i,'dc',k.dc)} = ${fmt(k.df*f*k.dc)}<br>──────────<br>Total = ${fmt(f*k.fc+l*k.lc+k.df*f*k.dc)}`;},
+    d:'Full repipe: plumbing points, faucets, drywall repair',
+    defNote:'Full plumbing repipe (החלפת צנרת מלאה).\nReplaces all old pipes with new ones. Cost based on number of bathrooms.\n\nBreakdown:\n• Plumbing points (נקודות אינסטלציה) — calculated as 3×bathrooms+6. More bathrooms = more pipe connections.\n• Faucet replacement (החלפת ברזים) — calculated as bathrooms+4.\n• Drywall repair (תיקון גבס) — opening walls to access pipes requires patching afterward.\n\nThis is usually needed in older homes with galvanized or polybutylene pipes.'},
+
+  {cat:'PLUMBING',item:'Drain Line',split:0,
+    dp:{t:15000},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Main drain line replacement',
+    defNote:'Main drain line replacement (החלפת קו ניקוז ראשי).\nThe main sewer pipe (צינור ביוב ראשי) that connects the house to the city sewer.\nFixed cost — this is a major job that involves digging under/around the house.\nNeeded when the existing drain is cracked, collapsed, or has tree root intrusion (חדירת שורשים).'},
+
+  {cat:'ELECTRICAL',item:'Panel Upgrade',split:0,
+    dp:{t:2500},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Electrical panel upgrade to 200A',
+    defNote:'Electrical panel upgrade (שדרוג לוח חשמל) to 200 Amps.\nReplaces an old/undersized panel (typically 100A or 150A) with a modern 200A panel.\nRequired when the home needs more electrical capacity — common in older homes.\nThis is a different job than a panel swap (see below).'},
+
+  {cat:'ELECTRICAL',item:'Panel Swap',split:0,
+    dp:{t:2000},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Panel swap (same amperage)',
+    defNote:'Panel swap (החלפת לוח חשמל) — same amperage.\nReplaces a damaged, outdated, or recalled panel with a new one of the same capacity.\nCheaper than an upgrade because no new wiring to the meter is needed.\nCommon reason: Federal Pacific or Zinsco panels (known fire hazards).'},
+
+  {cat:'ELECTRICAL',item:'AlumiConn',split:0,
+    dp:{t:2000},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Aluminum-to-copper connectors',
+    defNote:'AlumiConn connectors (מחברי אלומיניום-נחושת).\nHomes built in the 1960s-70s may have aluminum wiring (חיווט אלומיניום), which is a fire risk.\nAlumiConn connectors safely join aluminum wires to copper at every outlet, switch, and fixture.\nThis is the approved fix — cheaper than full rewiring (חיווט מחדש).'},
+
+  {cat:'ELECTRICAL',item:'Outlets & Switches',split:1,
+    dp:{mat:700,lab:400},
+    cM:(p,k)=>k.mat, cL:(p,k)=>k.lab,
+    fM:(p,k,i)=>`Fixed = $${pIn(i,'mat',k.mat)}`,
+    fL:(p,k,i)=>`Fixed = $${pIn(i,'lab',k.lab)}`,
+    d:'Replace all outlets and switches',
+    defNote:'Replace all outlets and switches (החלפת שקעים ומפסקים).\nSwapping old/discolored outlets and light switches with new ones.\nMaterials = the outlets and switches. Labor = electrician installation.\nGives the home a clean, updated look and ensures safety.'},
+
+  {cat:'ELECTRICAL',item:'GFCI Breakers',split:1,
+    dp:{mat:100,lab:10},
+    cM:(p,k)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;return n*k.mat;},
+    cL:(p,k)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;return n*k.lab;},
+    fM:(p,k,i)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;
+      return`bed+bath = ${bb}<br>≤2→8 &nbsp; 3-4→10 &nbsp; 5-6→11 &nbsp; 7+→12<br><br><strong>${n} breakers</strong> × $${pIn(i,'mat',k.mat)} = ${fmt(n*k.mat)}`;},
+    fL:(p,k,i)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;
+      return`${n} breakers × $${pIn(i,'lab',k.lab)} = ${fmt(n*k.lab)}`;},
+    d:'GFCI breakers 8–12 per house × $100 + $10 labor each',
+    defNote:'GFCI breakers (ממסרי פחת) — ground fault protection.\nThese breakers trip when they detect a current leak, preventing electrocution.\nRequired by code in kitchens, bathrooms, garages, and outdoor areas.\n\nCount is auto-calculated based on bedrooms + bathrooms:\n• 1-2 bed+bath = 8 breakers\n• 3-4 = 10 breakers\n• 5-6 = 11 breakers\n• 7+ = 12 breakers'},
+
+  {cat:'ELECTRICAL',item:'Light Fixtures',split:1,
+    dp:{mat:100,lab:50},
+    cM:(p,k)=>(p.bed+p.bath+6)*k.mat,
+    cL:(p,k)=>(p.bed+p.bath+6)*k.lab,
+    fM:(p,k,i)=>{const n=p.bed+p.bath+6;return`${p.bed} bedroom${p.bed!==1?'s':''} + ${p.bath} bathroom${p.bath!==1?'s':''} + 6 fixed rooms = <strong>${n} fixtures</strong><br>${n} × $${pIn(i,'mat',k.mat)} = ${fmt(n*k.mat)}`;},
+    fL:(p,k,i)=>{const n=p.bed+p.bath+6;return`${n} fixtures × $${pIn(i,'lab',k.lab)} = ${fmt(n*k.lab)}`;},
+    d:'Light fixtures: 1/bed + 1/bath + 6 fixed × $100 + $50 labor',
+    defNote:'Light fixtures (גופי תאורה) replacement.\nOne fixture per bedroom, one per bathroom, plus 6 for common rooms (kitchen, living room, hallway, laundry, porch, dining).\nTotal fixtures = bedrooms + bathrooms + 6.\nMaterials = the fixture. Labor = electrician install per fixture.'},
+
+  {cat:'ELECTRICAL',item:'Fans',split:1,
+    dp:{mat:70,lab:100},
+    cM:(p,k)=>(p.bed+1)*k.mat,
+    cL:(p,k)=>(p.bed+1)*k.lab,
+    fM:(p,k,i)=>{const n=p.bed+1;return`(bed + living room) = ${p.bed} + 1 = <strong>${n} fans</strong><br>${n} × $${pIn(i,'mat',k.mat)} = ${fmt(n*k.mat)}`;},
+    fL:(p,k,i)=>{const n=p.bed+1;return`${n} fans × $${pIn(i,'lab',k.lab)} = ${fmt(n*k.lab)}`;},
+    d:'Ceiling fans — $70 material + $100 labor per fan (bedrooms + living room)',
+    defNote:'Ceiling fans (מאווררי תקרה) installation.\nOne fan per bedroom + one for the living room = bedrooms + 1.\nMaterials = the fan unit. Labor = electrician installation.\nImportant in Florida for air circulation and tenant comfort.'},
+
+  {cat:'HVAC',item:'Central AC',split:0,
+    dp:{t1:4000,t2:4500,t3:5000,t4:5500,t5:6000},
+    cT:(p,k)=>{if(p.sqft<=1759)return k.t1;if(p.sqft<=1850)return k.t2;if(p.sqft<=1950)return k.t3;if(p.sqft<=2050)return k.t4;return k.t5;},
+    fT:(p,k,i)=>{const t=[['≤1759',k.t1,'t1',p.sqft<=1759],['≤1850',k.t2,'t2',p.sqft>1759&&p.sqft<=1850],['≤1950',k.t3,'t3',p.sqft>1850&&p.sqft<=1950],['≤2050',k.t4,'t4',p.sqft>1950&&p.sqft<=2050],['>2050',k.t5,'t5',p.sqft>2050]];
+      return`SqFt = ${p.sqft}<br><br>`+t.map(x=>`${x[3]?'►':'&nbsp;'} ${x[0]} → $${pIn(i,x[2],x[1])}`).join('<br>');},
+    d:'Central AC — sized by sqft',
+    defNote:'Central air conditioning (מזגן מרכזי) replacement.\nCost is based on house size (sqft) — bigger house needs a bigger unit.\n\nSize brackets:\n• Up to 1,759 sqft → lowest cost\n• 1,760–1,850 sqft → +$500\n• 1,851–1,950 sqft → +$1,000\n• 1,951–2,050 sqft → +$1,500\n• Over 2,050 sqft → highest cost\n\nIncludes the AC unit (condenser + air handler) and basic installation.'},
+
+  {cat:'HVAC',item:'Ductwork',split:0,
+    dp:{t:600},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Ductwork repair / sealing',
+    defNote:'Ductwork repair and sealing (תיקון ואיטום תעלות אוויר).\nThe ducts (תעלות) carry cooled/heated air throughout the house.\nLeaky or damaged ducts waste energy and reduce AC efficiency.\nThis covers sealing joints, patching holes, and minor repairs — not full replacement.'},
+
+  {cat:'KITCHEN',item:'Standard Kitchen',split:0,
+    dp:{t:5000},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Standard kitchen renovation',
+    defNote:'Standard kitchen renovation (שיפוץ מטבח סטנדרטי).\nA lump sum covering basic kitchen updates: countertops (משטחים), cabinets (ארונות), sink (כיור), and general refresh.\nThis is a budget-friendly renovation — not a full custom kitchen.\nAdjust the amount based on kitchen condition and scope of work.'},
+
+  {cat:'BATHROOMS',item:'Bath Fixtures (per bathroom)',split:1,
+    dp:{wt:150,wtl:150,tl:300,tll:300,dw:15,dwl:35},
+    cM:(p,k)=>p.bath*(k.wt+k.tl+k.dw),
+    cL:(p,k)=>p.bath*(k.wtl+k.tll+k.dwl),
+    fM:(p,k,i)=>{const m=k.wt+k.tl+k.dw;return`<strong>Per bathroom — common materials:</strong><br>🚰 Water tap / faucet: $${pIn(i,'wt',k.wt)}<br>🚽 Toilet: $${pIn(i,'tl',k.tl)}<br>🧱 Drywall / Cement board (material): $${pIn(i,'dw',k.dw)}<br>──────────<br>Subtotal/bath = ${fmt(m)}<br><br><strong>${p.bath} bath</strong> × ${fmt(m)} = ${fmt(p.bath*m)}`;},
+    fL:(p,k,i)=>{const l=k.wtl+k.tll+k.dwl;return`<strong>Per bathroom — common labor:</strong><br>🚰 Water tap install: $${pIn(i,'wtl',k.wtl)}<br>🚽 Toilet install: $${pIn(i,'tll',k.tll)}<br>🧱 Drywall / Cement board (labor): $${pIn(i,'dwl',k.dwl)}<br>──────────<br>Subtotal/bath = ${fmt(l)}<br><br><strong>${p.bath} bath</strong> × ${fmt(l)} = ${fmt(p.bath*l)}`;},
+    d:'Common items per bathroom — water tap, toilet, drywall (delta valve is in shower/tub rows)',
+    defNote:'Bathroom fixtures (אביזרי אמבטיה) — per bathroom.\nCost multiplied by number of bathrooms. Includes:\n• Water tap/faucet (ברז) — material + install labor\n• Toilet (אסלה) — material + install labor\n• Drywall/cement board (גבס/לוח צמנט) — patching around fixtures\n\nNote: The shower/tub valve (ברז תערובת) is NOT included here — it is in the Shower Stall or Bathtub rows below.'},
+
+  {cat:'BATHROOMS',item:'Shower Stall (Stand-Up)',split:1,
+    dp:{units:1,sqf:80,tileRate:2.5,darkMat:300,laborRate:10,panMat:600,panLab:500,glassMat:1500,glassLab:800,valveMat:350,valveLab:650},
+    cM:(p,k)=>k.units*(k.panMat+k.sqf*k.tileRate+k.darkMat+k.glassMat+k.valveMat),
+    cL:(p,k)=>k.units*(k.panLab+k.sqf*k.laborRate+k.glassLab+k.valveLab),
+    fM:(p,k,i)=>{
+      const tileMat=Math.round(k.sqf*k.tileRate);
+      const mat=k.panMat+tileMat+k.darkMat+k.glassMat+k.valveMat;
+      return`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">UNITS</span>&nbsp; ${pIn(i,'units',k.units,50)}</div>`+
+        `🚿 Shower Pan: $${pIn(i,'panMat',k.panMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $400–$900</span><br>`+
+        `🔲 Wall Tile: ${pIn(i,'sqf',k.sqf,50)} SQF × $${pIn(i,'tileRate',k.tileRate,50)}/sqf = ${fmt(tileMat)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Porcelain (גרניט פורצלן) recommended over ceramic — range $1.50–$2.50/sqf | Large format = less grout</span><br>`+
+        `⚙️ Dark Matter (grout / adhesive / waterproofing): $${pIn(i,'darkMat',k.darkMat)}<br>`+
+        `🪟 Custom Glass Enclosure: $${pIn(i,'glassMat',k.glassMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1,000–$2,000</span><br>`+
+        `🔧 Delta Valve (materials): $${pIn(i,'valveMat',k.valveMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $250–$500</span><br>`+
+        `──────────<br>Materials/unit = ${fmt(mat)} &nbsp;|&nbsp; <strong>${k.units} unit${k.units!==1?'s':''} = ${fmt(k.units*mat)}</strong>`;
+    },
+    fL:(p,k,i)=>{
+      const tileLab=Math.round(k.sqf*k.laborRate);
+      const lab=k.panLab+tileLab+k.glassLab+k.valveLab;
+      return`🚿 Shower Pan install: $${pIn(i,'panLab',k.panLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $350–$700</span><br>`+
+        `🔲 Tile labor: ${k.sqf} SQF × $${pIn(i,'laborRate',k.laborRate,50)}/sqf = ${fmt(tileLab)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Range $8–$12/sqf (tile laying only). Add $400–$700 if waterproofing (Schluter Kerdi / RedGard) is itemized separately</span><br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">📐 Standard shower: 60–90 SQF</span><br>`+
+        `🪟 Glass install: $${pIn(i,'glassLab',k.glassLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $600–$1,000</span><br>`+
+        `🔧 Delta Valve install: $${pIn(i,'valveLab',k.valveLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $500–$800</span><br>`+
+        `──────────<br>Labor/unit = ${fmt(lab)} &nbsp;|&nbsp; <strong>${k.units} unit${k.units!==1?'s':''} = ${fmt(k.units*lab)}</strong>`;
+    },
+    d:'Stand-up shower: pan + wall tile (SQF) + luxury glass + delta valve | default 80 SQF',
+    defNote:'Stand-up shower stall (מקלחון עומד) remodel.\nIncludes:\n• Shower pan (מאגן מקלחת) — the base/floor of the shower\n• Wall tile (ריצוף קיר) — calculated by wall sqft (default 80 sqft)\n• Dark matter — grout (רובה), adhesive (דבק), waterproofing (איטום)\n• Glass enclosure (מחיצת זכוכית) — custom frameless glass\n• Delta valve (ברז תערובת) — the mixing valve behind the wall\n\nUnits field: set how many shower stalls to build. Cost multiplies per unit.'},
+
+  {cat:'BATHROOMS',item:'Bathtub',split:1,
+    dp:{units:1,sqf:80,tileRate:2.5,darkMat:300,laborRate:10,tubMat:600,tubLab:800,curtMat:150,curtLab:50,valveMat:400,valveLab:700},
+    cM:(p,k)=>k.units*(k.tubMat+k.sqf*k.tileRate+k.darkMat+k.curtMat+k.valveMat),
+    cL:(p,k)=>k.units*(k.tubLab+k.sqf*k.laborRate+k.curtLab+k.valveLab),
+    fM:(p,k,i)=>{
+      const tileMat=Math.round(k.sqf*k.tileRate);
+      const mat=k.tubMat+tileMat+k.darkMat+k.curtMat+k.valveMat;
+      return`<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">UNITS</span>&nbsp; ${pIn(i,'units',k.units,50)}</div>`+
+        `🛁 Bathtub: $${pIn(i,'tubMat',k.tubMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $400–$900</span><br>`+
+        `🔲 Wall Tile: ${pIn(i,'sqf',k.sqf,50)} SQF × $${pIn(i,'tileRate',k.tileRate,50)}/sqf = ${fmt(tileMat)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Porcelain (גרניט פורצלן) recommended over ceramic — range $1.50–$2.50/sqf | Large format = less grout</span><br>`+
+        `⚙️ Dark Matter (grout / adhesive / waterproofing): $${pIn(i,'darkMat',k.darkMat)}<br>`+
+        `🚿 Curtain + Rod: $${pIn(i,'curtMat',k.curtMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $80–$250</span><br>`+
+        `🔧 Delta Valve (materials): $${pIn(i,'valveMat',k.valveMat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $300–$550</span><br>`+
+        `──────────<br>Materials/unit = ${fmt(mat)} &nbsp;|&nbsp; <strong>${k.units} unit${k.units!==1?'s':''} = ${fmt(k.units*mat)}</strong>`;
+    },
+    fL:(p,k,i)=>{
+      const tileLab=Math.round(k.sqf*k.laborRate);
+      const lab=k.tubLab+tileLab+k.curtLab+k.valveLab;
+      return`🛁 Bathtub install: $${pIn(i,'tubLab',k.tubLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $600–$1,100</span><br>`+
+        `🔲 Tile labor: ${k.sqf} SQF × $${pIn(i,'laborRate',k.laborRate,50)}/sqf = ${fmt(tileLab)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Range $8–$12/sqf (tile laying only). Add $400–$700 if waterproofing (Schluter Kerdi / RedGard) is itemized separately</span><br>`+
+        `🚿 Curtain install: $${pIn(i,'curtLab',k.curtLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $30–$80</span><br>`+
+        `🔧 Delta Valve install: $${pIn(i,'valveLab',k.valveLab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $550–$850</span><br>`+
+        `──────────<br>Labor/unit = ${fmt(lab)} &nbsp;|&nbsp; <strong>${k.units} unit${k.units!==1?'s':''} = ${fmt(k.units*lab)}</strong>`;
+    },
+    d:'Bathtub remodel: tub + wall tile (SQF) + curtain/rod + delta valve | suitable for family units',
+    defNote:'Bathtub (אמבטיה) remodel.\nSimilar to shower stall but with a tub instead of a pan. Includes:\n• Bathtub (אמבטיה) — the tub unit + installation\n• Wall tile (ריצוף קיר) — calculated by wall sqft (default 80 sqft)\n• Dark matter — grout (רובה), adhesive (דבק), waterproofing (איטום)\n• Curtain + rod (וילון מקלחת + מוט) — instead of glass enclosure\n• Delta valve (ברז תערובת) — the mixing valve behind the wall\n\nBetter for family rentals — tenants with kids prefer bathtubs.\nUnits field: set how many bathtubs to install.'},
+
+  // ── PAINT ──
+  {cat:'PAINT',item:'Exterior Painting',split:1,
+    dp:{wallH:9,waste:1.10,washR:0.20,paintR:2.00,bucketMat:195,cov:1000,cons:200},
+    cM:(p,k)=>{
+      const wA=Math.round(4*Math.sqrt(p.sqft||1500)*k.wallH*k.waste);
+      return Math.ceil(wA/k.cov)*k.bucketMat+k.cons;
+    },
+    cL:(p,k)=>{
+      const wA=Math.round(4*Math.sqrt(p.sqft||1500)*k.wallH*k.waste);
+      return Math.round(wA*(k.washR+k.paintR));
+    },
+    fM:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const wA=Math.round(4*Math.sqrt(sq)*k.wallH*k.waste);
+      const bk=Math.ceil(wA/k.cov);
+      const paintMat=bk*k.bucketMat;
+      const matTotal=paintMat+k.cons;
+      return `<span style="color:var(--muted);font-size:.76rem">Perimeter ≈ 4×√sqft (square house est.) | Wall Area = Perim × Height × Waste factor</span><br>`+
+        `Wall Area = 4×√${sq} × ${pIn(i,'wallH',k.wallH,42)}ft × ${pIn(i,'waste',k.waste,50)} = <strong>${wA.toLocaleString()} sqf</strong><br>`+
+        `🎨 Paint (Behr Ultra): ⌈${wA}÷${pIn(i,'cov',k.cov,60)}⌉ = <strong>${bk} bucket${bk!==1?'s':''}</strong> × $${pIn(i,'bucketMat',k.bucketMat)} = ${fmt(paintMat)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Behr Ultra (built-in primer + UV protection) $185–$205/bucket | 1 bucket = ~1,000 sqf (2 coats)</span><br>`+
+        `📦 Consumables (tape, plastic sheeting, rollers): $${pIn(i,'cons',k.cons)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $150–$250</span><br>`+
+        `──────────<br>Materials = ${fmt(matTotal)}`;
+    },
+    fL:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const wA=Math.round(4*Math.sqrt(sq)*k.wallH*k.waste);
+      const washTotal=Math.round(wA*k.washR);
+      const paintTotal=Math.round(wA*k.paintR);
+      const labTotal=washTotal+paintTotal;
+      return `Wall Area = <strong>${wA.toLocaleString()} sqf</strong><br>`+
+        `🚿 Pressure Wash: ${wA.toLocaleString()} sqf × $${pIn(i,'washR',k.washR,50)}/sqf = ${fmt(washTotal)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Mandatory in Florida — removes salt/mildew before painting | range $0.15–$0.25/sqf</span><br>`+
+        `🖌️ Painting (scrape + mask + 2 coats): ${wA.toLocaleString()} sqf × $${pIn(i,'paintR',k.paintR,50)}/sqf = ${fmt(paintTotal)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Includes masking windows/trims | Jacksonville range $1.50–$2.50/sqf</span><br>`+
+        `──────────<br>Labor = ${fmt(labTotal)}`;
+    },
+    d:'Exterior painting — Behr Ultra premium | Jacksonville 2026 | pressure wash + 2 coats | SQF-based wall area',
+    defNote:'Exterior painting (צביעת חוץ) — full job.\nIncludes pressure washing (שטיפה בלחץ) + 2 coats of paint.\n\nMaterials: paint buckets calculated from wall area. Using Behr Ultra premium.\nLabor: pressure wash + painting per sqft of wall area.\n\nWall area is auto-calculated: perimeter × wall height × waste factor.\nThe perimeter is estimated as 4×√sqft (assuming a square footprint).\n\nNote: This row already includes pressure washing — do NOT also enable "Exterior Wash Only" or you will double-count.'},
+
+  {cat:'PAINT',item:'Exterior Wash Only',split:0,
+    dp:{wallH:9,waste:1.10,washR:0.20},
+    cT:(p,k)=>{
+      const wA=Math.round(4*Math.sqrt(p.sqft||1500)*k.wallH*k.waste);
+      return Math.round(wA*k.washR);
+    },
+    fT:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const wA=Math.round(4*Math.sqrt(sq)*k.wallH*k.waste);
+      const total=Math.round(wA*k.washR);
+      return `<span style="color:var(--muted);font-size:.76rem">Perimeter ≈ 4×√sqft (square house est.) | Wall Area = Perim × Height × Waste</span><br>`+
+        `Wall Area = 4×√${sq} × ${pIn(i,'wallH',k.wallH,42)}ft × ${pIn(i,'waste',k.waste,50)} = <strong>${wA.toLocaleString()} sqf</strong><br>`+
+        `🚿 Pressure Wash (included): ${wA.toLocaleString()} sqf × $${pIn(i,'washR',k.washR,50)}/sqf = <strong>${fmt(total)}</strong><br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Mandatory in FL before any paint job — removes salt, mildew & dirt | range $0.15–$0.25/sqf</span><br>`+
+        `──────────<br>Total = ${fmt(total)}<br>`+
+        `<span style="color:#ffa500;font-size:.75rem">⚠️ Note: Exterior Painting row already includes the pressure wash — uncheck one to avoid double-counting</span>`;
+    },
+    d:'Pressure wash only — standalone | use when painting separately or for maintenance | ⚠️ Exterior Painting already includes wash',
+    defNote:'Pressure wash only (שטיפה בלחץ בלבד).\nStandalone pressure washing of the exterior — no painting.\nUse this when the house just needs cleaning, or when painting is done separately.\n\n⚠️ WARNING: If "Exterior Painting" is ON, do NOT enable this row — the painting row already includes pressure wash. Enabling both = paying twice for the same wash.'},
+
+  {cat:'PAINT',item:'Interior Painting',split:1,
+    dp:{wallFac:1.10,paintR:1.75,bucketMat:155,cov:1000,cons:150},
+    cM:(p,k)=>{
+      const wA=Math.round((p.sqft||1500)*k.wallFac);
+      return Math.ceil(wA/k.cov)*k.bucketMat+k.cons;
+    },
+    cL:(p,k)=>Math.round((p.sqft||1500)*k.paintR),
+    fM:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const wA=Math.round(sq*k.wallFac);
+      const bk=Math.ceil(wA/k.cov);
+      const paintMat=bk*k.bucketMat;
+      const matTotal=paintMat+k.cons;
+      return `<span style="color:var(--muted);font-size:.76rem">Wall area = Floor SQF × factor (accounts for room partitions & 8–9ft ceilings)</span><br>`+
+        `Wall Area = ${sq} × ${pIn(i,'wallFac',k.wallFac,50)} = <strong>${wA.toLocaleString()} sqf</strong><br>`+
+        `🎨 Paint (Behr Premium Plus): ⌈${wA}÷${pIn(i,'cov',k.cov,60)}⌉ = <strong>${bk} bucket${bk!==1?'s':''}</strong> × $${pIn(i,'bucketMat',k.bucketMat)} = ${fmt(paintMat)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 $145–$165/bucket | Recommended: Eggshell or Satin finish (wipeable for tenants)</span><br>`+
+        `📦 Consumables (drop cloths, tape, pans): $${pIn(i,'cons',k.cons)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $100–$200</span><br>`+
+        `──────────<br>Materials = ${fmt(matTotal)}`;
+    },
+    fL:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const labTotal=Math.round(sq*k.paintR);
+      return `<span style="color:var(--muted);font-size:.76rem">Interior labor is priced per sqf of floor area (industry standard)</span><br>`+
+        `🖌️ Painting (walls, one color): ${sq} sqf × $${pIn(i,'paintR',k.paintR,50)}/sqf = ${fmt(labTotal)}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Includes rolling + cutting-in | Jacksonville range $1.00–$2.00/sqf</span><br>`+
+        `──────────<br>Labor = ${fmt(labTotal)}`;
+    },
+    d:'Interior painting — Behr Premium Plus | walls only | Eggshell/Satin for tenants | SQF-based',
+    defNote:'Interior painting (צביעת פנים) — walls only.\nUsing Behr Premium Plus paint in Eggshell or Satin finish (גימור חלק/סאטן) — durable and easy to clean for rentals.\n\nMaterials: paint buckets calculated from interior wall area (sqft × wall factor).\nLabor: rolling + cutting-in (חיתוך פינות) per sqft.\n\nDoes not include ceilings, trim, or doors — those are separate items.'},
+
+  {cat:'PAINT',item:'Door Painting',split:1,
+    dp:{doors:6,doorMat:17,doorLab:62},
+    cM:(p,k)=>k.doors*k.doorMat,
+    cL:(p,k)=>k.doors*k.doorLab,
+    fM:(p,k,i)=>`🚪 ${pIn(i,'doors',k.doors,50)} doors × $${pIn(i,'doorMat',k.doorMat)}/door<br>`+
+      `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Semi-Gloss White (easy to clean) | ~5 doors/gallon | 1-gal can $45–$55 | mat ≈ $17/door</span><br>`+
+      `──────────<br>Materials = ${fmt(k.doors*k.doorMat)}`,
+    fL:(p,k,i)=>`🚪 ${k.doors} doors × $${pIn(i,'doorLab',k.doorLab)}/door (both sides + frame/casing)<br>`+
+      `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Includes prep + 2 coats | Jacksonville range $50–$75/door</span><br>`+
+      `──────────<br>Labor = ${fmt(k.doors*k.doorLab)}`,
+    d:'Door painting — Semi-Gloss White | both sides + frame/casing | range $50–$75 labor/door',
+    defNote:'Door painting (צביעת דלתות) — both sides + frame.\nSemi-Gloss White finish (גימור חצי-מבריק לבן) — standard for interior doors in rentals.\nIncludes the door (both sides), frame, and casing (משקוף ומסגרת).\n\nDoors field: set the number of doors. Default is 6.\nMaterial cost is low (~$17/door from a shared gallon). Labor is per door.'},
+
+  {cat:'PAINT',item:'Baseboard Painting',split:0,
+    dp:{t:400},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t,75)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $300–$500</span><br>`+
+      `<span style="color:var(--muted);font-size:.75rem">💡 Includes caulking gaps, spot-prime bare wood, 2 coats Semi-Gloss White | whole house</span>`,
+    d:'Baseboard painting — caulk + spot-prime + 2 coats Semi-Gloss | range $300–$500 | default $400',
+    defNote:'Baseboard painting (צביעת פנלי רצפה) — whole house.\nIncludes: caulking gaps between baseboard and wall (איטום פערים), spot-priming bare wood (פריימר), and 2 coats of Semi-Gloss White (גימור חצי-מבריק לבן).\n\nFlat cost: $300–$500 for a typical home — default $400 (midpoint).\nUsually needed after new baseboard install (use with the "Baseboard" row in FLOORING) or when refreshing existing baseboards during an interior paint job.'},
+
+  // ── GENERAL ──
+  {cat:'GENERAL',item:'Survey + Inspection',gcExcl:true,split:0,
+    dp:{t:450},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $400–$450</span>`,
+    d:'Property survey and home inspection — range $400–$450',
+    defNote:'Property survey and home inspection (מדידת מגרש ובדיקת בית).\n• Survey (מדידה) — maps the property boundaries and confirms lot size.\n• Home inspection (בדיקת בית) — professional inspector checks structure, roof, plumbing, electrical, HVAC, etc.\n\nThis is a one-time cost before purchasing. Essential for identifying hidden problems.'},
+
+  {cat:'GENERAL',item:'Insurance',gcExcl:true,split:0,
+    dp:{t:0},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
+    d:'Insurance costs',
+    defNote:'Insurance (ביטוח) costs.\nCovers property insurance during renovation and/or landlord insurance.\nSet to $0 by default — enter your actual quote.\nIn Florida, insurance can be expensive due to hurricane risk (סיכון הוריקן).'},
+
+  {cat:'GENERAL',item:'Boots on the Ground',gcExcl:true,split:0,
+    dp:{mode:1,visitPr:167,visits:12,weekPr:500,weeks:4,monthPr:2000,months:1},
+    cT:(p,k)=>{
+      const m=Math.min(2,Math.max(0,Math.round(k.mode)));
+      if(m===0)return Math.round(k.visits*k.visitPr);
+      if(m===1)return Math.round(k.weeks*k.weekPr);
+      return Math.round(k.months*k.monthPr);
+    },
+    fT:(p,k,i)=>{
+      const m=Math.min(2,Math.max(0,Math.round(k.mode)));
+      const estW=Math.max(2,Math.min(16,Math.ceil((_gcBase||30000)/8000)));
+      const modeSel=`<select class="tree-size-sel" id="fp-${i}-mode" onchange="ePSel(${i},'mode',this.value)"><option value="0"${m===0?' selected':''}>👣 Per Visit</option><option value="1"${m===1?' selected':''}>📅 Weekly Rate</option><option value="2"${m===2?' selected':''}>🗓 Flat Fee Monthly</option></select>`;
+      let detail='';
+      if(m===0){
+        detail=`${pIn(i,'visits',k.visits,55)} visits &nbsp;&times;&nbsp; $${pIn(i,'visitPr',k.visitPr,65)}/visit &nbsp;= &nbsp;<strong style="color:var(--orange2)">${fmt(k.visits*k.visitPr)}</strong><br>`+
+          `<span style="color:var(--muted);font-size:.74rem;margin-left:14px">💡 Typical: 3 visits/week &nbsp;·&nbsp; $400–600/week ÷ 3 = $133–200/visit</span>`;
+      } else if(m===1){
+        detail=`${pIn(i,'weeks',k.weeks,50)} weeks &nbsp;&times;&nbsp; $${pIn(i,'weekPr',k.weekPr,65)}/week &nbsp;= &nbsp;<strong style="color:var(--orange2)">${fmt(k.weeks*k.weekPr)}</strong><br>`+
+          `<span style="color:var(--muted);font-size:.74rem;margin-left:14px">💡 Typical: 3 visits/week &nbsp;·&nbsp; $400–600/week &nbsp;·&nbsp; range $400–$600/week</span><br>`+
+          `<span style="color:var(--muted);font-size:.74rem;margin-left:14px">📐 Project estimate: <strong style="color:var(--text)">${estW} weeks</strong> (based on current hard costs)</span><br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:14px">Guide: &lt;$20k → 2–3wk &nbsp;|&nbsp; $20–40k → 3–5wk &nbsp;|&nbsp; $40–60k → 5–8wk &nbsp;|&nbsp; $60k+ → 8–12wk</span>`;
+      } else {
+        detail=`$${pIn(i,'monthPr',k.monthPr,75)}/month &nbsp;&times;&nbsp; ${pIn(i,'months',k.months,50)} months &nbsp;= &nbsp;<strong style="color:var(--orange2)">${fmt(k.monthPr*k.months)}</strong><br>`+
+          `<span style="color:var(--muted);font-size:.74rem;margin-left:14px">💡 ~4 weeks/month &nbsp;·&nbsp; ~$2,000/month at $500/week rate</span>`;
+      }
+      return `<div style="margin-bottom:10px"><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Pricing Mode</div>${modeSel}</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange2);border-radius:0 8px 8px 0;padding:10px 14px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:8px;color:var(--orange2)">👁 BOTG Cost</div>`+
+        detail+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">⚠️ BOTG is an <strong style="color:var(--text)">independent</strong> third party — cost is NOT subject to GC markup.</div>`;
+    },
+    h:(p,k)=>{const m=Math.min(2,Math.max(0,Math.round(k.mode)));const modes=['Per Visit','Weekly Rate','Flat Fee Monthly'];const amt=m===0?k.visits*k.visitPr:m===1?k.weeks*k.weekPr:k.monthPr*k.months;return`${modes[m]}  ·  ${fmt(amt)}`;},
+    d:'Boots on the Ground — Per Visit | Weekly Rate | Flat Fee Monthly | independent, NOT subject to GC markup',
+    defNote:'Boots on the Ground (נציג בשטח) — your local representative at the property.\nAn independent person who visits the site on your behalf: takes photos, meets subcontractors, checks work quality, reports to you.\nEssential for out-of-state investors (משקיעים מרחוק).\n\n⚠️ BOTG is NOT subject to GC markup — they work for YOU, not for the GC.\n\nMARKET PRICING: $400–$600/week · 3 visits per week.\n• Per visit rate: $133–$200/visit (midpoint $167)\n• Weekly rate: $400–$600/week (midpoint $500)\n• Monthly rate: ~$2,000/month (~4 weeks × $500)\n\nPRICING MODES:\n• Per Visit (לפי ביקור) — best for light monitoring or specific milestone checks.\n  Total = visits × price per visit\n• Weekly Rate (שבועי) — best for active renovation phase. Calculator shows duration estimate based on project size.\n  Total = weeks × weekly rate\n• Flat Fee Monthly (חודשי) — best for longer projects.\n  Total = months × monthly rate\n\nDURATION GUIDANCE (based on hard costs):\n• Under $20k → 2–3 weeks\n• $20–40k → 3–5 weeks\n• $40–60k → 5–8 weeks\n• $60k+ → 8–12 weeks'},
+
+  {cat:'GENERAL',item:'GC Fee',gcExcl:true,split:0,
+    dp:{rate:0.15},
+    cT:(p,k)=>Math.round(_gcBase*k.rate),
+    fT:(p,k,i)=>{
+      const fee=Math.round(_gcBase*k.rate);
+      const pct=Math.round(k.rate*100);
+      return `<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;margin-bottom:12px">`+
+        `<span style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Markup Rate</span>`+
+        `<span>${pIn(i,'rate',k.rate,65)} &nbsp;<span style="color:var(--muted);font-size:.75rem">(${pct}%) &nbsp; range 10%–20%</span></span>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange)">📋 Hard Cost Base (subject to GC markup)</div>`+
+        `<div style="font-size:.76rem;color:var(--muted);margin-bottom:6px">All active costs <strong style="color:var(--text)">EXCLUDING</strong>:</div>`+
+        `<div style="font-size:.76rem;color:var(--muted);line-height:1.8;margin-left:10px">`+
+        `🛒 APPLIANCES — you buy these directly (owner-supplied)<br>`+
+        `📋 Survey + Inspection, Insurance — owner-managed overhead<br>`+
+        `👁 Boots on the Ground — independent, no GC involvement`+
+        `</div>`+
+        `<div style="border-top:1px solid rgba(255,255,255,.1);margin-top:8px;padding-top:8px">`+
+        `Hard Cost Base &nbsp;= &nbsp;<strong style="color:var(--text)">${fmt(_gcBase)}</strong><br><br>`+
+        `GC Fee = ${pct}% &times; ${fmt(_gcBase)} &nbsp;= &nbsp;<strong style="color:var(--orange2);font-size:1rem">${fmt(fee)}</strong>`+
+        `</div>`+
+        `</div>`;
+    },
+    d:'GC Fee — 15% markup on Hard Costs (excl. Appliances, Survey, Insurance, BOTG) | range 10%–20%',
+    defNote:'General Contractor (GC) fee (עמלת קבלן ראשי).\nThe GC manages all subcontractors (חשמלאי, אינסטלטור, etc.) and procures materials on your behalf. They charge a markup on all costs they manage — this is the GC fee.\n\nMarkup Rate: 10%–20% depending on project scope. Default 15%.\n\nHard Cost Base: all active renovation costs EXCEPT:\n• APPLIANCES — you buy these directly at Lowe\'s / Home Depot (owner-supplied / FF&E)\n• Survey + Inspection, Insurance — owner-managed overhead items\n• Boots on the Ground — independent third party, not managed by GC\n\nFormula: GC Fee = Hard Cost Base × markup rate\n\nNote: The GC fee itself is NOT marked up (no markup on markup). The rate input is editable — adjust it based on your actual GC agreement.'},
+
+  // ── GARAGE ──
+  {cat:'GARAGE',item:'Garage Door',split:0,
+    dp:{type:0,s1:1400,d1:2000},
+    cT:(p,k)=>{const t=Math.min(1,Math.max(0,Math.round(k.type)));return t===0?k.s1:k.d1;},
+    fT:(p,k,i)=>{
+      const t=Math.min(1,Math.max(0,Math.round(k.type)));
+      const sel=`<select class="tree-size-sel" id="fp-${i}-type" onchange="ePSel(${i},'type',this.value)"><option value="0"${t===0?' selected':''}>🚗 Single Garage Door</option><option value="1"${t===1?' selected':''}>🚗🚗 Double Garage Door</option></select>`;
+      return `<div style="margin-bottom:8px">${sel}</div>`+
+        (t===0
+          ?`Single: $${pIn(i,'s1',k.s1)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1,200–$1,400</span>`
+          :`Double: $${pIn(i,'d1',k.d1)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1,800–$2,000</span>`);
+    },
+    h:(p,k)=>{const t=Math.min(1,Math.max(0,Math.round(k.type)));return t===0?`Single Door  ·  $${Number(k.s1).toLocaleString()}`:`Double Door  ·  $${Number(k.d1).toLocaleString()}`;},
+    d:'Garage door — Single ($1,200–$1,400, default $1,400) or Double ($1,800–$2,000, default $2,000)',
+    defNote:'Garage door replacement (החלפת דלת מוסך).\n\nDROPDOWN — Door Type:\n• Single (בודדת) — for 1-car garage. Default $1,400.\n• Double (כפולה) — for 2-car garage. Default $2,000.\n\nPick the type that matches the existing garage opening. Includes the door panel and installation.'},
+
+  {cat:'GARAGE',item:'Garage Door Opener',split:1,
+    dp:{mat:300,lab:175},
+    cM:(p,k)=>k.mat,
+    cL:(p,k)=>k.lab,
+    fM:(p,k,i)=>`Unit: $${pIn(i,'mat',k.mat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $250–$350</span>`+
+      `<div style="margin-top:6px;font-size:.75rem;color:var(--muted)">Recommended brands: Genie or Chamberlain</div>`,
+    fL:(p,k,i)=>`Install: $${pIn(i,'lab',k.lab)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $150–$200</span>`,
+    d:'Garage door opener — Genie or Chamberlain | $250–$350 unit + $150–$200 labor',
+    defNote:'Garage door opener (מנוע דלת מוסך) — motorized opener with remote.\nMaterials = the motor unit. Labor = installation.\nRecommended brands: Genie or Chamberlain — reliable and widely available.\nIncludes the motor, rail, remote control, and wall button.'},
+
+  // ── FENCE ──
+  {cat:'FENCE',item:'Dog-Ear Wood Fence',split:0,
+    dp:{lf:200,panMat:70,panLab:70,post:13.5,cpb:1,concPr:7,screwBox:30,latch:35},
+    cT:(p,k)=>{
+      const panels=Math.ceil(k.lf/8);
+      const posts=panels+2;
+      const concBags=posts*k.cpb;
+      const screwBoxes=Math.ceil(panels*20/100);
+      return Math.round(panels*(k.panMat+k.panLab)+posts*k.post+concBags*k.concPr+screwBoxes*k.screwBox+k.latch);
+    },
+    fT:(p,k,i)=>{
+      const lf=k.lf;
+      const panels=Math.ceil(lf/8);
+      const posts=panels+2;
+      const concBags=posts*k.cpb;
+      const screwBoxes=Math.ceil(panels*20/100);
+      const matPanels=panels*k.panMat;
+      const matPosts=posts*k.post;
+      const matConc=concBags*k.concPr;
+      const matScrews=screwBoxes*k.screwBox;
+      const totalMat=matPanels+matPosts+matConc+matScrews+k.latch;
+      const totalLab=panels*k.panLab;
+      return `<div style="margin-bottom:10px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Total Linear Feet (LF)</div>`+
+        `${pIn(i,'lf',k.lf,75)} LF &nbsp;→&nbsp; panels = ⌈${lf}÷8⌉ = <strong>${panels}</strong> &nbsp;·&nbsp; posts = ${panels}+2 = <strong>${posts}</strong>`+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:10px">💡 Typical Jacksonville lot 50×120 ft &nbsp;·&nbsp; Back+2 sides ≈ 290 LF &nbsp;·&nbsp; Full perimeter ≈ 340 LF &nbsp;·&nbsp; Adjust to your property survey</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange)">📦 Materials</div>`+
+        `🪵 Dog-ear panels 6ft×8ft: ${panels} × $${pIn(i,'panMat',k.panMat)} = ${fmt(matPanels)}<br>`+
+        `🪝 4×4×8 posts: ${posts} × $${pIn(i,'post',k.post,65)} = ${fmt(matPosts)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $12–$15 | posts = panels+2</span><br>`+
+        `🪣 Fast-set concrete: ${posts}×${pIn(i,'cpb',k.cpb,40)} bag/post = <strong>${concBags} bags</strong> × $${pIn(i,'concPr',k.concPr,50)} = ${fmt(matConc)}<br>`+
+        `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">cpb = bags per post (adjust if your inspector requires deeper holes)</span><br>`+
+        `🔩 Exterior screws: ⌈${panels}×20÷100⌉ = <strong>${screwBoxes} box${screwBoxes!==1?'es':''}</strong> × $${pIn(i,'screwBox',k.screwBox)} = ${fmt(matScrews)} &nbsp;<span style="color:var(--muted);font-size:.75rem">~20/panel · 100-unit box</span><br>`+
+        `🔒 Gate latch (מנגנון שער): $${pIn(i,'latch',k.latch,55)}<br>`+
+        `─── Materials = ${fmt(totalMat)}`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange2);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange2)">🔨 Labor</div>`+
+        `Panel install: ${panels} × $${pIn(i,'panLab',k.panLab)} = <strong>${fmt(totalLab)}</strong> &nbsp;<span style="color:var(--muted);font-size:.75rem">includes post-setting, concrete pour, panel hanging</span>`+
+        `</div>`+
+        `<div style="border-top:1px solid var(--border);padding-top:8px">${fmt(totalMat)} + ${fmt(totalLab)} = <strong style="color:var(--orange2);font-size:.95rem">${fmt(totalMat+totalLab)}</strong></div>`;
+    },
+    h:(p,k)=>{const panels=Math.ceil(k.lf/8);return`${k.lf} LF · ${panels} panels · ${panels+2} posts`;},
+    d:'Dog-ear fence 6ft×8ft | LF → ⌈LF÷8⌉ panels | posts=panels+2 | $70 mat + $70 labor per panel',
+    defNote:'Dog-ear wood fence (גדר עץ) — 6 ft tall, 8 ft wide dog-ear panels.\n\nLINEAR FEET ESTIMATE: Fence size depends on your lot, not house sqft.\n• Typical Jacksonville residential lot: 50 ft wide × 120 ft deep\n• Back + two sides only (no front fence): 120 + 50 + 120 ≈ 290 LF\n• Full perimeter: 50+50+120+120 = 340 LF\n• Default 200 LF — adjust to match your property survey.\n\nFormulas:\n• Panels (לוחות גדר) = ⌈linear feet ÷ 8⌉ (each panel is 8 ft wide)\n• Posts (עמודי תמיכה 4×4×8) = panels + 2 (one post at every joint + 2 end posts)\n• Concrete bags (שקי בטון מהיר) = posts × cpb (default 1 bag per post)\n• Exterior screws (ברגים חיצוניים): ~20 per panel · sold in 100-unit boxes at $30\n• Gate latch (מנגנון שער): $35 — one per gate opening\n\ncpb (bags per post): Quikrete fast-set 50lb bag, 1 per post for standard depth. Increase to 2 if posts go deeper than 30".\n\nLabor ($70/panel): Includes post-setting, pouring concrete, and hanging panels.'},
+
+  // ── FLOORING ──
+  {cat:'FLOORING',item:'Flooring',split:0,
+    dp:{type:2,
+        // Carpet
+        cMat:1.25, cLab:0.75,
+        // LVP
+        lvpMat:2.50, lvpLab:2.25,
+        // Tile — detailed breakdown
+        tileMat:2.00, tileLab:3.75,
+        thinsetBag:15, schluterU:9, schluterP:17.5, clipBag:250, rgBag:30},
+    cT:(p,k)=>{
+      const sq=p.sqft||1500;
+      const t=Math.min(2,Math.max(0,Math.round(k.type)));
+      if(t===0) return Math.round(sq*(k.cMat+k.cLab));
+      if(t===1){const rolls=Math.ceil(sq/300); return Math.round(sq*(k.lvpMat+k.lvpLab)+rolls*170);}
+      const thinBags=Math.ceil(sq/32);
+      const clipPacks=Math.ceil(sq/5000);
+      const rgBags=Math.ceil(sq/200);
+      return Math.round(sq*k.tileMat + sq*k.tileLab + thinBags*(k.thinsetBag||15) + (k.schluterU||9)*(k.schluterP||17.5) + clipPacks*(k.clipBag||250) + rgBags*(k.rgBag||30));
+    },
+    fT:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const t=Math.min(2,Math.max(0,Math.round(k.type)));
+      const floorSel=`<select class="tree-size-sel" id="fp-${i}-type" onchange="ePSel(${i},'type',this.value)"><option value="0"${t===0?' selected':''}>🟤 Carpet</option><option value="1"${t===1?' selected':''}>🪵 LVP — Luxury Vinyl Plank</option><option value="2"${t===2?' selected':''}>⭐ Porcelain Tile 12×24 (Default)</option></select>`;
+      let det='';
+      if(t===0){
+        const mT=Math.round(sq*k.cMat),lT=Math.round(sq*k.cLab);
+        det=`🔖 Old carpet removal: <strong>Free</strong><br>`+
+          `🧶 Material: ${sq.toLocaleString()} sqf &times; $${pIn(i,'cMat',k.cMat,50)}/sqf = ${fmt(mT)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1.00–$1.50/sqf</span><br>`+
+          `🔨 Labor: ${sq.toLocaleString()} sqf &times; $${pIn(i,'cLab',k.cLab,50)}/sqf = ${fmt(lT)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $0.50–$1.00/sqf</span><br>`+
+          `──────────<br>Total = <strong style="color:var(--orange2)">${fmt(mT+lT)}</strong>`;
+      } else if(t===1){
+        const rolls=Math.ceil(sq/300),underC=rolls*170;
+        const mT=Math.round(sq*k.lvpMat),lT=Math.round(sq*k.lvpLab);
+        det=`📋 LVP 5mm thickness · 12mil wear layer<br><br>`+
+          `🪵 Material: ${sq.toLocaleString()} sqf &times; $${pIn(i,'lvpMat',k.lvpMat,50)}/sqf = ${fmt(mT)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $2.00–$3.00/sqf</span><br>`+
+          `🔨 Labor: ${sq.toLocaleString()} sqf &times; $${pIn(i,'lvpLab',k.lvpLab,50)}/sqf = ${fmt(lT)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1.50–$3.00/sqf</span><br>`+
+          `🔇 Sentinel Underlayment: &lceil;${sq}&divide;300&rceil; = <strong>${rolls} roll${rolls!==1?'s':''}</strong> &times; $170 = ${fmt(underC)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">Floor &amp; Decor — $170/roll · 300 sqf/roll · Sound &amp; moisture barrier</span><br>`+
+          `──────────<br>Total = <strong style="color:var(--orange2)">${fmt(mT+lT+underC)}</strong>`;
+      } else {
+        const thinBags=Math.ceil(sq/32);
+        const clipPacks=Math.ceil(sq/5000);
+        const rgBags=Math.ceil(sq/200);
+        const mT=Math.round(sq*k.tileMat);
+        const lT=Math.round(sq*k.tileLab);
+        const thinC=thinBags*(k.thinsetBag||15);
+        const schluterC=Math.round((k.schluterU||9)*(k.schluterP||17.5));
+        const clipC=clipPacks*(k.clipBag||250);
+        const rgC=rgBags*(k.rgBag||30);
+        const total=mT+lT+thinC+schluterC+clipC+rgC;
+        det=`📋 Porcelain Tile 12&times;24 &nbsp;<a href="https://www.flooranddecor.com/tile/porcelain-tile" target="_blank" style="color:var(--orange2);font-size:.73rem;text-decoration:none">🛒 Floor &amp; Decor →</a><br><br>`+
+          `🔲 Tiles: ${sq.toLocaleString()} sqf &times; $${pIn(i,'tileMat',k.tileMat,50)}/sqf = ${fmt(mT)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">range $1.50–$2.50/sqf — taste dependent, check Floor &amp; Decor for options</span><br>`+
+          `🔨 Labor: ${sq.toLocaleString()} sqf &times; $${pIn(i,'tileLab',k.tileLab,50)}/sqf = ${fmt(lT)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $2.50–$5.00/sqf</span><br>`+
+          `🪣 Mapei Thinset (דבק אריחים): &lceil;${sq}&divide;32&rceil; = <strong>${thinBags} bags</strong> &times; $${pIn(i,'thinsetBag',k.thinsetBag||15,50)}/bag = ${fmt(thinC)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">~31 bags per 1,000 sqf · coverage ~32 sqf/bag</span><br>`+
+          `📏 Schluter strips (פסי חיבור): ${pIn(i,'schluterU',k.schluterU||9,40)} units &times; $${pIn(i,'schluterP',k.schluterP||17.5,55)}/unit = ${fmt(schluterC)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">8 ft metal trim at room transitions | range $15–$20/unit | 8–10 units typical</span><br>`+
+          `🔩 1/8" Tile leveling clips (קליפסי יישור): &lceil;${sq}&divide;5,000&rceil; = <strong>${clipPacks} pack${clipPacks!==1?'s':''}</strong> &times; $${pIn(i,'clipBag',k.clipBag||250,55)}/pack = ${fmt(clipC)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">1,000 clips/pack · 2 packs per 10,000 sqf | prevents lippage between tiles</span><br>`+
+          `🪨 Red Guard (רובה): &lceil;${sq}&divide;200&rceil; = <strong>${rgBags} bags</strong> &times; $${pIn(i,'rgBag',k.rgBag||30,50)}/bag = ${fmt(rgC)}<br>`+
+          `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">25 lb bag · 5 bags per 1,000 sqf | grout applied between the tiles</span> &nbsp;<span style="color:#f97316;font-size:.73rem;font-weight:600">⚠️ Choose dark gray color</span><br>`+
+          `──────────<br>Total = <strong style="color:var(--orange2)">${fmt(total)}</strong>`;
+      }
+      return `<div style="margin-bottom:10px">${floorSel}</div>`+det;
+    },
+    h:(p,k)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.type)));
+      return['Carpet','LVP (5mm · 12mil wear layer)','Porcelain Tile 12×24'][t];
+    },
+    d:'Flooring — Carpet / LVP (5mm 12mil, default) / Porcelain Tile 12×24',
+    defNote:'Flooring (ריצוף) installation for the entire house.\n\nDROPDOWN — Flooring Type:\n• Carpet (שטיח) — cheapest option. Good for bedrooms.\n• LVP (ויניל יוקרתי) — Luxury Vinyl Plank. Waterproof, durable, good for rentals.\n• Porcelain Tile (אריחי פורצלן) — DEFAULT. Best long-term durability, lowest maintenance for tenants. 12×24 format.\nChanging this dropdown recalculates all costs.\n\nLVP includes underlayment (ריפוד תחתון) — moisture barrier rolls, ~$170/roll (1 roll per 300 sqft).\n\nTile detailed breakdown:\n• Tiles: $1.50–$2.50/sqft (taste dependent — visit flooranddecor.com for options)\n• Labor: $2.50–$5.00/sqft\n• Mapei Thinset (דבק אריחים): ~31 bags per 1,000 sqft @ $15/bag\n• Schluter strips (פסי חיבור): 8–10 units @ $15–$20 each — metal trim at room transitions\n• 1/8" Tile leveling clips (קליפסי יישור): 2 packs per 10,000 sqft @ $250/pack — prevents lippage\n• Red Guard (רובה): 5 bags per 1,000 sqft @ $30/bag — grout applied between the tiles\n\nFor more info and product selection: https://www.flooranddecor.com\n\nFor baseboard (פנל רצפה), use the dedicated "Baseboard" row below.'},
+
+  {cat:'FLOORING',item:'Baseboard',split:1,
+    dp:{lfFac:0.30, matRate:0.50, labRate:1.50},
+    cM:(p,k)=>Math.round((p.sqft||1500)*(k.lfFac||0.30)*k.matRate),
+    cL:(p,k)=>Math.round((p.sqft||1500)*(k.lfFac||0.30)*k.labRate),
+    fM:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const lf=Math.round(sq*(k.lfFac||0.30));
+      return `📐 ${sq} sqft × ${pIn(i,'lfFac',k.lfFac,50)} LF factor = <strong>${lf} LF</strong><br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Factor 0.30 estimates total linear feet (מטר רץ) of all room perimeters combined</span><br>`+
+        `📦 ${lf} LF × $${pIn(i,'matRate',k.matRate,55)}/LF = ${fmt(Math.round(lf*k.matRate))}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Range: $0.40–$0.60/LF · Standard 3.25" MDF baseboard</span><br>`+
+        `──────────<br>Materials = ${fmt(Math.round(lf*k.matRate))}`;
+    },
+    fL:(p,k,i)=>{
+      const sq=p.sqft||1500;
+      const lf=Math.round(sq*(k.lfFac||0.30));
+      return `🔨 ${lf} LF × $${pIn(i,'labRate',k.labRate,55)}/LF = ${fmt(Math.round(lf*k.labRate))}<br>`+
+        `<span style="color:var(--muted);font-size:.75rem;margin-left:16px">💡 Includes: remove old, cut angles, nail, caulk | Range: $1.00–$2.00/LF</span><br>`+
+        `──────────<br>Labor = ${fmt(Math.round(lf*k.labRate))}`;
+    },
+    d:'Baseboard installation — MDF 3.25" | sqft × 0.30 = total LF | $0.50 mat + $1.50 labor per LF',
+    defNote:'Baseboard (פנל רצפה) installation — whole house.\nMDF molding installed along the bottom of every wall.\n\nLinear feet (מטר רץ) is estimated as: sqft × 0.30 factor.\nThis accounts for all room perimeters combined throughout the house.\n\nMaterials ($0.50/LF): standard 3.25" MDF baseboard molding.\nLabor ($1.50/LF): remove old baseboard, cut angles (חיתוך זוויות), nail, and caulk joints.\n\nAfter installation, use the "Baseboard Painting" row in the PAINT section to add the painting cost.'},
+
+  // ── DOORS ──
+  {cat:'DOORS',item:'Interior Doors',split:0,
+    dp:{n:5,type:0,mat:82,labPre:100,labSlab:50,knob:10,hinge:3},
+    cT:(p,k)=>{
+      const t=Math.min(1,Math.max(0,Math.round(k.type)));
+      const lab=t===0?k.labPre:k.labSlab;
+      return Math.round(k.n*(k.mat+k.knob+2*k.hinge+lab));
+    },
+    fT:(p,k,i)=>{
+      const t=Math.min(1,Math.max(0,Math.round(k.type)));
+      const n=k.n;
+      const lab=t===0?k.labPre:k.labSlab;
+      const hw=k.knob+2*k.hinge;
+      const matPer=k.mat+hw;
+      const estN=p.bed+p.bath;
+      const typeSel=`<select class="tree-size-sel" id="fp-${i}-type" onchange="ePSel(${i},'type',this.value)"><option value="0"${t===0?' selected':''}>🚪 Prehung / עם משקוף</option><option value="1"${t===1?' selected':''}>🚪 Slab / בלי משקוף</option></select>`;
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Door Type</div>${typeSel}</div>`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Number of Doors</div>${pIn(i,'n',k.n,60)}</div>`+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:10px">💡 Estimate: bed (${p.bed}) + bath (${p.bath}) = <strong style="color:var(--text)">${estN}</strong> interior doors &nbsp;·&nbsp; adjust above if needed (typical 4–6 per home)</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange)">📦 Materials (per door)</div>`+
+        `🚪 Door unit: $${pIn(i,'mat',k.mat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $75–$90</span><br>`+
+        `🔩 Knob: $${pIn(i,'knob',k.knob,50)} &nbsp;+&nbsp; 2 × Hinge $${pIn(i,'hinge',k.hinge,45)}/ea = <strong>$${hw}</strong> hardware/door<br>`+
+        `<span style="color:var(--muted);font-size:.73rem;margin-left:16px">2 hinges (ציריות) per door · $3 each</span><br>`+
+        `─── Per door mat+hw: ${fmt(matPer)} &nbsp;→&nbsp; <strong>${n} × ${fmt(matPer)} = ${fmt(n*matPer)}</strong>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange2);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange2)">🔨 Labor</div>`+
+        (t===0
+          ?`Prehung install (עם משקוף): ${n} × $${pIn(i,'labPre',k.labPre,65)} = <strong>${fmt(n*k.labPre)}</strong> &nbsp;<span style="color:var(--muted);font-size:.75rem">range $75–$125/door</span>`
+          :`Slab install (בלי משקוף): ${n} × $${pIn(i,'labSlab',k.labSlab,65)} = <strong>${fmt(n*k.labSlab)}</strong> &nbsp;<span style="color:var(--muted);font-size:.75rem">range $40–$60/door</span>`)+
+        `</div>`+
+        `<div style="border-top:1px solid var(--border);padding-top:8px">Total = ${fmt(n*matPer)} + ${fmt(n*lab)} = <strong style="color:var(--orange2);font-size:.95rem">${fmt(n*(matPer+lab))}</strong></div>`;
+    },
+    h:(p,k)=>{const t=Math.min(1,Math.max(0,Math.round(k.type)));return`${k.n} doors · ${t===0?'Prehung':'Slab'}`;},
+    d:'Interior doors — Prehung (עם משקוף, $100 labor) or Slab (בלי משקוף, $50 labor) | mat $75–90 + $10 knob + 2×$3 hinges',
+    defNote:'Interior doors (דלתות פנים) installation/replacement.\n\nDOOR COUNT ESTIMATE: Use bed + bath as a quick estimate (e.g., 3 bed + 2 bath = 5 doors). Adjust manually if needed. A typical Jacksonville home has 4–6 interior doors.\n\nDROPDOWN — Door Type:\n• Prehung (עם משקוף) — door comes with the frame (מסגרת) already attached. Best when replacing the old frame too. Labor: $100/door.\n• Slab (בלי משקוף) — door panel only, no frame. Use when the existing frame is in good shape. Labor: $50/door.\n\nMaterials per door:\n• Door unit (יחידת דלת): $75–$90 → default $82 (midpoint)\n• Knob (ידית): $10\n• Hinges (ציריות): 2 per door × $3 = $6\n\nNote: Door painting is handled separately under PAINT → Door Painting row.'},
+
+  {cat:'DOORS',item:'Exterior Doors',split:0,
+    dp:{n:3,type:0,mat:300,labSlab:100,labPre:300,knob:10,hinge:3},
+    cT:(p,k)=>{
+      const t=Math.min(1,Math.max(0,Math.round(k.type)));
+      const lab=t===0?k.labSlab:k.labPre;
+      return Math.round(k.n*(k.mat+k.knob+2*k.hinge+lab));
+    },
+    fT:(p,k,i)=>{
+      const t=Math.min(1,Math.max(0,Math.round(k.type)));
+      const n=k.n;
+      const lab=t===0?k.labSlab:k.labPre;
+      const hw=k.knob+2*k.hinge;
+      const matPer=k.mat+hw;
+      const estN=Math.max(3,p.bed-1);
+      const typeSel=`<select class="tree-size-sel" id="fp-${i}-type" onchange="ePSel(${i},'type',this.value)"><option value="0"${t===0?' selected':''}>🚪 Slab only / בלי משקוף</option><option value="1"${t===1?' selected':''}>🚪 Prehung / עם משקוף</option></select>`;
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Door Type</div>${typeSel}</div>`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Number of Doors</div>${pIn(i,'n',k.n,60)}</div>`+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:10px">💡 Min 3 per home: front + back + garage entry. Estimate: max(3, bed−1) → <strong style="color:var(--text)">${estN}</strong> &nbsp;·&nbsp; adjust above if needed</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange)">📦 Materials (per door)</div>`+
+        `🚪 Steel door (דלת מתכת): $${pIn(i,'mat',k.mat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $250–$350</span><br>`+
+        `🔩 Knob: $${pIn(i,'knob',k.knob,50)} &nbsp;+&nbsp; 2 × Hinge $${pIn(i,'hinge',k.hinge,45)}/ea = <strong>$${hw}</strong> hardware/door<br>`+
+        `─── Per door mat+hw: ${fmt(matPer)} &nbsp;→&nbsp; <strong>${n} × ${fmt(matPer)} = ${fmt(n*matPer)}</strong>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange2);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange2)">🔨 Labor</div>`+
+        (t===0
+          ?`Slab install (בלי משקוף): ${n} × $${pIn(i,'labSlab',k.labSlab,65)} = <strong>${fmt(n*k.labSlab)}</strong> &nbsp;<span style="color:var(--muted);font-size:.75rem">range $75–$125/door</span>`
+          :`Prehung install (עם משקוף): ${n} × $${pIn(i,'labPre',k.labPre,65)} = <strong>${fmt(n*k.labPre)}</strong> &nbsp;<span style="color:var(--muted);font-size:.75rem">range $250–$350/door</span>`)+
+        `</div>`+
+        `<div style="border-top:1px solid var(--border);padding-top:8px">Total = ${fmt(n*matPer)} + ${fmt(n*lab)} = <strong style="color:var(--orange2);font-size:.95rem">${fmt(n*(matPer+lab))}</strong></div>`;
+    },
+    h:(p,k)=>{const t=Math.min(1,Math.max(0,Math.round(k.type)));return`${k.n} ext doors · ${t===0?'Slab':'Prehung'}`;},
+    d:'Exterior steel doors — Slab ($100 labor) or Prehung ($250–350 labor) | mat $250–350 | min 3 per home',
+    defNote:'Exterior doors (דלתות חוץ) — steel/metal doors facing the outside.\n\nDOOR COUNT ESTIMATE: Every home needs at least 3: front door (כניסה ראשית), back door (כניסה אחורית), and garage entry (כניסה מהמוסך). Estimate: max(3, bedrooms−1). Default is 3.\n\nDROPDOWN — Door Type:\n• Slab only (בלי משקוף) — door panel only. Labor: $100/door. Use when the frame is still in good condition.\n• Prehung (עם משקוף) — door with frame attached. Labor: $250–$350 → default $300 (midpoint). Use when frame is rotted, damaged, or missing.\n\nMaterials per door:\n• Steel door (דלת מתכת) — exterior side is metal for security and Florida weather resistance: $250–$350 → default $300 (midpoint)\n• Knob (ידית): $10\n• Hinges (ציריות): 2 per door × $3 = $6\n\nNote: Exterior steel/metal doors are standard for Jacksonville rentals — wood warps in Florida humidity.'},
+
+  {cat:'DOORS',item:'Bi-Fold Closet Doors',split:0,
+    dp:{n:6,mat:138,hw:25,lab:40},
+    cT:(p,k)=>Math.round(k.n*(k.mat+k.hw+k.lab)),
+    fT:(p,k,i)=>{
+      const n=k.n;
+      const estN=p.bed*2;
+      const perPanel=k.mat+k.hw+k.lab;
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Number of Panels</div>${pIn(i,'n',k.n,60)}</div>`+
+        `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Openings</div><div style="font-size:.85rem;color:var(--text);padding:6px 0">${Math.ceil(n/2)} openings (2 panels each)</div></div>`+
+        `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:10px">💡 Estimate: bed × 2 panels = ${p.bed} × 2 = <strong style="color:var(--text)">${estN} panels</strong> &nbsp;·&nbsp; each closet opening (ארון) uses 2 bi-fold panels</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange)">📦 Materials (per panel)</div>`+
+        `🚪 Home Depot bi-fold panel: $${pIn(i,'mat',k.mat)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $125–$150</span><br>`+
+        `⚙️ Hardware set (סט פירזול): $${pIn(i,'hw',k.hw)} &nbsp;<span style="color:var(--muted);font-size:.75rem">quality set — track, pivot pins, hinges</span><br>`+
+        `─── Mat+hw per panel: ${fmt(k.mat+k.hw)} &nbsp;→&nbsp; <strong>${n} × ${fmt(k.mat+k.hw)} = ${fmt(n*(k.mat+k.hw))}</strong>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.18);border-left:3px solid var(--orange2);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
+        `<div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--orange2)">🔨 Labor (per panel)</div>`+
+        `Install: $${pIn(i,'lab',k.lab,60)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $30–$50/panel</span>`+
+        `</div>`+
+        `<div style="border-top:1px solid var(--border);padding-top:8px">${n} panels × ${fmt(perPanel)} (mat+hw+labor) = <strong style="color:var(--orange2);font-size:.95rem">${fmt(n*perPanel)}</strong></div>`;
+    },
+    h:(p,k)=>`${k.n} panels (${Math.ceil(k.n/2)} openings)`,
+    d:'Bi-fold closet doors (דלתות מתקפלות) — Home Depot | $125–150 panel + $25 hardware set + $40 labor',
+    defNote:'Bi-fold closet doors (דלתות מתקפלות לארונות) from Home Depot.\nFolding doors on a top track — standard for bedroom closets in Jacksonville rentals.\n\nDOOR COUNT ESTIMATE: A standard bedroom closet uses 1 opening with 2 bi-fold panels. So: bedrooms × 2 panels.\nExample: 3 bedrooms → 6 panels (3 closet openings × 2 panels each).\n\nCost per panel:\n• Bi-fold panel (לוח דלת מתקפל): $125–$150 → default $138 (midpoint)\n• Hardware set (סט פירזול איכותי): $25 per panel — includes track (מסילה), pivot pins, door hinges. This is a quality set.\n• Installation labor: $30–$50 per panel → default $40\n\nNote: Count "panels" not "openings." A single closet opening (פתיחת ארון) requires 2 panels.\nNote: Knobs and hinges are NOT added separately here — the $25 hardware set covers all bi-fold-specific hardware.'},
+
+  // ── APPLIANCES ──
+  {cat:'APPLIANCES',item:'Appliance Set',gcExcl:true,split:0,
+    dp:{t:2750},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>
+      `🛒 <strong>Purchase at Lowe\'s</strong> <span style="color:var(--muted);font-size:.73rem">(better quality than Home Depot)</span><br><br>`+
+      `📦 Full set: Fridge + Stove + Microwave + Dishwasher<br>`+
+      `💰 Price: $${pIn(i,'t',k.t,80)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $2,500–$3,000 · cheaper than buying separately</span><br>`+
+      `🔧 1-year manufacturer warranty included<br>`+
+      `<span style="color:var(--orange2);font-size:.73rem;font-weight:600">⚠️ If using this row, keep the 4 individual rows below disabled to avoid double-counting</span>`,
+    d:'Appliance Set — fridge+stove+microwave+dishwasher | $2,500–$3,000 | Lowe\'s (Default)',
+    defNote:'Full appliance set (מכשירי חשמל סט) — Fridge + Stove + Microwave + Dishwasher bought together.\nRange: $2,500–$3,000 | default $2,750 (midpoint).\nBuying as a set is cheaper than buying each item separately ($3,400 individually).\nIncludes 1-year manufacturer warranty.\n\n💡 Purchase at Lowe\'s — better quality selection than Home Depot.\n⚠️ When this row is ON, keep the 4 individual appliance rows below DISABLED to avoid double-counting.'},
+
+  {cat:'APPLIANCES',item:'Refrigerator',gcExcl:true,split:0,on:false,
+    dp:{t:1350},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`🛒 <strong>Purchase at Lowe\'s</strong> <span style="color:var(--muted);font-size:.73rem">(better quality than Home Depot)</span><br><br>`+
+      `💰 Price: $${pIn(i,'t',k.t,80)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $1,200–$1,500</span><br>`+
+      `🔧 1-year manufacturer warranty included`,
+    d:'Refrigerator (מקרר) — range $1,200–$1,500 | recommend Lowe\'s',
+    defNote:'Refrigerator (מקרר) — standard fridge for rental unit.\nRange: $1,200–$1,500 | default $1,350 (midpoint).\nIncludes 1-year manufacturer warranty.\n\n💡 Recommend purchasing at Lowe\'s — better quality selection than Home Depot.\n⚠️ Enable this row only if buying individually (disable the "Appliance Set" row above).'},
+
+  {cat:'APPLIANCES',item:'Stove / Range',gcExcl:true,split:0,on:false,
+    dp:{t:650},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`🛒 <strong>Purchase at Lowe\'s</strong> <span style="color:var(--muted);font-size:.73rem">(better quality than Home Depot)</span><br><br>`+
+      `💰 Price: $${pIn(i,'t',k.t,80)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $600–$700</span><br>`+
+      `🔧 1-year manufacturer warranty included`,
+    d:'Stove / Range (תנור) — range $600–$700 | recommend Lowe\'s',
+    defNote:'Stove / Range (תנור) — standard electric or gas range for rental unit.\nRange: $600–$700 | default $650 (midpoint).\nIncludes 1-year manufacturer warranty.\n\n💡 Recommend purchasing at Lowe\'s — better quality selection than Home Depot.'},
+
+  {cat:'APPLIANCES',item:'Microwave',gcExcl:true,split:0,on:false,
+    dp:{t:700},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`🛒 <strong>Purchase at Lowe\'s</strong> <span style="color:var(--muted);font-size:.73rem">(better quality than Home Depot)</span><br><br>`+
+      `💰 Price: $${pIn(i,'t',k.t,80)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $600–$800</span><br>`+
+      `🔧 1-year manufacturer warranty included`,
+    d:'Microwave (מיקרוגל) — range $600–$800 | recommend Lowe\'s',
+    defNote:'Microwave (מיקרוגל) — over-the-range or countertop microwave.\nRange: $600–$800 | default $700 (midpoint).\nIncludes 1-year manufacturer warranty.\n\n💡 Recommend purchasing at Lowe\'s — better quality selection than Home Depot.'},
+
+  {cat:'APPLIANCES',item:'Dishwasher',gcExcl:true,split:0,on:false,
+    dp:{t:700},
+    cT:(p,k)=>k.t,
+    fT:(p,k,i)=>`🛒 <strong>Purchase at Lowe\'s</strong> <span style="color:var(--muted);font-size:.73rem">(better quality than Home Depot)</span><br><br>`+
+      `💰 Price: $${pIn(i,'t',k.t,80)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $600–$800</span><br>`+
+      `🔧 1-year manufacturer warranty included`,
+    d:'Dishwasher (מדיח כלים) — range $600–$800 | recommend Lowe\'s',
+    defNote:'Dishwasher (מדיח כלים) — standard built-in dishwasher.\nRange: $600–$800 | default $700 (midpoint).\nIncludes 1-year manufacturer warranty.\n\n💡 Recommend purchasing at Lowe\'s — better quality selection than Home Depot.'},
+];
+
+/* ═══════ STATE ═══════ */
+let st=ROWS.map(r=>({on:r.on!==false,oM:'',oL:'',oT:'',exp:false,k:{...r.dp},notes:r.defNote||''}));
+let customCats=[];
+let customByBuiltin={};
+CATS.forEach(c=>customByBuiltin[c]=[]);
+let miscOn=true;
+let _pmBase=0; // legacy — kept for any saved projects that reference it
+let _gcBase=0; // Hard Cost base for GC markup (non-gcExcl rows)
+
+/* ═══════ BUILD ═══════ */
+function build(){
+  const tb=$('tbody');
+  tb.innerHTML='';
+  const p=getP();
+
+  CATS.forEach(cat=>{
+    const rows=ROWS.map((r,i)=>({r,i})).filter(x=>x.r.cat===cat);
+    renderCatHeader(tb,cat,false);
+    rows.forEach(({r,i})=>renderFormulaRow(tb,r,i,p));
+    (customByBuiltin[cat]||[]).forEach((cr,ci)=>renderCustomRow(tb,cr,cat,ci));
+  });
+
+  customCats.forEach((cc,cci)=>{
+    renderCatHeader(tb,cc.name,true,cci);
+    cc.rows.forEach((cr,ci)=>renderCustomRow(tb,cr,'__custom__'+cci,ci));
+  });
+
+  renderMiscCategory(tb);
+  calc();
+}
+
+function renderCatHeader(tb,name,isCustom,cci){
+  const tr=document.createElement('tr');
+  tr.className='cat-header';
+  const td=document.createElement('td');
+  td.colSpan=5;
+  let catLabel;
+  if(isCustom){
+    catLabel=`<input class="custom-cat-name" value="${esc(name)}" oninput="editCatName(${cci},this.value)">`;
+  } else {
+    catLabel=`<span class="cat-name">${name}</span>`;
+  }
+  const delBtn=isCustom?`<button class="cat-del-btn" onclick="delCategory(${cci})" title="Delete category">✕</button>`:'';
+  const addKey=isCustom?`addCustomRowToCat('__custom__${cci}')`:`addCustomRowToCat('${name}')`;
+  td.innerHTML=`<div class="cat-bar">${catLabel}<div class="cat-actions"><button class="cat-add-btn" onclick="${addKey}">+ item</button>${delBtn}</div></div>`;
+  tr.appendChild(td);
+  tb.appendChild(tr);
+}
+
+function renderFormulaRow(tb,r,i,p){
+  const s=st[i], on=s.on, k=s.k;
+  const tr=document.createElement('tr');
+  tr.id='row-'+i;
+  if(!on)tr.className='disabled';
+
+  const btnC=on?'toggle-btn yes':'toggle-btn no';
+  const btnT=on?'✓ Yes':'✗ No';
+  const expC=s.exp?'expand-btn open':'expand-btn';
+
+  let matC,labC;
+  if(r.split){
+    const mE=s.oM!=='',lE=s.oL!=='';
+    matC=`<input class="money-input${mE?' user-edited':''}" id="mat-${i}" type="number" value="${mE?s.oM:Math.round(r.cM(p,k))}" onfocus="this.select()" oninput="eF(${i},'oM',this.value)">`;
+    labC=`<input class="money-input${lE?' user-edited':''}" id="lab-${i}" type="number" value="${lE?s.oL:Math.round(r.cL(p,k))}" onfocus="this.select()" oninput="eF(${i},'oL',this.value)">`;
+  } else {
+    matC='<span style="color:var(--muted)">—</span>';
+    labC='<span style="color:var(--muted)">—</span>';
+  }
+
+  let totC;
+  if(!r.split){
+    const tE=s.oT!=='';
+    totC=`<input class="money-input${tE?' user-edited':''}" id="tot-${i}" type="number" value="${tE?s.oT:Math.round(r.cT(p,k))}" onfocus="this.select()" oninput="eF(${i},'oT',this.value)" style="font-weight:700">`;
+  } else {
+    totC=`<span id="tot-${i}" style="font-size:.9rem">—</span>`;
+  }
+
+  const hasO=s.oM!==''||s.oL!==''||s.oT!=='';
+  const kChanged=JSON.stringify(s.k)!==JSON.stringify(r.dp);
+  const showRst=hasO||kChanged;
+  const rst=showRst?`<button class="reset-btn" onclick="rstRow(${i})">↺</button>`:'';
+  const hintTxt=r.h?r.h(p,k):'';
+  const itemInner=hintTxt
+    ?`<div class="item-info"><span>${r.item}</span><span class="item-hint">${hintTxt}</span></div>`
+    :`<span>${r.item}</span>`;
+
+  tr.innerHTML=`
+    <td><div class="item-cell"><button class="${expC}" onclick="togExp(${i})">▶</button>${itemInner}${rst}</div></td>
+    <td><button class="${btnC}" onclick="togOn(${i})">${btnT}</button></td>
+    <td>${matC}</td><td>${labC}</td>
+    <td class="total-cell">${totC}</td>`;
+  tb.appendChild(tr);
+
+  /* Formula panel */
+  const ftr=document.createElement('tr');
+  ftr.className='formula-row';
+  const ftd=document.createElement('td');
+  ftd.colSpan=5;
+  let leftH=`<div class="fp-desc">${r.d}</div>`;
+  if(r.split){
+    leftH+=`<div class="fp-section"><div class="fp-label">Materials</div><div class="fp-formula">${r.fM(p,k,i)}</div></div>`;
+    leftH+=`<div class="fp-section"><div class="fp-label">Labor</div><div class="fp-formula">${r.fL(p,k,i)}</div></div>`;
+  } else {
+    leftH+=`<div class="fp-section"><div class="fp-label">Formula</div><div class="fp-formula">${r.fT(p,k,i)}</div></div>`;
+  }
+  if(showRst) leftH+=`<div style="font-size:.75rem;color:var(--orange2);margin-top:4px">⚠ Manual override active — click ↺ to reset</div>`;
+  const notesVal=esc(s.notes||'');
+  const rightH=`<div class="fp-right"><div class="fp-label">📝 Notes</div><textarea class="fp-notes" id="notes-${i}" placeholder="Add notes, context, tips..." oninput="eN(${i},this.value)">${notesVal}</textarea></div>`;
+  ftd.innerHTML=`<div class="formula-panel${s.exp?' open':''}"><div class="fp-layout"><div class="fp-left" id="fpl-${i}">${leftH}</div>${rightH}</div></div>`;
+  ftr.appendChild(ftd);
+  tb.appendChild(ftr);
+}
+
+function renderCustomRow(tb,cr,catKey,ci){
+  const tr=document.createElement('tr');
+  tr.className='custom-row'+(cr.on?'':' disabled');
+  const btnC=cr.on?'toggle-btn yes':'toggle-btn no';
+  const btnT=cr.on?'✓ Yes':'✗ No';
+  const m=parseFloat(cr.mat)||0, l=parseFloat(cr.lab)||0;
+  const hasOT=cr.oT!==undefined&&cr.oT!=='';
+  const totVal=hasOT?cr.oT:Math.round(m+l);
+  const k=esc(catKey);
+  tr.innerHTML=`
+    <td><div class="item-cell"><button class="del-btn" onclick="delCR('${k}',${ci})">✕</button><input class="custom-name-input" value="${esc(cr.item)}" placeholder="Item name" oninput="eCR('${k}',${ci},'item',this.value)"></div></td>
+    <td><button class="${btnC}" onclick="togCR('${k}',${ci})">${btnT}</button></td>
+    <td><input class="money-input" type="number" value="${cr.mat}" placeholder="0" oninput="eCR('${k}',${ci},'mat',this.value)"></td>
+    <td><input class="money-input" type="number" value="${cr.lab}" placeholder="0" oninput="eCR('${k}',${ci},'lab',this.value)"></td>
+    <td class="total-cell"><input class="money-input${hasOT?' user-edited':''}" id="ct-${k}-${ci}" type="number" value="${totVal}" style="font-weight:700" onfocus="this.select()" oninput="eCR('${k}',${ci},'oT',this.value)"></td>`;
+  tb.appendChild(tr);
+}
+
+function renderMiscCategory(tb){
+  /* Category header */
+  const htr=document.createElement('tr');
+  htr.className='cat-header';
+  const htd=document.createElement('td');
+  htd.colSpan=5;
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(15% of subtotal)</span></div>`;
+  htr.appendChild(htd);
+  tb.appendChild(htr);
+
+  /* Misc row */
+  const mtr=document.createElement('tr');
+  mtr.id='misc-row';
+  if(!miscOn)mtr.className='disabled';
+  mtr.innerHTML=`
+    <td><div class="item-cell"><span>Miscellaneous</span></div></td>
+    <td><button class="${miscOn?'toggle-btn yes':'toggle-btn no'}" onclick="miscOn=!miscOn;build();">${miscOn?'✓ Yes':'✗ No'}</button></td>
+    <td><span style="color:var(--muted)">—</span></td>
+    <td><span style="color:var(--muted)">—</span></td>
+    <td class="total-cell"><span id="misc-total" style="font-variant-numeric:tabular-nums">—</span></td>`;
+  tb.appendChild(mtr);
+}
+
+function esc(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+
+/* ═══════ FORMULA ROW INTERACTIONS ═══════ */
+function togOn(i){st[i].on=!st[i].on;build();}
+function togExp(i){st[i].exp=!st[i].exp;build();}
+function eF(i,f,v){
+  st[i][f]=(v===''?'':v);
+  calc();
+  const pre=f==='oM'?'mat':f==='oL'?'lab':'tot';
+  const el=$(pre+'-'+i);
+  if(el)el.classList.toggle('user-edited',st[i][f]!=='');
+}
+function rstRow(i){st[i].oM='';st[i].oL='';st[i].oT='';st[i].k={...ROWS[i].dp};build();}
+
+/* ═══════ NOTES EDITING ═══════ */
+function eN(i,v){st[i].notes=v;saveState();}
+
+/* ═══════ PARAM EDITING ═══════ */
+function eP(i,name,v){
+  st[i].k[name]=(v===''?0:parseFloat(v)||0);
+  /* Re-render only this row's formula panel left side (not entire table) */
+  const fpl=$('fpl-'+i);
+  if(fpl){
+    const p=getP(),r=ROWS[i],s=st[i],k=s.k;
+    let h=`<div class="fp-desc">${r.d}</div>`;
+    if(r.split){
+      h+=`<div class="fp-section"><div class="fp-label">Materials</div><div class="fp-formula">${r.fM(p,k,i)}</div></div>`;
+      h+=`<div class="fp-section"><div class="fp-label">Labor</div><div class="fp-formula">${r.fL(p,k,i)}</div></div>`;
+    } else {
+      h+=`<div class="fp-section"><div class="fp-label">Formula</div><div class="fp-formula">${r.fT(p,k,i)}</div></div>`;
+    }
+    const hasO=s.oM!==''||s.oL!==''||s.oT!=='';
+    const kChanged=JSON.stringify(s.k)!==JSON.stringify(r.dp);
+    if(hasO||kChanged) h+=`<div style="font-size:.75rem;color:var(--orange2);margin-top:4px">⚠ Manual override active — click ↺ to reset</div>`;
+    fpl.innerHTML=h;
+  }
+  calc();
+  /* Restore raw value and focus — the input was recreated by innerHTML */
+  const el=$('fp-'+i+'-'+name);
+  if(el){el.value=v;el.focus();}
+}
+function ePSel(i,name,v){
+  st[i].k[name]=parseFloat(v)||0;
+  build();
+}
+
+/* ═══════ CUSTOM ROW INTERACTIONS ═══════ */
+function getCRList(key){
+  if(key.startsWith('__custom__')){
+    const idx=parseInt(key.replace('__custom__',''));
+    return customCats[idx]?.rows||[];
+  }
+  return customByBuiltin[key]||[];
+}
+
+function addCustomRowToCat(key){
+  getCRList(key).push({item:'',mat:'',lab:'',oT:'',on:true});
+  build();
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('.custom-name-input');
+    if(inputs.length)inputs[inputs.length-1].focus();
+  },50);
+}
+
+function eCR(key,ci,field,v){
+  const list=getCRList(key);
+  if(!list[ci])return;
+  const cr=list[ci];
+  if(field==='oT'){
+    cr.oT=(v===''?'':v);
+    const te=$('ct-'+esc(key)+'-'+ci);
+    if(te)te.classList.toggle('user-edited',cr.oT!=='');
+  } else {
+    cr[field]=v;
+    if((field==='mat'||field==='lab')&&(!cr.oT||cr.oT==='')){
+      const m=parseFloat(cr.mat)||0, l=parseFloat(cr.lab)||0;
+      const te=$('ct-'+esc(key)+'-'+ci);
+      if(te&&document.activeElement!==te)te.value=Math.round(m+l);
+    }
+  }
+  calc();
+}
+function togCR(key,ci){const list=getCRList(key);if(list[ci])list[ci].on=!list[ci].on;build();}
+function delCR(key,ci){getCRList(key).splice(ci,1);build();}
+
+/* ═══════ CATEGORY MANAGEMENT ═══════ */
+function addCategory(){
+  customCats.push({name:'NEW CATEGORY',rows:[{item:'',mat:'',lab:'',oT:'',on:true}]});
+  build();
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('.custom-cat-name');
+    if(inputs.length){inputs[inputs.length-1].select();inputs[inputs.length-1].focus();}
+  },50);
+}
+function editCatName(cci,v){customCats[cci].name=v;}
+function delCategory(cci){customCats.splice(cci,1);build();}
+
+/* ═══════ CALCULATION ═══════ */
+function calc(){
+  const p=getP();
+  const gcFeeIdx=ROWS.findIndex(r=>r.item==='GC Fee');
+  let gcHardTotal=0, ownedTotal=0, botgTotal=0, overheadTotal=0;
+
+  /* Pass 1 — all rows except GC Fee (handled after base is known) */
+  ROWS.forEach((r,i)=>{
+    if(i===gcFeeIdx)return;
+    const s=st[i], k=s.k;
+    if(!s.on)return;
+    let rowT=0;
+    if(r.split){
+      const mv=s.oM!==''?parseFloat(s.oM):r.cM(p,k);
+      const lv=s.oL!==''?parseFloat(s.oL):r.cL(p,k);
+      const t=(isNaN(mv)?0:mv)+(isNaN(lv)?0:lv);
+      if(s.oM==='')sIV('mat-'+i,Math.round(r.cM(p,k)));
+      if(s.oL==='')sIV('lab-'+i,Math.round(r.cL(p,k)));
+      const te=$('tot-'+i);
+      if(te)te.textContent=fmt(t);
+      rowT=t;
+    } else {
+      const fv=r.cT(p,k);
+      const tv=s.oT!==''?parseFloat(s.oT):fv;
+      if(s.oT==='')sIV('tot-'+i,Math.round(fv));
+      rowT=isNaN(tv)?0:tv;
+    }
+    /* Classify by gcExcl flag */
+    if(!r.gcExcl){
+      gcHardTotal+=rowT;
+    } else if(r.cat==='APPLIANCES'){
+      ownedTotal+=rowT;
+    } else if(r.item==='Boots on the Ground'){
+      botgTotal+=rowT;
+    } else {
+      overheadTotal+=rowT; // Survey+Inspection, Insurance, etc.
+    }
+  });
+
+  /* Custom rows */
+  function crTotal(cr){
+    if(!cr.on)return 0;
+    if(cr.oT!==undefined&&cr.oT!=='')return parseFloat(cr.oT)||0;
+    return(parseFloat(cr.mat)||0)+(parseFloat(cr.lab)||0);
+  }
+  CATS.forEach(cat=>{
+    const isOwned=cat==='APPLIANCES';
+    (customByBuiltin[cat]||[]).forEach(cr=>{
+      const t=crTotal(cr);
+      if(isOwned)ownedTotal+=t; else gcHardTotal+=t;
+    });
+  });
+  customCats.forEach(cc=>{cc.rows.forEach(cr=>{gcHardTotal+=crTotal(cr);});});
+
+  /* GC Fee — markup % on Hard Cost base */
+  _gcBase=gcHardTotal;
+  _pmBase=_gcBase; // legacy alias
+  let gcFeeAmt=0;
+  if(gcFeeIdx>=0){
+    const gcS=st[gcFeeIdx];
+    gcFeeAmt=gcS.on?(gcS.oT!==''?parseFloat(gcS.oT)||0:Math.round(_gcBase*gcS.k.rate)):0;
+    if(gcS.on&&gcS.oT==='')sIV('tot-'+gcFeeIdx,Math.round(_gcBase*gcS.k.rate));
+  }
+
+  const base=gcHardTotal+gcFeeAmt+ownedTotal+botgTotal+overheadTotal;
+
+  /* Miscellaneous 15% of full subtotal (incl. GC markup) */
+  const misc=miscOn?Math.round(base*.15):0;
+  const miscEl=$('misc-total');
+  if(miscEl)miscEl.textContent=miscOn?fmt(misc):'$0';
+
+  const grand=base+misc;
+  const gcPct=gcFeeIdx>=0&&st[gcFeeIdx].on?Math.round((st[gcFeeIdx].k.rate||0.15)*100):15;
+
+  $('summary').innerHTML=
+    `<div class="summary-row"><span>Hard Costs <span style="font-size:.78rem;color:var(--muted)">(GC scope)</span></span><span>${fmt(gcHardTotal)}</span></div>`+
+    `<div class="summary-row"><span style="padding-left:14px">↳ GC Markup <span style="font-size:.78rem;color:var(--muted)">(${gcPct}%)</span></span><span style="color:var(--orange2)">+${fmt(gcFeeAmt)}</span></div>`+
+    `<div class="summary-row"><span>Owner-Supplied <span style="font-size:.78rem;color:var(--muted)">(appliances)</span></span><span>${fmt(ownedTotal)}</span></div>`+
+    `<div class="summary-row"><span>Boots on the Ground</span><span>${fmt(botgTotal)}</span></div>`+
+    `<div class="summary-row"><span>Overhead <span style="font-size:.78rem;color:var(--muted)">(survey / insurance)</span></span><span>${fmt(overheadTotal)}</span></div>`+
+    `<div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px"><span>Subtotal</span><span>${fmt(base)}</span></div>`+
+    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(15%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
+    `<div class="summary-row"><span><strong>TOTAL RENOVATION COST</strong></span><span><strong>${fmt(grand)}</strong></span></div>`;
+}
+
+function sIV(id,v){const el=$(id);if(el&&el.tagName==='INPUT'&&document.activeElement!==el)el.value=v;}
+
+/* ═══════ SAVE & LOAD (localStorage — defaults only) ═══════ */
+const DEFAULTS_KEY='brrrr-calc-defaults';
+let editDefaultsMode=false;
+
+/* Build the current state snapshot object */
+function buildStateSnapshot(){
+  return{
+    st:st.map((s,i)=>({...s,_cat:ROWS[i]?.cat,_item:ROWS[i]?.item})),
+    customByBuiltin,customCats,miscOn,
+    permits:permitsState,
+    prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value}
+  };
+}
+
+/* Apply a saved st array to current state — matches by cat|item key (new) or index (old) */
+function applyRowState(savedArr){
+  const byKey={};
+  let hasKeys=false;
+  savedArr.forEach(s=>{if(s._cat&&s._item){byKey[s._cat+'|'+s._item]=s;hasKeys=true;}});
+  ROWS.forEach((r,i)=>{
+    const saved=byKey[r.cat+'|'+r.item]||(hasKeys?null:savedArr[i]);
+    if(!saved)return;
+    st[i].on=saved.on??true;
+    st[i].exp=saved.exp??false;
+    st[i].notes=saved.notes||(ROWS[i]?.defNote??'');
+    if(saved.k)st[i].k={...ROWS[i].dp,...saved.k};
+    /* Only restore manual overrides from keyed snapshots — old index-based snapshots
+       can have stale overrides due to row additions shifting indices */
+    if(hasKeys){
+      st[i].oM=saved.oM??'';
+      st[i].oL=saved.oL??'';
+      st[i].oT=saved.oT??'';
+    }
+  });
+}
+
+/* saveState only fires when user is intentionally editing defaults */
+function saveState(){
+  if(!editDefaultsMode)return;
+  try{localStorage.setItem(DEFAULTS_KEY,JSON.stringify(buildStateSnapshot()));}catch(e){}
+}
+
+/* Save current state as new defaults explicitly */
+function saveAsDefaults(){
+  try{
+    localStorage.setItem(DEFAULTS_KEY,JSON.stringify(buildStateSnapshot()));
+    const btn=document.querySelector('.edit-banner .ebtn:not(.exit)');
+    if(btn){const orig=btn.textContent;btn.textContent='✅ Saved!';setTimeout(()=>btn.textContent=orig,1500);}
+  }catch(e){}
+}
+
+/* Toggle edit-defaults mode */
+function toggleEditDefaults(){
+  editDefaultsMode=!editDefaultsMode;
+  const banner=$('edit-banner');
+  if(editDefaultsMode){
+    banner.classList.add('active');
+  }else{
+    banner.classList.remove('active');
+  }
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(DEFAULTS_KEY);
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+
+    /* Restore formula row states — match by cat|item key (robust to row additions/reorders) */
+    if(data.st&&Array.isArray(data.st)){applyRowState(data.st);}
+
+    /* Restore custom rows per built-in category */
+    if(data.customByBuiltin){
+      CATS.forEach(cat=>{
+        if(data.customByBuiltin[cat]&&Array.isArray(data.customByBuiltin[cat])){
+          customByBuiltin[cat]=data.customByBuiltin[cat].map(cr=>({
+            item:cr.item||'',mat:cr.mat||'',lab:cr.lab||'',oT:cr.oT||'',on:cr.on!==false
+          }));
+        }
+      });
+    }
+
+    /* Restore custom categories */
+    if(data.customCats&&Array.isArray(data.customCats)){
+      customCats=data.customCats.map(cc=>({
+        name:cc.name||'NEW CATEGORY',
+        rows:(cc.rows||[]).map(cr=>({
+          item:cr.item||'',mat:cr.mat||'',lab:cr.lab||'',oT:cr.oT||'',on:cr.on!==false
+        }))
+      }));
+    }
+
+    /* Restore toggles */
+
+
+    if(data.miscOn!==undefined)miscOn=data.miscOn;
+
+    /* Restore permits */
+    if(data.permits&&Array.isArray(data.permits)){
+      data.permits.forEach((saved,i)=>{
+        if(i<permitsState.length){
+          permitsState[i].date=saved.date||'';
+          permitsState[i].notes=saved.notes||'';
+        }
+      });
+    }
+
+    /* Restore property fields */
+    if(data.prop){
+      if(data.prop.address)$('address').value=data.prop.address;
+      if(data.prop.sqft)$('sqft').value=data.prop.sqft;
+      if(data.prop.bed)$('bed').value=data.prop.bed;
+      if(data.prop.bath)$('bath').value=data.prop.bath;
+      if(data.prop.listingUrl){$('listingUrl').value=data.prop.listingUrl;updateListingBtn();}
+    }
+
+    return true;
+  }catch(e){return false;}
+}
+
+/* ═══════ PROJECT FOLDER (IndexedDB) ═══════ */
+let projectDirHandle=null;
+
+function _idb(mode){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open('brrrr-db',1);
+    r.onupgradeneeded=e=>e.target.result.createObjectStore('handles');
+    r.onsuccess=e=>res({db:e.target.result,mode});
+    r.onerror=()=>rej();
+  });
+}
+
+async function initProjectDir(){
+  try{
+    const {db}=await _idb('r');
+    return new Promise(res=>{
+      const req=db.transaction('handles','readonly').objectStore('handles').get('projectDir');
+      req.onsuccess=()=>{projectDirHandle=req.result||null;res();};
+      req.onerror=()=>res();
+    });
+  }catch(e){}
+}
+
+async function saveDirHandle(h){
+  try{
+    const {db}=await _idb('rw');
+    return new Promise(res=>{
+      const tx=db.transaction('handles','readwrite');
+      tx.objectStore('handles').put(h,'projectDir');
+      tx.oncomplete=res;tx.onerror=res;
+    });
+  }catch(e){}
+}
+
+async function pickProjectFolder(){
+  if(!window.showDirectoryPicker){alert('Your browser does not support folder selection.');return;}
+  try{
+    const h=await window.showDirectoryPicker({mode:'readwrite'});
+    projectDirHandle=h;
+    await saveDirHandle(h);
+    updateFolderUI();
+  }catch(e){if(e.name!=='AbortError')console.error(e);}
+}
+
+function updateFolderUI(){
+  const el=$('folder-name');
+  if(el)el.textContent=projectDirHandle?projectDirHandle.name:'Set project folder…';
+  const tag=$('folder-tag');
+  if(tag)tag.title=projectDirHandle?'Folder: '+projectDirHandle.name+'\nClick to change':'Click to set default save/open folder';
+}
+
+/* ── Shared save helper ── */
+async function saveFileWithPicker(html,suggestedName){
+  const opts={suggestedName,types:[{description:'BRRRR HTML Report',accept:{'text/html':['.html']}}]};
+  if(projectDirHandle)opts.startIn=projectDirHandle;
+  if(window.showSaveFilePicker){
+    try{
+      const fh=await window.showSaveFilePicker(opts);
+      const w=await fh.createWritable();
+      await w.write(html);
+      await w.close();
+      return true;
+    }catch(e){if(e.name!=='AbortError')throw e;return false;}
+  }
+  /* Fallback */
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=suggestedName;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return true;
+}
+
+/* ── Shared open helper — returns array of File objects (or empty) ── */
+async function openFilePicker(multiple){
+  const opts={
+    multiple:!!multiple,
+    types:[{description:'BRRRR Files',accept:{'text/html':['.html'],'application/json':['.json']}}]
+  };
+  if(projectDirHandle)opts.startIn=projectDirHandle;
+  if(window.showOpenFilePicker){
+    try{
+      const handles=await window.showOpenFilePicker(opts);
+      return await Promise.all(handles.map(h=>h.getFile()));
+    }catch(e){if(e.name!=='AbortError')throw e;return[];}
+  }
+  /* Fallback: trigger hidden file input */
+  return new Promise(res=>{
+    const inp=document.createElement('input');
+    inp.type='file';inp.accept='.html,.json';inp.multiple=!!multiple;
+    inp.onchange=()=>res(Array.from(inp.files||[]));
+    inp.oncancel=()=>res([]);
+    inp.click();
+  });
+}
+
+/* ═══════ EXPORT & IMPORT ═══════ */
+function exportData(){
+  /* ── Compute totals from current state ── */
+  const p=getP();
+  let sub=0;
+  const catTotals={};
+  CATS.forEach(c=>catTotals[c]=0);
+  ROWS.forEach((r,i)=>{
+    const s=st[i],k=s.k;
+    if(!s.on)return;
+    let t=0;
+    if(r.split){
+      const mv=s.oM!==''?parseFloat(s.oM):r.cM(p,k);
+      const lv=s.oL!==''?parseFloat(s.oL):r.cL(p,k);
+      t=(isNaN(mv)?0:mv)+(isNaN(lv)?0:lv);
+    }else{
+      const fv=r.cT(p,k);
+      const tv=s.oT!==''?parseFloat(s.oT):fv;
+      t=isNaN(tv)?0:tv;
+    }
+    sub+=t;catTotals[r.cat]=(catTotals[r.cat]||0)+t;
+  });
+  function crTot(cr){
+    if(!cr.on)return 0;
+    if(cr.oT!==undefined&&cr.oT!=='')return parseFloat(cr.oT)||0;
+    return(parseFloat(cr.mat)||0)+(parseFloat(cr.lab)||0);
+  }
+  CATS.forEach(cat=>{
+    (customByBuiltin[cat]||[]).forEach(cr=>{const t=crTot(cr);sub+=t;catTotals[cat]=(catTotals[cat]||0)+t;});
+  });
+  customCats.forEach(cc=>{
+    if(catTotals[cc.name]===undefined)catTotals[cc.name]=0;
+    cc.rows.forEach(cr=>{const t=crTot(cr);sub+=t;catTotals[cc.name]+=t;});
+  });
+  const misc=miscOn?Math.round(sub*.15):0;
+  if(miscOn){catTotals['MISCELLANEOUS']=(catTotals['MISCELLANEOUS']||0)+misc;sub+=misc;}
+  const grand=sub;
+
+  const data={
+    st,customByBuiltin,customCats,miscOn,
+    permits:permitsState,
+    prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value},
+    computed:{sub,misc,grand,catTotals},
+    exportedAt:new Date().toISOString()
+  };
+
+  const addr=$('address').value||'property';
+  const shortAddr=addr.split(',')[0].trim().replace(/\s+/g,'_');
+  const suggestedName=`${shortAddr}_brrrr_${new Date().toISOString().slice(0,10)}.html`;
+
+  /* ── Build HTML snapshot ── */
+  const f2=v=>'$'+Math.round(v||0).toLocaleString('en-US');
+  const esc2=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const curYear=new Date().getFullYear();
+
+  const catRowsHtml=Object.entries(catTotals)
+    .filter(([,v])=>v>0)
+    .map(([c,v])=>`<tr><td class="cat-label">${esc2(c)}</td><td>${f2(v)}</td></tr>`)
+    .join('');
+
+  const permRowsHtml=(typeof PERMITS!=='undefined'?PERMITS:[]).map((perm,i)=>{
+    const ps=permitsState[i];
+    if(!ps.date&&!ps.notes)return'';
+    let status='';
+    if(ps.date&&perm.maxYears!==null){
+      const yr=parseInt(ps.date);
+      if(!isNaN(yr)){const age=curYear-yr;status=age>perm.maxYears?`<span class="ps warn">\u26A0 ${age} yrs \u2013 replace</span>`:`<span class="ps ok">\u2713 ${age} yrs \u2013 OK</span>`;}
+    }else if(ps.date){status='<span class="ps na">\u2139 Logged</span>';}
+    return`<tr><td><strong>${esc2(perm.name)}</strong>${status}<br><small>${esc2(perm.hint)}</small></td><td>${esc2(ps.date)||'\u2014'}</td><td>${esc2(ps.notes)||'\u2014'}</td></tr>`;
+  }).join('');
+
+  const permSection=permRowsHtml?`<div class="card"><h2>\uD83D\uDCDC Property Permits</h2><table><thead><tr><th>Permit</th><th>Date</th><th>Notes</th></tr></thead><tbody>${permRowsHtml}</tbody></table></div>`:'';
+  const linkHtml=data.prop.listingUrl?`<div style="margin-top:12px"><a href="${esc2(data.prop.listingUrl)}" target="_blank" style="color:var(--orange);font-size:.8rem;">\uD83D\uDD17 View Listing</a></div>`:'';
+  const jsonSafe=JSON.stringify(data).replace(/<\/script>/gi,'<\\/script>');
+
+  const html=`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BRRRR Report \u2013 ${esc2(addr)}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--card:#16213e;--card2:#0f3460;--orange:#e94560;--orange2:#ff6b35;--text:#eee;--muted:#888;--border:#2a2a4a;--yes:#00c853}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+header{background:linear-gradient(135deg,#0f3460,#1a1a2e);padding:24px 20px;text-align:center;border-bottom:3px solid var(--orange)}
+header h1{font-size:1.6rem;font-weight:800;letter-spacing:1px}header h1 span{color:var(--orange)}
+header p{color:var(--muted);font-size:.9rem;margin-top:6px}
+.container{max-width:680px;margin:0 auto;padding:20px 16px}
+.card{background:var(--card);border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid var(--border)}
+.card h2{font-size:1rem;color:var(--orange);margin-bottom:14px}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:4px}
+.prop-item label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+.prop-item span{font-size:1rem;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{background:var(--card2);padding:9px 12px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left;border-bottom:2px solid var(--orange)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:.88rem}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.cat-label{color:var(--muted);font-size:.82rem;padding-left:16px}
+tr.total-row td{font-weight:700;font-size:1.1rem;color:var(--orange);border-top:2px solid var(--orange);border-bottom:none;padding-top:14px}
+tr:hover td{background:rgba(233,69,96,.04)}
+.ps{font-size:.7rem;padding:1px 7px;border-radius:10px;font-weight:600;margin-left:6px;display:inline-block}
+.ps.ok{background:rgba(0,200,83,.15);color:var(--yes)}
+.ps.warn{background:rgba(255,165,0,.15);color:#ffa500}
+.ps.na{background:rgba(136,136,136,.15);color:var(--muted)}
+small{color:var(--muted);font-size:.72rem}
+.meta{font-size:.72rem;color:var(--muted);text-align:center;margin-top:24px}
+</style>
+<script type="application/json" id="brrrr-data">${jsonSafe}<\/script>
+</head>
+<body>
+<header>
+  <h1>\uD83C\uDFE0 <span>BRRRR</span> Renovation Report</h1>
+  <p>${esc2(addr)}</p>
+</header>
+<div class="container">
+  <div class="card">
+    <h2>\uD83D\uDCCB Property Details</h2>
+    <div class="prop-grid">
+      <div class="prop-item"><label>SqFt</label><span>${esc2(data.prop.sqft)||'\u2014'}</span></div>
+      <div class="prop-item"><label>Bedrooms</label><span>${esc2(data.prop.bed)||'\u2014'}</span></div>
+      <div class="prop-item"><label>Bathrooms</label><span>${esc2(data.prop.bath)||'\u2014'}</span></div>
+    </div>
+    ${linkHtml}
+  </div>
+  <div class="card">
+    <h2>\uD83D\uDCB0 Cost Breakdown</h2>
+    <table>
+      <thead><tr><th>Category</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody>
+        ${catRowsHtml}
+        <tr style="height:6px"><td colspan="2" style="border:none;background:none"></td></tr>
+        <tr class="total-row"><td>TOTAL RENOVATION COST</td><td>${f2(grand)}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  ${permSection}
+  <div class="meta">Exported ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} \u00B7 BRRRR Renovation Calculator</div>
+</div>
+</body>
+</html>`;
+
+  saveFileWithPicker(html,suggestedName).catch(e=>alert('Save error: '+e.message));
+}
+
+function importFile(){
+  openFilePicker(false).then(files=>{
+    if(files.length)importDataFromFile(files[0]);
+  }).catch(e=>alert('Error: '+e.message));
+}
+
+function importDataFromEvent(event){
+  const file=event.target.files[0];
+  if(file)importDataFromFile(file);
+  event.target.value='';
+}
+
+function importDataFromFile(file){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      let data;
+      const text=e.target.result;
+      if(file.name.toLowerCase().endsWith('.html')){
+        const m=text.match(/<script[^>]+id=["']brrrr-data["'][^>]*>([\s\S]*?)<\/script>/);
+        if(!m)throw new Error('No BRRRR data found in this HTML file.');
+        data=JSON.parse(m[1]);
+      }else{
+        data=JSON.parse(text);
+      }
+
+      /* Restore all state — match by cat|item key */
+      if(data.st&&Array.isArray(data.st)){applyRowState(data.st);}
+
+      if(data.customByBuiltin){
+        CATS.forEach(cat=>{
+          if(data.customByBuiltin[cat]&&Array.isArray(data.customByBuiltin[cat])){
+            customByBuiltin[cat]=data.customByBuiltin[cat].map(cr=>({
+              item:cr.item||'',mat:cr.mat||'',lab:cr.lab||'',oT:cr.oT||'',on:cr.on!==false
+            }));
+          }
+        });
+      }
+
+      if(data.customCats&&Array.isArray(data.customCats)){
+        customCats=data.customCats.map(cc=>({
+          name:cc.name||'NEW CATEGORY',
+          rows:(cc.rows||[]).map(cr=>({
+            item:cr.item||'',mat:cr.mat||'',lab:cr.lab||'',oT:cr.oT||'',on:cr.on!==false
+          }))
+        }));
+      }
+
+  
+  
+
+      if(data.permits&&Array.isArray(data.permits)){
+        data.permits.forEach((saved,i)=>{
+          if(i<permitsState.length){
+            permitsState[i].date=saved.date||'';
+            permitsState[i].notes=saved.notes||'';
+          }
+        });
+      }
+
+      if(data.prop){
+        if(data.prop.address)$('address').value=data.prop.address;
+        if(data.prop.sqft)$('sqft').value=data.prop.sqft;
+        if(data.prop.bed)$('bed').value=data.prop.bed;
+        if(data.prop.bath)$('bath').value=data.prop.bath;
+        if(data.prop.listingUrl){$('listingUrl').value=data.prop.listingUrl;updateListingBtn();}
+      }
+
+      build();
+      buildPermits();
+    }catch(err){
+      alert('❌ Error importing file: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ═══════ COMPARE PROJECTS ═══════ */
+function compareProjects(){
+  openFilePicker(true).then(files=>{
+    if(!files.length)return;
+    const reads=files.map(f=>new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=ev=>{
+        try{
+          let data;
+          const text=ev.target.result;
+          if(f.name.toLowerCase().endsWith('.html')){
+            const m=text.match(/<script[^>]+id=["']brrrr-data["'][^>]*>([\s\S]*?)<\/script>/);
+            if(m)data=JSON.parse(m[1]);
+          }else{
+            data=JSON.parse(text);
+          }
+          res(data||null);
+        }catch(err){rej(err);}
+      };
+      r.onerror=rej;
+      r.readAsText(f);
+    }));
+    Promise.all(reads).then(datasets=>{
+      const valid=datasets.filter(Boolean);
+      if(!valid.length){alert('\u274C No valid BRRRR files found.');return;}
+      openCompareWindow(valid,files.map(f=>f.name));
+    }).catch(err=>alert('\u274C Error reading files: '+err.message));
+  }).catch(err=>alert('\u274C Error: '+err.message));
+}
+
+function openCompareWindow(datasets,filenames){
+  const f2=v=>'$'+Math.round(v||0).toLocaleString('en-US');
+  const esc2=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const headCols=datasets.map((d,i)=>{
+    const addr=d.prop?.address||filenames?.[i]||('Property '+(i+1));
+    const short=addr.split(',')[0];
+    return`<th>${esc2(short)}</th>`;
+  }).join('');
+
+  /* Collect all category names in order */
+  const allCats=[];
+  const seen=new Set();
+  CATS.forEach(c=>{if(!seen.has(c)){seen.add(c);allCats.push(c);}});
+  datasets.forEach(d=>{
+    if(d.computed?.catTotals){
+      Object.keys(d.computed.catTotals).forEach(c=>{if(!seen.has(c)){seen.add(c);allCats.push(c);}});
+    }
+  });
+
+  /* Find best (lowest) total for highlighting */
+  const grands=datasets.map(d=>d.computed?.grand||0);
+  const minGrand=Math.min(...grands.filter(v=>v>0));
+
+  const metrics=[
+    {label:'Address',fn:d=>esc2(d.prop?.address||'\u2014'),plain:true},
+    {label:'SqFt',fn:d=>esc2(d.prop?.sqft||'\u2014'),plain:true},
+    {label:'Bed / Bath',fn:d=>`${esc2(d.prop?.bed||'?')} / ${esc2(d.prop?.bath||'?')}`,plain:true},
+    {sep:true,label:'COST BREAKDOWN'},
+    ...allCats.map(c=>({label:c,fn:d=>f2((d.computed?.catTotals||{})[c]||0),cat:true})),
+    {sep:true},
+    {label:'TOTAL RENOVATION COST',fn:d=>f2(d.computed?.grand),total:true,highlight:true},
+  ];
+
+  const tableRows=metrics.map(m=>{
+    if(m.sep)return`<tr class="sep-row"><td colspan="${datasets.length+1}">${esc2(m.label||'')}</td></tr>`;
+    const cells=datasets.map((d,i)=>{
+      const val=m.fn(d);
+      let cls='';
+      if(m.highlight&&d.computed?.grand>0&&d.computed?.grand===minGrand&&datasets.length>1)cls=' class="best"';
+      return`<td${cls}>${val}</td>`;
+    }).join('');
+    const rowCls=m.total?' class="total-row"':m.cat?' class="cat-row"':'';
+    return`<tr${rowCls}><td class="label">${esc2(m.label)}</td>${cells}</tr>`;
+  }).join('');
+
+  const html=`<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BRRRR \u2013 Property Comparison</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--card:#16213e;--card2:#0f3460;--orange:#e94560;--orange2:#ff6b35;--text:#eee;--muted:#888;--border:#2a2a4a;--yes:#00c853}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:0 0 60px}
+header{background:linear-gradient(135deg,#0f3460,#1a1a2e);padding:20px;text-align:center;border-bottom:3px solid var(--orange)}
+header h1{font-size:1.5rem;font-weight:800;letter-spacing:1px}header h1 span{color:var(--orange)}
+header p{color:var(--muted);font-size:.85rem;margin-top:4px}
+.wrap{padding:20px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:${Math.max(600,datasets.length*200+220)}px}
+th{background:var(--card2);padding:12px 14px;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);border-bottom:2px solid var(--orange);white-space:nowrap}
+th:first-child{text-align:left;position:sticky;left:0;z-index:3;min-width:210px}
+th:not(:first-child){text-align:right;min-width:160px}
+td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:.88rem;font-variant-numeric:tabular-nums}
+td.label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:600;position:sticky;left:0;background:var(--bg);z-index:1;white-space:nowrap}
+td:not(.label){text-align:right}
+tr:hover td{background:rgba(233,69,96,.05)}tr:hover td.label{background:rgba(233,69,96,.12)}
+tr.sep-row td{background:var(--card2);color:var(--orange);font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border:none;position:sticky;left:0}
+tr.cat-row td.label{padding-left:28px;font-size:.78rem;color:var(--text);text-transform:none;letter-spacing:0}
+tr.total-row td{font-weight:700;font-size:1rem;color:var(--orange);border-top:2px solid var(--orange);border-bottom:none;padding-top:14px}
+tr.total-row td.label{color:var(--orange)}
+td.best{color:var(--yes);font-weight:700}
+.meta{font-size:.72rem;color:var(--muted);text-align:center;margin-top:24px;padding:0 20px}
+</style></head>
+<body>
+<header>
+  <h1>\uD83C\uDFE0 <span>BRRRR</span> Property Comparison</h1>
+  <p>${datasets.length} propert${datasets.length===1?'y':'ies'} compared</p>
+</header>
+<div class="wrap">
+  <table>
+    <thead><tr><th>Metric</th>${headCols}</tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+  <div class="meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} \u00B7 BRRRR Renovation Calculator${datasets.length>1?' \u00B7 \uD83D\uDFE2 = lowest total':''}</div>
+</div>
+</body></html>`;
+
+  /* ── Show as full-screen in-page overlay (no popup needed) ── */
+  let ov=document.getElementById('compare-overlay');
+  if(ov)ov.remove();
+  ov=document.createElement('div');
+  ov.id='compare-overlay';
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:#1a1a2e;overflow:auto;display:flex;flex-direction:column';
+  /* Inject an iframe so the comparison HTML is fully self-contained */
+  const blob2=new Blob([html],{type:'text/html'});
+  const burl=URL.createObjectURL(blob2);
+  ov.innerHTML=`
+    <div style="position:sticky;top:0;z-index:2;background:#0f3460;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #e94560">
+      <span style="color:#eee;font-size:.85rem;font-weight:700">\uD83D\uDCCA Project Comparison \u2014 ${datasets.length} propert${datasets.length===1?'y':'ies'}</span>
+      <div style="display:flex;gap:8px">
+        <a href="${burl}" download="brrrr-comparison-${new Date().toISOString().slice(0,10)}.html" style="background:none;border:1px solid #2a2a4a;color:#e94560;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:.72rem;text-decoration:none">\uD83D\uDCE5 Save</a>
+        <button onclick="document.getElementById('compare-overlay').remove();URL.revokeObjectURL('${burl}')" style="background:none;border:1px solid #2a2a4a;color:#888;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:.72rem">\u2715 Close</button>
+      </div>
+    </div>
+    <iframe src="${burl}" style="flex:1;border:none;width:100%"></iframe>`;
+  document.body.appendChild(ov);
+  document.body.style.overflow='hidden';
+  ov.querySelector('button').addEventListener('click',()=>{document.body.style.overflow='';},{ once:true });
+}
+
+/* ═══════ AUTO-SAVE: hook into every state change ═══════ */
+const _origBuild=build;
+build=function(){_origBuild();saveState();};
+const _origCalc=calc;
+calc=function(){_origCalc();saveState();};
+
+/* ═══════ PERMITS ═══════ */
+const PERMITS=[
+  {id:'roof',name:'Roof',hint:'Over 15 years → replace',maxYears:15},
+  {id:'hvac',name:'HVAC (Heating/Cooling)',hint:'Over 12 years → replace',maxYears:12},
+  {id:'water_heater',name:'Water Heater',hint:'Over 12 years → replace',maxYears:12},
+  {id:'plumbing',name:'Plumbing',hint:'C-PVC',maxYears:null},
+  {id:'electrical',name:'Electrical',hint:'150 AMP',maxYears:null}
+];
+
+let permitsState=PERMITS.map(p=>({id:p.id,date:'',notes:''}));
+
+function buildPermits(){
+  const tb=$('permits-tbody');
+  if(!tb)return;
+  tb.innerHTML='';
+  const curYear=new Date().getFullYear();
+  PERMITS.forEach((p,i)=>{
+    const ps=permitsState[i];
+    const tr=document.createElement('tr');
+    let statusHtml='';
+    if(ps.date&&p.maxYears!==null){
+      const yr=parseInt(ps.date);
+      if(!isNaN(yr)){
+        const age=curYear-yr;
+        if(age>p.maxYears){
+          statusHtml=`<div class="permit-status warn">⚠ ${age} yrs — replace</div>`;
+        } else {
+          statusHtml=`<div class="permit-status ok">✓ ${age} yrs — OK</div>`;
+        }
+      }
+    } else if(ps.date&&p.maxYears===null){
+      statusHtml=`<div class="permit-status na">ℹ Logged</div>`;
+    }
+    tr.innerHTML=`
+      <td><div class="permit-name">${p.name}</div><div class="permit-hint">${p.hint}</div>${statusHtml}</td>
+      <td><input class="permit-input" type="text" placeholder="e.g. 2025" value="${esc(ps.date)}" oninput="permitsState[${i}].date=this.value;saveState()" onblur="buildPermits()"></td>
+      <td><input class="permit-input" type="text" placeholder="Notes..." value="${esc(ps.notes)}" oninput="permitsState[${i}].notes=this.value;saveState()"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+
+/* ═══════ CITY PERMIT FETCH (direct JAX EPICS API) ═══════ */
+
+/* Normalize address to USPS abbreviations (matches JAX EPICS database format) */
+function normalizeAddr(raw){
+  const ABBREV={ROAD:'RD',STREET:'ST',AVENUE:'AVE',DRIVE:'DR',LANE:'LN',COURT:'CT',
+    CIRCLE:'CIR',BOULEVARD:'BLVD',PLACE:'PL',TERRACE:'TER',TRAIL:'TRL',
+    PARKWAY:'PKWY',HIGHWAY:'HWY',NORTH:'N',SOUTH:'S',EAST:'E',WEST:'W'};
+  let t=raw.toUpperCase().split(',')[0].trim(); // drop city/state
+  Object.entries(ABBREV).forEach(([k,v])=>t=t.replace(new RegExp('\\b'+k+'\\b','g'),v));
+  return t.replace(/\s+/g,' ').trim();
+}
+
+async function fetchCityPermits(){
+  const raw=($('address').value||'').trim();
+  if(!raw){alert('Please enter a property address first.');return;}
+  const addr=normalizeAddr(raw);
+
+  const btn=document.getElementById('fetch-btn');
+  const wrap=document.getElementById('city-permits-wrap');
+  const status=document.getElementById('city-permits-status');
+  const tableWrap=document.getElementById('city-permits-table-wrap');
+  const tbody=document.getElementById('city-permits-tbody');
+
+  wrap.style.display='';
+  tableWrap.style.display='none';
+  tbody.innerHTML='';
+  btn.disabled=true;
+  status.className='city-permits-status loading';
+  status.innerHTML='<div class="spinner"></div>&nbsp; Opening JAX EPICS for: <b>'+esc(addr)+'</b>…';
+
+  /* Open JAX EPICS — Tampermonkey userscript picks up #brrrr-addr= and does the work */
+  const jaxUrl='https://jaxepics.coj.net/Search/AdvancedSearch#brrrr-addr='+encodeURIComponent(addr);
+  let jaxWin=null;
+  try{jaxWin=window.open(jaxUrl,'jax_epics_bridge');}catch(e){}
+
+  let resolved=false;
+  const finish=(permits,err)=>{
+    if(resolved)return; resolved=true;
+    clearTimeout(tout);
+    window.removeEventListener('message',onMsg);
+    btn.disabled=false;
+    try{if(jaxWin&&!jaxWin.closed)jaxWin.close();}catch(e){}
+    if(err){
+      status.className='city-permits-status error';
+      status.innerHTML='⚠️ '+esc(err); return;
+    }
+    if(!permits||!permits.length){
+      status.className='city-permits-status';
+      status.innerHTML='ℹ️ No permits found for: <b>'+esc(addr)+'</b>'; return;
+    }
+    status.className='city-permits-status success';
+    status.innerHTML='✓ Found <b>'+permits.length+'</b> permit(s) — JAX EPICS';
+    permits.forEach(p=>{
+      const num=p.FullPermitNumber||p.fullPermitNumber||'';
+      const click=p.FullPermitNumber_Click||'';
+      const type=p.PermitTypeDescription||p.permitTypeDescription||'';
+      const work=p.WorkTypeDescription||p.workTypeDescription||'';
+      const stat=p.StatusDescription||p.statusDescription||'';
+      const di=p.DateIssued||p.dateIssued||'';
+      let year=''; const ym=di.match(/(\d{4})/); if(ym)year=ym[1];
+      if(!year){const pm=num.match(/-(\d{4})-/); if(pm)year=pm[1];}
+      if(!year){const pm2=num.match(/-(\d{2})-/); if(pm2)year=String(2000+parseInt(pm2[1]));}
+      const numCell=click
+        ?'<td><a href="https://jaxepics.coj.net/'+esc(click)+'" target="_blank" class="pnum" style="color:var(--orange2);text-decoration:none">'+esc(num)+' ↗</a></td>'
+        :'<td><span class="pnum">'+esc(num)+'</span></td>';
+      const tr=document.createElement('tr');
+      tr.innerHTML=numCell+'<td class="ptype">'+esc(type)+'</td><td class="ptype">'+esc(work)+'</td><td class="pyear">'+esc(stat)+'</td><td class="pyear">'+esc(year)+'</td>';
+      tbody.appendChild(tr);
+    });
+    tableWrap.style.display='';
+  };
+
+  const onMsg=(e)=>{if(e.data&&e.data.type==='jaxepics_results')finish(e.data.permits,e.data.error);};
+  window.addEventListener('message',onMsg);
+
+  const tout=setTimeout(()=>{
+    if(resolved)return; resolved=true;
+    window.removeEventListener('message',onMsg);
+    btn.disabled=false;
+    const blocked=!jaxWin||jaxWin.closed;
+    status.className='city-permits-status';
+    status.innerHTML=(blocked
+      ?'⚠️ Popup was blocked — please allow popups for this page and try again.'
+      :'ℹ️ No response from JAX EPICS bridge script. Make sure Tampermonkey is installed — see <b>jax_permit_search/jax_epics_bridge.user.js</b>.');
+  },22000);
+}
+
+
+/* ═══════ ZOOM ═══════ */
+const ZOOM_STEPS=[75,80,85,90,95,100,105,110,115,120,125,130];
+let zoomIdx=ZOOM_STEPS.indexOf(100);
+function zoomApply(idx){
+  zoomIdx=Math.max(0,Math.min(ZOOM_STEPS.length-1,idx));
+  const pct=ZOOM_STEPS[zoomIdx];
+  document.documentElement.style.fontSize=(pct/100*16)+'px';
+  const lbl=$('zoom-lbl');
+  if(lbl)lbl.textContent=pct+'%';
+  try{localStorage.setItem('brrrr-zoom',zoomIdx);}catch(e){}
+}
+function zoomAdj(dir){zoomApply(zoomIdx+dir);}
+function zoomInit(){
+  try{const s=localStorage.getItem('brrrr-zoom');if(s!==null)zoomIdx=parseInt(s)||zoomIdx;}catch(e){}
+  zoomApply(zoomIdx);
+}
+
+/* ═══════ INIT ═══════ */
+['sqft','bed','bath','address','listingUrl'].forEach(id=>$(id).addEventListener('input',()=>build()));
+zoomInit();
+loadState();
+build();
+buildPermits();
+initProjectDir().then(updateFolderUI);
+</script>
+</body>
+</html>
