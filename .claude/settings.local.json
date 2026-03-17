@@ -4,7 +4,14 @@
       "Bash(start \"\" \"C:/Users/user/.agent/diagrams/brrrr-calculator-features.html\")",
       "Bash(git init)",
       "Bash(git add .)",
-      "Bash(git config --global --add safe.directory \"C:/Users/user/Desktop/claude worspace/BRRRR_Calculator\")"
+      "Bash(git config --global --add safe.directory \"C:/Users/user/Desktop/claude worspace/BRRRR_Calculator\")",
+      "Bash(git commit -m \"initial commit - renovation calculator\")",
+      "Bash(git branch -M main)",
+      "Bash(git remote add origin https://github.com/gpolitzer/renovation-calculator.git)",
+      "Bash(git push -u origin main)",
+      "Bash(git mv brrrr-calculator.html index.html)",
+      "Bash(git commit -m \"rename to index.html for GitHub Pages\")",
+      "Bash(git push)"
     ]
   }
 }
