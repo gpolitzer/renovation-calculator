@@ -367,8 +367,11 @@ const ROWS=[
     defNote:'Replacing a Tiled Roof (החלפת גג רעפים) cost.\nCalculated by: house square footage × material rate per sqft + fixed labor fee.\nBigger house = more materials. Labor is a flat fee regardless of size.\nTypical rate: $5–$9 per sqft for materials.'},
 
   {cat:'EXTERIOR',item:'Sealing a Metal Roof (GacoRoof)',split:0,on:false,
-    dp:{rfac:1.15,pailCost:320,cov:250,anc:0.175,labType:0,labRate:2.0,labHrRate:65,labHrs:10},
+    dp:{mode:0,rfac:1.15,pailCost:320,cov:250,anc:0.175,labType:0,labRate:2.0,labHrRate:65,labHrs:10,subMode:0,standalone:400,partOf:200},
     cT:(p,k)=>{
+      if(Math.round(k.mode||0)===1){
+        return Math.round(k.subMode===1?(k.partOf||200):(k.standalone||400));
+      }
       const rsqft=Math.round(p.sqft*(k.rfac||1.15));
       const pails=Math.ceil(rsqft/(k.cov||250));
       const mat=Math.round(pails*(k.pailCost||320)+rsqft*(k.anc||0.175));
@@ -377,6 +380,20 @@ const ROWS=[
       return mat+lab;
     },
     fT:(p,k,i)=>{
+      const isTargeted=Math.round(k.mode||0)===1;
+      const modeSel=`<select class="tree-size-sel" id="fp-${i}-mode" onchange="ePSel(${i},'mode',this.value)"><option value="0"${!isTargeted?' selected':''}>🪣 Full Roof Restoration</option><option value="1"${isTargeted?' selected':''}>🔩 Targeted Sealing (seams &amp; fasteners)</option></select>`;
+      const modeRow=`<div style="margin-bottom:10px"><span style="color:var(--muted);font-size:.8rem">SCOPE OF WORK</span>&nbsp; ${modeSel}</div>`;
+      if(isTargeted){
+        const isSub=Math.round(k.subMode||0)===1;
+        const fee=Math.round(isSub?(k.partOf||200):(k.standalone||400));
+        const subSel=`<select class="tree-size-sel" id="fp-${i}-subMode" onchange="ePSel(${i},'subMode',this.value)"><option value="0"${!isSub?' selected':''}>Standalone Service Call</option><option value="1"${isSub?' selected':''}>Part of Larger Project</option></select>`;
+        return modeRow+
+          `<div style="margin-bottom:6px"><span style="color:var(--muted);font-size:.8rem">SERVICE TYPE</span>&nbsp; ${subSel}</div>`+
+          `🔩 Flat fee — sealing seams (תפרים) and fasteners (ברגים) only:<br>`+
+          `&nbsp;&nbsp;&nbsp;$${pIn(i,isSub?'partOf':'standalone',fee,70)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range: ${isSub?'$150–$250':'$300–$500'}</span><br><br>`+
+          `<div style="opacity:.45;font-size:.8rem;border-left:2px solid var(--border);padding-left:8px;margin-bottom:8px">🪣 Pail count — N/A (no full coating)<br>⚙️ Ancillary — N/A (no surface prep)</div>`+
+          `<strong style="color:var(--orange2)">Total: ${fmt(fee)}</strong>`;
+      }
       const rsqft=Math.round(p.sqft*(k.rfac||1.15));
       const pails=Math.ceil(rsqft/(k.cov||250));
       const matGaco=pails*(k.pailCost||320);
@@ -389,7 +406,8 @@ const ROWS=[
       const labDetail=isHrly
         ?`$${pIn(i,'labHrRate',k.labHrRate||65,55)}/hr × ${pIn(i,'labHrs',k.labHrs||10,50)} hrs = <strong>${fmt(lab)}</strong>`
         :`$${pIn(i,'labRate',k.labRate||2,55)}/sqft × ${rsqft} sqft = <strong>${fmt(lab)}</strong>`;
-      return `<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">ROOF FACTOR</span>&nbsp; ${pIn(i,'rfac',k.rfac||1.15,50)} &nbsp;×&nbsp; ${p.sqft} sqft = <strong>${rsqft} sqft roof</strong></div>`+
+      return modeRow+
+        `<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">ROOF FACTOR</span>&nbsp; ${pIn(i,'rfac',k.rfac||1.15,50)} &nbsp;×&nbsp; ${p.sqft} sqft = <strong>${rsqft} sqft roof</strong></div>`+
         `🪣 GacoRoof pails: ⌈${rsqft} ÷ ${pIn(i,'cov',k.cov||250,55)}⌉ = <strong>${pails} pails</strong> × $${pIn(i,'pailCost',k.pailCost||320,60)} = ${fmt(matGaco)}<br>`+
         `⚙️ Ancillary (GacoWash / seam tape / primer): $${pIn(i,'anc',k.anc||0.175,55)}/sqft × ${rsqft} = ${fmt(matAnc)}<br>`+
         `<strong>Materials total: ${fmt(mat)}</strong><br><br>`+
@@ -398,9 +416,9 @@ const ROWS=[
         `<span style="color:var(--muted);font-size:.75rem">${isHrly?'Range: $50–$80/hr (handyman)':'Range: $1.00–$3.00/sqft (contractor, incl. prep: power wash + seam sealing)'}</span><br><br>`+
         `<strong style="color:var(--orange2)">Total: ${fmt(total)}</strong>`;
     },
-    h:(p,k)=>`Est. roof: ${Math.round(p.sqft*(k.rfac||1.15))} sqft`,
-    d:'GacoRoof 100% silicone coating (2 coats) on metal roof — materials + labor',
-    defNote:'Sealing a Metal Roof (GacoRoof) (איטום גג מתכת בסיליקון).\nGacoRoof is a 100% silicone roof coating (ציפוי גג סיליקון) applied in 2 coats.\n\nROOF SIZE ESTIMATE: House sqft × 1.15 factor = roof sqft (accounts for overhangs and eaves).\nAdjust the factor if your roof footprint differs significantly from the living area.\n\nMaterials:\n• GacoRoof 5-gallon pails: $320/pail · 1 pail covers 250 sqft (full 2-coat process)\n• Pails needed = ⌈roof sqft ÷ 250⌉\n• Ancillary (cleaning agents / GacoWash, seam tape, primers): $0.10–$0.25/sqft → default $0.175/sqft\n  Increases if roof has significant rust or oil bleed-through.\n\nDROPDOWN — Labor Type:\n• Per Sqft (לפי מ"ר) — professional contractor in Jacksonville: $1.00–$3.00/sqft → default $2.00/sqft.\n  Includes prep work: power washing, manual scrubbing, sealing fasteners and seams.\n• Hourly (לפי שעה) — local handyman: $50–$80/hr → default $65/hr.\n  Best for smaller roofs or detailed repair sections. Set the number of hours manually.\n\n⚠️ This row is OFF by default — metal roofs are less common than tiled roofs in Jacksonville residential properties.'},
+    h:(p,k)=>Math.round(k.mode||0)===1?`Targeted sealing — seams & fasteners only`:`Est. roof: ${Math.round(p.sqft*(k.rfac||1.15))} sqft`,
+    d:'GacoRoof silicone coating — Full Roof Restoration or Targeted Sealing (seams & fasteners)',
+    defNote:'Sealing a Metal Roof (GacoRoof) (איטום גג מתכת בסיליקון).\n\nDROPDOWN — Scope of Work:\n\n● Full Roof Restoration (שחזור גג מלא) — GacoRoof 100% silicone coating applied in 2 coats over the entire surface.\n\n  ROOF SIZE ESTIMATE: House sqft × 1.15 factor = roof sqft (accounts for overhangs and eaves).\n\n  Materials:\n  • GacoRoof 5-gallon pails: $320/pail · 1 pail covers 250 sqft (full 2-coat process)\n  • Pails needed = ⌈roof sqft ÷ 250⌉\n  • Ancillary (GacoWash, seam tape, primers): $0.10–$0.25/sqft → default $0.175/sqft\n\n  Labor Type dropdown:\n  • Per Sqft (לפי מ"ר) — contractor: $1.00–$3.00/sqft → default $2.00/sqft (incl. prep)\n  • Hourly (לפי שעה) — handyman: $50–$80/hr → default $65/hr\n\n● Targeted Sealing (איטום ממוקד) — seams (תפרים) and fasteners/screws (ברגים) only, no full coating.\n  Used for high-profile metal panel roofs where only penetration points need sealing.\n  Flat fee pricing — pail count and ancillary do not apply.\n\n  Service Type dropdown:\n  • Standalone Service Call (קריאת שירות עצמאית) — $300–$500 → default $400\n  • Part of Larger Project (כחלק מפרויקט גדול) — $150–$250 → default $200\n\n⚠️ This row is OFF by default — metal roofs are less common than tiled roofs in Jacksonville.'},
 
   {cat:'EXTERIOR',item:'Tree Removal',split:0,
     dp:{trees:1,size:1,
