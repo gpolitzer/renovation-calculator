@@ -69,9 +69,15 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - GC Fee row = `_gcBase × rate` (default 15%)
 
 ## Categories (render order)
-`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · FLOORING · DOORS · APPLIANCES · GENERAL`
+`DEMOLITION · EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · FLOORING · DOORS · APPLIANCES · GENERAL`
 
 ## Row Catalog
+
+### DEMOLITION
+| Item | split | Default | Key params |
+|---|---|---|---|
+| Dumpster / Waste Disposal | 0 | ON | `tier` (0=light/1=standard/2=heavy), `dumpCost`=475, `dumpQty` (1–2), `freeTons`=2/dumpster, `totalTons` (3/7/10 by tier), `overRate`=63/ton |
+| Demo Labor | 0 | ON | `tier` (0=light/1=standard/2=heavy), `rate`=325/person/day, `crew` (2–4), `days` (1–3) |
 
 ### EXTERIOR
 | Item | split | Default | Key params |

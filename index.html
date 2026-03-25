@@ -355,9 +355,112 @@ function pIn(i,name,val,w){
 }
 
 /* ═══════ BUILT-IN CATEGORIES & ROWS ═══════ */
-const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','FLOORING','DOORS','APPLIANCES','GENERAL'];
+const CATS=['DEMOLITION','EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','FLOORING','DOORS','APPLIANCES','GENERAL'];
 
 const ROWS=[
+  // ── DEMOLITION ──
+  {cat:'DEMOLITION',item:'Dumpster / Waste Disposal',split:0,
+    dp:{tier:1,dumpCost:475,dumpQty:2,freeTons:2,totalTons:7,overRate:63},
+    cT:(p,k)=>{
+      const dumpTotal=k.dumpCost*k.dumpQty;
+      const freeTotal=k.freeTons*k.dumpQty;
+      const overTons=Math.max(0,k.totalTons-freeTotal);
+      return Math.round(dumpTotal+overTons*k.overRate);
+    },
+    fT:(p,k,i)=>{
+      const t=Math.round(k.tier||0);
+      const dumpTotal=k.dumpCost*k.dumpQty;
+      const freeTotal=k.freeTons*k.dumpQty;
+      const overTons=Math.max(0,k.totalTons-freeTotal);
+      const overCost=Math.round(overTons*k.overRate);
+      const grand=Math.round(dumpTotal+overCost);
+      const tierSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="(function(v){var p=[[475,1,3],[475,2,7],[650,2,10]][v];st[${i}].k.tier=+v;st[${i}].k.dumpCost=p[0];st[${i}].k.dumpQty=p[1];st[${i}].k.totalTons=p[2];build();})(this.value)"><option value="0"${t===0?' selected':''}>🔨 Light Rehab — 1 dumpster, ~3 tons</option><option value="1"${t===1?' selected':''}>🏗️ Standard Rehab — 2 dumpsters, ~7 tons</option><option value="2"${t===2?' selected':''}>🏚️ Heavy / Gut Rehab — 2 large dumpsters, ~10 tons</option></select>`;
+      return `<div style="margin-bottom:10px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Rehab Level</div>`+
+        tierSel+`</div>`+
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Dumpster Cost ($200–$750)</div>`+
+            `$${pIn(i,'dumpCost',k.dumpCost,60)} × ${pIn(i,'dumpQty',k.dumpQty,35)} dumpsters`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Est. Total Waste (tons)</div>`+
+            `${pIn(i,'totalTons',k.totalTons,50)} tons&nbsp;<span style="font-size:.72rem;color:var(--muted)">(${freeTotal} free, ${overTons} overage)</span>`+
+          `</div>`+
+        `</div>`+
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Free Tons / Dumpster</div>`+
+            `${pIn(i,'freeTons',k.freeTons,35)}`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Overage Rate ($50–$75/ton)</div>`+
+            `$${pIn(i,'overRate',k.overRate,50)}/ton`+
+          `</div>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>${k.dumpQty} × Dumpster rental <span style="color:var(--muted);font-size:.76rem">($${k.dumpCost}/ea)</span></span>`+
+          `<strong>${fmt(dumpTotal)}</strong>`+
+        `</div>`+
+        (overTons>0?`<div style="display:flex;justify-content:space-between">`+
+          `<span>${overTons} ton overage <span style="color:var(--muted);font-size:.76rem">($${k.overRate}/ton — ${k.totalTons} total − ${freeTotal} free)</span></span>`+
+          `<strong>${fmt(overCost)}</strong>`+
+        `</div>`:'')+
+        `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">${fmt(grand)}</span>`+
+        `</div>`+
+        `</div>`;
+    },
+    h:(p,k)=>{
+      const freeTotal=k.freeTons*k.dumpQty;
+      const overTons=Math.max(0,k.totalTons-freeTotal);
+      return`${k.dumpQty} dumpster${k.dumpQty>1?'s':''} · ${k.totalTons}t waste (${freeTotal}t free + ${overTons}t overage)`;
+    },
+    d:'Dumpster rental + overage fees | 2 free tons/dumpster | $50–$75/ton overage',
+    defNote:'Dumpster / Waste Disposal (מכולת פסולת / פינוי) — rental + overage fees.\n\nREHAB LEVELS (choose preset or override manually):\n• Light (קל): 1 dumpster (20-yard, $475), ~3 tons → $538\n• Standard (רגיל): 2 dumpsters (20-yard, $475/ea), ~7 tons → $1,139\n• Heavy (כבד): 2 large dumpsters (30-yard, $650/ea), ~10 tons → $1,690\n\nPRICING:\n• Dumpster rental: $200–$750 range (midpoint $475 for 20-yard, $650 for 30-yard).\n• First 2 tons per dumpster are FREE (כלול במחיר ההשכרה).\n• Overage: $50–$75/ton (midpoint $63) for weight beyond the free allowance.\n\nFORMULA: (dumpCost × qty) + max(0, totalTons − freeTons×qty) × overRate\n\nAll params editable — change tier to load presets, then fine-tune.'},
+
+  {cat:'DEMOLITION',item:'Demo Labor',split:0,
+    dp:{tier:1,rate:325,crew:4,days:2},
+    cT:(p,k)=>Math.round(k.rate*k.crew*k.days),
+    fT:(p,k,i)=>{
+      const t=Math.round(k.tier||0);
+      const total=Math.round(k.rate*k.crew*k.days);
+      const tierSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="(function(v){var p=[[2,1],[4,2],[4,3]][v];st[${i}].k.tier=+v;st[${i}].k.crew=p[0];st[${i}].k.days=p[1];build();})(this.value)"><option value="0"${t===0?' selected':''}>🔨 Light — 2 workers, 1 day</option><option value="1"${t===1?' selected':''}>🏗️ Standard — 4 workers, 2 days</option><option value="2"${t===2?' selected':''}>🏚️ Heavy — 4 workers, 3 days</option></select>`;
+      return `<div style="margin-bottom:10px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Rehab Level</div>`+
+        tierSel+`</div>`+
+        `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Daily Rate ($250–$400)</div>`+
+            `$${pIn(i,'rate',k.rate,60)}/person`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Crew Size</div>`+
+            `${pIn(i,'crew',k.crew,35)} workers`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Days</div>`+
+            `${pIn(i,'days',k.days,35)}`+
+          `</div>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>${k.crew} workers × ${k.days} day${k.days>1?'s':''} × $${k.rate}/day</span>`+
+          `<strong>${fmt(total)}</strong>`+
+        `</div>`+
+        `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">${fmt(total)}</span>`+
+        `</div>`+
+        `</div>`;
+    },
+    h:(p,k)=>`${k.crew} workers × ${k.days} day${k.days>1?'s':''} × $${k.rate} = ${fmt(k.rate*k.crew*k.days)}`,
+    d:'Unskilled demo crew | $250–$400/person/day | cabinet, flooring, fixture removal',
+    defNote:'Demo Labor (עבודות פירוק) — unskilled labor for demolition and cleanup.\n\nREHAB LEVELS:\n• Light (קל): 2 workers × 1 day — cosmetic demo (removing fixtures, trim, light flooring).\n• Standard (רגיל): 4 workers × 2 days — full demo (cabinets, tile, flooring, fixtures, broom clean).\n• Heavy (כבד): 4 workers × 3 days — gut job (everything down to studs, heavy tile/mortar removal).\n\nDAILY RATE: $250–$400/person (midpoint $325). These are unskilled day laborers (פועלים לא מקצועיים), not licensed contractors.\n\nSCOPE typically includes:\n• Cabinet removal (פירוק ארונות)\n• Flooring & tile removal (הסרת ריצוף)\n• Fixture removal (פירוק אביזרים — toilets, sinks, tubs)\n• Broom-clean finish (ניקוי גס)\n\nFORMULA: rate × crew × days\n\nAll params editable — change tier to load presets, then fine-tune.'},
+
+  // ── EXTERIOR ──
   {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,
     dp:{r:7,lab:2000},
     cM:(p,k)=>p.sqft*k.r, cL:(p,k)=>k.lab,
