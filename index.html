@@ -355,7 +355,7 @@ function pIn(i,name,val,w){
 }
 
 /* ═══════ BUILT-IN CATEGORIES & ROWS ═══════ */
-const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','DEMOLITION','CONTINGENCY','FLOORING','DOORS','APPLIANCES','GENERAL'];
+const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','DEMOLITION','CONTINGENCY','GARDENING','FLOORING','DOORS','APPLIANCES','GENERAL'];
 
 const ROWS=[
   // ── DEMOLITION ──
@@ -1314,6 +1314,31 @@ const ROWS=[
     h:(p,k)=>`${Math.round(k.qty||0)} windows · $125/window (labor + parts)`,
     d:'Spring/Balance Replacement — $125/window (labor + parts)',
     defNote:'Spring/Balance Replacement (תיקון קפיץ/מאזן) — repair of broken lift mechanisms in modern vinyl windows.\n\nCOST: $125 per window — includes both labor and replacement parts (spring or balance channel).\n\nUSE CASE: Modern single-hung and double-hung vinyl windows use either a coiled spring or a spiral balance rod to hold the sash in position. When these break, the window will not stay open or close properly. This is a common repair in older vinyl windows.\n\nThis row is OFF by default. Enable it when the inspection finds broken window mechanisms.'},
+
+  // ── GARDENING ──
+  {cat:'GARDENING',item:'Initial Cleanup',split:0,
+    dp:{t:750},
+    cT:(p,k)=>Math.round(k.t||0),
+    fT:(p,k,i)=>`<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:1.9;margin-bottom:10px">`+
+      `<div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Included in cleanup</div>`+
+      `<div>🌿 <b>Mowing & Edging</b> — כיסוח דשא פרוע + קווים נקיים בשולי המדרכה</div>`+
+      `<div>✂️ <b>Trimming</b> — גיזום ענפים נמוכים (הגנה מסופות פלורידה) + שיחים שחוסמים חלונות</div>`+
+      `<div>🌱 <b>Weeding</b> — עקירת עשבים שוטים מערוגות וחריצי בטון</div>`+
+      `<div>🪵 <b>Mulching</b> — פיזור שכבת מאלץ' חדשה בערוגות (מראה "חדש" במינימום כסף)</div>`+
+      `</div>`+
+      `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">`+
+        `<div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Flat Fee ($500–$1,000)</div>`+
+        `<span style="color:var(--muted)">$</span>${pIn(i,'t',k.t,70)}`+
+      `</div>`+
+      `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:10px 14px;font-size:.83rem">`+
+        `<div style="display:flex;justify-content:space-between;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">$${fmt(Math.round(k.t||0))}</span>`+
+        `</div>`+
+      `</div>`,
+    h:(p,k)=>`One-time yard cleanup · ${fmt(k.t||0)}`,
+    d:'Initial yard cleanup (one-time) | $500–$1,000 | mow, edge, trim, weed, mulch',
+    defNote:'Initial Cleanup (סידור ראשוני — חד פעמי) — full yard cleanup before listing or renting.\n\nINCLUDED:\n• Mowing & Edging (כיסוח ויצירת קווים): כיסוח דשא פרוע ועיצוב קצוות לאורך המדרכה והשביל.\n• Trimming (גיזום): חיתוך ענפים נמוכים שצומחים מעל הגג — חשוב במיוחד בפלורידה למניעת נזק בסופות. גיזום שיחים שחוסמים חלונות.\n• Weeding (עקירת עשבים): הסרת עשבים שוטים מהערוגות ומהסדקים בבטון.\n• Mulching (מאלץ\'): פיזור שכבה של 2–3 אינץ\' שבבי עץ בערוגות — נותן מראה מטופח ומניעת צמיחת עשבים חוזרת.\n\nCOST: $500–$1,000 flat (midpoint $750) לניקיון ראשוני מלא. חד-פעמי — לאחר מכן תחזוקה שוטפת בעלות נמוכה יותר.\n\nהחשיבות: Curb appeal (מראה חיצוני) הוא אחד הגורמים הראשונים שמשפיעים על דיירים ושמאים. נכס מסודר מבחוץ = רושם ראשוני חיובי.'},
 
   // ── FLOORING ──
   {cat:'FLOORING',item:'Flooring',split:0,
