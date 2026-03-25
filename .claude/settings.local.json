@@ -11,7 +11,13 @@
       "Bash(git push -u origin main)",
       "Bash(git mv brrrr-calculator.html index.html)",
       "Bash(git commit -m \"rename to index.html for GitHub Pages\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git add index.html)",
+      "Bash(git commit -m \"GacoRoof: add Targeted Sealing mode \\(flat fee for seams & fasteners\\)\")",
+      "Bash(git add CLAUDE.md)",
+      "Bash(git commit -m \"CLAUDE.md: expand to full project memory \\(row catalog, architecture, auto-push rule\\)\")",
+      "Bash(git commit -m \"CLAUDE.md: add rule to keep project memory up to date after changes\")",
+      "Bash(git commit:*)"
     ]
   }
 }

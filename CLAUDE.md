@@ -69,7 +69,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - GC Fee row = `_gcBase × rate` (default 15%)
 
 ## Categories (render order)
-`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · FLOORING · DOORS · APPLIANCES · GENERAL`
+`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · FLOORING · DOORS · APPLIANCES · GENERAL`
 
 ## Row Catalog
 
@@ -126,12 +126,21 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 | Door Painting | 1 | ON | per door |
 | Baseboard Painting | 0 | ON | flat fee |
 
-### GARAGE / FENCE / FLOORING / DOORS
+### GARAGE / FENCE
 | Item | split | Default | Key params |
 |---|---|---|---|
 | Garage Door | 0 | ON | `type` (single/double) |
 | Garage Door Opener | 1 | ON | `mat`, `lab` |
 | Dog-Ear Wood Fence | 0 | ON | `lf` (linear feet), per-panel pricing |
+
+### WINDOWS
+| Item | split | Default | Key params |
+|---|---|---|---|
+| Window Replacement | 0 | ON | `size` (0=Standard $450 / 1=Small/Narrow $300 / 2=Block Frame $325), `config` (0=Single / 1=Twin×2 mat), `qty` (0=auto: bed×2+bath+3), `lab`=150, `woodFrame` (bool→+$20 flashing tape flat), `drywallRepair` (bool→+`repairAmt`), `repairAmt`=100 |
+
+### FLOORING / DOORS
+| Item | split | Default | Key params |
+|---|---|---|---|
 | Flooring | 0 | ON | `type` (0=carpet/1=LVP/2=tile — default tile) |
 | Baseboard | 1 | ON | `lfFac` × sqft |
 | Interior Doors | 0 | ON | `type` (prehung/slab), count = bed+bath |
