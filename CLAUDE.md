@@ -136,7 +136,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 ### WINDOWS
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Window Replacement | 0 | ON | `qtyL` (Large/Standard $450, 0=auto: bed×2+3), `qtyS` (Small/Narrow $300, 0=auto: bath), `frameType` (0=Block Frame / 1=Wood Frame +$20/win), `repairAmt`=100/window mandatory · labor $150/window flat |
+| Window Replacement | 0 | ON | `qtySingle` (0=auto: bed×2+bath+3), `qtyDouble` (wide openings, mat×2=$900, default 0), `frameType` (0=Block/1=Wood +$20/unit), `repairAmt`=100/unit, `addBlinds` (0/1), `blindMat`=40 · labor $150/opening flat |
 
 ### FLOORING / DOORS
 | Item | split | Default | Key params |
