@@ -977,65 +977,55 @@ const ROWS=[
 
   // ── WINDOWS ──
   {cat:'WINDOWS',item:'Window Replacement',split:0,
-    dp:{size:0,config:0,qty:0,frameType:0,repairAmt:100},
+    dp:{qtyL:0,qtyS:0,frameType:0,repairAmt:100},
     cT:(p,k)=>{
-      const autoQty=p.bed*2+p.bath+3;
-      const q=k.qty>0?k.qty:autoQty;
-      const sz=Math.round(k.size)===1?1:0;
-      const twin=Math.round(k.config)===1;
+      const qL=k.qtyL>0?k.qtyL:(p.bed*2+3);
+      const qS=k.qtyS>0?k.qtyS:p.bath;
+      const totalWins=qL+qS;
       const wood=Math.round(k.frameType)===1;
-      const matBase=[450,300][sz];
-      const matPerOpening=matBase*(twin?2:1);
-      const labPerOpening=twin?250:150;
-      const winsPerOpening=twin?2:1;
-      const flashPerOpening=wood?20*winsPerOpening:0;
-      const repairPerOpening=k.repairAmt*winsPerOpening;
-      return Math.round((matPerOpening+labPerOpening+flashPerOpening+repairPerOpening)*q);
+      return Math.round(qL*450+qS*300+totalWins*150+(wood?totalWins*20:0)+k.repairAmt*totalWins);
     },
     fT:(p,k,i)=>{
-      const autoQty=p.bed*2+p.bath+3;
-      const q=k.qty>0?Math.round(k.qty):autoQty;
-      const sz=Math.round(k.size)===1?1:0;
-      const twin=Math.round(k.config)===1;
+      const autoL=p.bed*2+3;
+      const autoS=p.bath;
+      const qL=k.qtyL>0?Math.round(k.qtyL):autoL;
+      const qS=k.qtyS>0?Math.round(k.qtyS):autoS;
+      const totalWins=qL+qS;
       const wood=Math.round(k.frameType)===1;
-      const matBase=[450,300][sz];
-      const typeLabel=['Large/Standard (30"–36")','Small/Narrow (< 24")'][sz];
-      const matRange=['$350–$550','$200–$400'][sz];
-      const winsPerOpening=twin?2:1;
-      const matPerOpening=matBase*(twin?2:1);
-      const labPerOpening=twin?250:150;
-      const flashPerOpening=wood?20*winsPerOpening:0;
-      const repairPerOpening=k.repairAmt*winsPerOpening;
-      const totalMat=matPerOpening*q;
-      const totalLab=labPerOpening*q;
-      const totalFlash=flashPerOpening*q;
-      const totalRepair=repairPerOpening*q;
+      const totalMat=qL*450+qS*300;
+      const totalLab=totalWins*150;
+      const totalFlash=wood?totalWins*20:0;
+      const totalRepair=k.repairAmt*totalWins;
       const grandTotal=totalMat+totalLab+totalFlash+totalRepair;
-      const totalWins=q*winsPerOpening;
-      const sizeSel=`<select class="tree-size-sel" id="fp-${i}-size" onchange="ePSel(${i},'size',this.value)"><option value="0"${sz===0?' selected':''}>Large/Standard — 30"–36" wide</option><option value="1"${sz===1?' selected':''}>Small/Narrow — Under 24" (bathrooms/utility)</option></select>`;
-      const cfgSel=`<select class="tree-size-sel" id="fp-${i}-config" onchange="ePSel(${i},'config',this.value)"><option value="0"${!twin?' selected':''}>Single unit per opening — $150 labor</option><option value="1"${twin?' selected':''}>Twin/Double — 2 units side-by-side (mat ×2, $250 labor)</option></select>`;
       const frameSel=`<select class="tree-size-sel" id="fp-${i}-frameType" onchange="ePSel(${i},'frameType',this.value)"><option value="0"${!wood?' selected':''}>Block Frame / Concrete — no extra charge</option><option value="1"${wood?' selected':''}>Wood Frame — $20 Flashing Tape per window</option></select>`;
       return `<div style="margin-bottom:10px">`+
-        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Window Type</div>`+
-        sizeSel+`</div>`+
-        `<div style="margin-bottom:10px">`+
-        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Configuration</div>`+
-        cfgSel+`</div>`+
-        `<div style="margin-bottom:10px">`+
         `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Frame / Install Type</div>`+
         frameSel+`</div>`+
-        `<div style="margin-bottom:14px">`+
-        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Quantity (openings)</div>`+
-        `${pIn(i,'qty',k.qty,55)} &nbsp;<span style="color:var(--muted);font-size:.78rem">(0 = Auto: ${p.bed} bed×2 + ${p.bath} bath + 3 = <strong>${autoQty}</strong> openings)</span>`+
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Large/Standard (30"–36")</div>`+
+            `${pIn(i,'qtyL',k.qtyL,55)} &nbsp;<span style="color:var(--muted);font-size:.76rem">0=auto (${autoL})</span>`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Small/Narrow (&lt; 24")</div>`+
+            `${pIn(i,'qtyS',k.qtyS,55)} &nbsp;<span style="color:var(--muted);font-size:.76rem">0=auto (${autoS})</span>`+
+          `</div>`+
         `</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px">💡 Auto: Large = bed×2+3 (${p.bed}×2+3=${autoL}) &nbsp;·&nbsp; Small = bath (${autoS}) &nbsp;·&nbsp; Total = <strong>${totalWins} windows</strong></div>`+
         `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
         `<div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Cost Summary</div>`+
+        (qL>0?
+          `<div style="display:flex;justify-content:space-between">`+
+            `<span>${qL} × Large/Standard <span style="color:var(--muted);font-size:.76rem">($450 · range $350–$550)</span></span>`+
+            `<strong>${fmt(qL*450)}</strong>`+
+          `</div>`:'')+
+        (qS>0?
+          `<div style="display:flex;justify-content:space-between">`+
+            `<span>${qS} × Small/Narrow <span style="color:var(--muted);font-size:.76rem">($300 · range $200–$400)</span></span>`+
+            `<strong>${fmt(qS*300)}</strong>`+
+          `</div>`:'')+
         `<div style="display:flex;justify-content:space-between">`+
-          `<span>${q} × ${typeLabel} <span style="color:var(--muted);font-size:.76rem">(${matRange}${twin?' ×2':''})</span></span>`+
-          `<strong>${fmt(totalMat)}</strong>`+
-        `</div>`+
-        `<div style="display:flex;justify-content:space-between">`+
-          `<span>${q} × Labor <span style="color:var(--muted);font-size:.76rem">($${labPerOpening}/opening${twin?' combined':' flat'})</span></span>`+
+          `<span>${totalWins} × Labor <span style="color:var(--muted);font-size:.76rem">($150/window flat)</span></span>`+
           `<strong>${fmt(totalLab)}</strong>`+
         `</div>`+
         (wood?
@@ -1054,13 +1044,12 @@ const ROWS=[
         `</div>`;
     },
     h:(p,k)=>{
-      const autoQty=p.bed*2+p.bath+3;
-      const q=k.qty>0?Math.round(k.qty):autoQty;
-      const lbl=['Large/Standard','Small/Narrow'][Math.round(k.size)===1?1:0];
-      return`${q} openings · ${lbl}${Math.round(k.config)===1?' (Twin)':''}${Math.round(k.frameType)===1?' · Wood Frame':''}`;
+      const qL=k.qtyL>0?Math.round(k.qtyL):(p.bed*2+3);
+      const qS=k.qtyS>0?Math.round(k.qtyS):p.bath;
+      return`${qL+qS} windows (${qL} large + ${qS} small)${Math.round(k.frameType)===1?' · Wood Frame':''}`;
     },
-    d:'Double Pane Low-E Vinyl | Large $450 / Small $300 | $150–$250 labor/opening | $100 repair/window',
-    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nQUANTITY AUTO-ESTIMATE (qty = 0):\nFormula: bed×2 + bath + 3 → counts openings\n• 2 openings per bedroom (חדר שינה)\n• 1 opening per bathroom (חדר אמבטיה)\n• 3 for common areas (סלון, מטבח, פינת אוכל)\nExamples: 3/2 = 11 · 4/2 = 13 · 2/1 = 8\nSet qty to any non-zero value to override. Always verify against the actual floor plan.\n\nWINDOW TYPES:\n• Large/Standard ($350–$550, midpoint $450): 30"–36" wide Single-Hung — most common FL residential window\n• Small/Narrow ($200–$400, midpoint $300): Under 24" wide — bathrooms, utility rooms\n\nCONFIGURATION:\n• Single: one window per opening — material at base price, labor $150/opening\n• Twin/Double (כפול): two units side-by-side in a wide opening — material ×2, labor $250/opening (combined rate)\n\nFRAME / INSTALL TYPE:\n• Block Frame / Concrete: retrofit insert into existing concrete block wall — no extra charge. Standard for FL masonry homes.\n• Wood Frame: rough opening framed in wood — add $20 Flashing Tape (גלילת אטם) per window to prevent water intrusion in FL climate.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150 per window (default $100). Mandatory line item — always budget for this. Needed when new window unit is smaller than old frame, leaving gaps at interior wall. Applied per window unit (so Twin/Double = 2× per opening).'},
+    d:'Double Pane Low-E Vinyl | Large $450 / Small $300 | $150 labor/window | $100 repair/window',
+    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nQUANTITY AUTO-ESTIMATE (set to 0 for auto):\n• Large/Standard (חלונות גדולים): bed×2 + 3 — bedrooms (2 each) + common areas (living/kitchen/dining)\n• Small/Narrow (חלונות קטנים): bath — one per bathroom\nExamples: 3/2 → 9 large + 2 small = 11 · 4/2 → 11 large + 2 small = 13\nSet any qty to a non-zero value to override that type independently. Verify against the floor plan.\n\nWINDOW TYPES:\n• Large/Standard ($350–$550, midpoint $450): 30"–36" wide Single-Hung — bedrooms, living room, kitchen\n• Small/Narrow ($200–$400, midpoint $300): Under 24" wide — bathrooms, utility rooms\n\nFRAME / INSTALL TYPE:\n• Block Frame / Concrete: retrofit insert into existing concrete block wall — no extra charge. Standard for FL masonry homes.\n• Wood Frame: rough opening framed in wood — add $20 Flashing Tape (גלילת אטם) per window to prevent water intrusion.\n\nLABOR: $150/window flat — same rate for all sizes. Includes old unit removal, shimming, install, caulk sealing.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150 per window (default $100). Mandatory — always budget this. Needed when new unit is smaller than old frame, leaving interior gaps.'},
 
   // ── FLOORING ──
   {cat:'FLOORING',item:'Flooring',split:0,
