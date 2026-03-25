@@ -355,7 +355,7 @@ function pIn(i,name,val,w){
 }
 
 /* ═══════ BUILT-IN CATEGORIES & ROWS ═══════ */
-const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','DEMOLITION','FLOORING','DOORS','APPLIANCES','GENERAL'];
+const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHROOMS','PAINT','GARAGE','FENCE','WINDOWS','DEMOLITION','CONTINGENCY','FLOORING','DOORS','APPLIANCES','GENERAL'];
 
 const ROWS=[
   // ── DEMOLITION ──
@@ -459,6 +459,91 @@ const ROWS=[
     h:(p,k)=>`${k.crew} workers × ${k.days} day${k.days>1?'s':''} × $${k.rate} = ${fmt(k.rate*k.crew*k.days)}`,
     d:'Unskilled demo crew | $250–$400/person/day | cabinet, flooring, fixture removal',
     defNote:'Demo Labor (עבודות פירוק) — unskilled labor for demolition and cleanup.\n\nREHAB LEVELS:\n• Light (קל): 2 workers × 1 day — cosmetic demo (removing fixtures, trim, light flooring).\n• Standard (רגיל): 4 workers × 2 days — full demo (cabinets, tile, flooring, fixtures, broom clean).\n• Heavy (כבד): 4 workers × 3 days — gut job (everything down to studs, heavy tile/mortar removal).\n\nDAILY RATE: $250–$400/person (midpoint $325). These are unskilled day laborers (פועלים לא מקצועיים), not licensed contractors.\n\nSCOPE typically includes:\n• Cabinet removal (פירוק ארונות)\n• Flooring & tile removal (הסרת ריצוף)\n• Fixture removal (פירוק אביזרים — toilets, sinks, tubs)\n• Broom-clean finish (ניקוי גס)\n\nFORMULA: rate × crew × days\n\nAll params editable — change tier to load presets, then fine-tune.'},
+
+  // ── CONTINGENCY ──
+  {cat:'CONTINGENCY',item:'General Labor Allowance',split:0,
+    dp:{val:-1},
+    cT:(p,k)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      return k.val>=0?Math.round(k.val):base;
+    },
+    fT:(p,k,i)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const isAuto=k.val<0;
+      const cur=isAuto?base:Math.round(k.val);
+      const lo=fmt(Math.round(base*0.8)),hi=fmt(Math.round(base*1.2));
+      const reset=isAuto?'':`<span style="cursor:pointer;color:var(--orange2);font-size:.7rem;margin-left:6px" onclick="eP(${i},'val',-1)">↺ auto</span>`;
+      const sqftBand=p.sqft<1000?'under 1,000 sqft':p.sqft<1500?'1,000–1,500 sqft':'1,500–2,000 sqft';
+      return `<div style="margin-bottom:6px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">`+
+          `Amount ${isAuto?`<span style="color:var(--orange2);font-weight:400">(auto: ${sqftBand})</span>`:`<span style="font-weight:400">(manual)</span>`}${reset}`+
+        `</div>`+
+        `$${pIn(i,'val',cur,80)}`+
+      `</div>`+
+      `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;line-height:1.6">`+
+        `💡 Auto tiers: &lt;1,000 sqft → $4,000 &nbsp;·&nbsp; 1,000–1,500 → $7,500 &nbsp;·&nbsp; 1,500+ → $8,750<br>`+
+        `&nbsp;&nbsp;±20% range for this property: ${lo} – ${hi} &nbsp;·&nbsp; Type any amount to override, click ↺ auto to restore.`+
+      `</div>`+
+      `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>Unforeseen labor (touch-ups, site prep, odd jobs)</span>`+
+          `<strong>${fmt(cur)}</strong>`+
+        `</div>`+
+        `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">${fmt(cur)}</span>`+
+        `</div>`+
+      `</div>`;
+    },
+    h:(p,k)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const cur=k.val>=0?Math.round(k.val):base;
+      return`${fmt(cur)} (${k.val>=0?'manual':'auto: '+p.sqft+' sqft'})`;
+    },
+    d:'General labor buffer | $4k–$8.75k auto by sqft | ±20% adjustment',
+    defNote:'General Labor Allowance (רזרבה לעבודה כללית) — budget for unforeseen labor not covered in trade quotes.\n\nIncludes: touch-ups (גימורים), odd jobs, site prep, small repairs between trades.\n\nAUTO TIERS (based on total square footage):\n• Under 1,000 sqft → $4,000 (range $3,000–$5,000)\n• 1,000–1,500 sqft → $7,500 (flat)\n• 1,500–2,000 sqft → $8,750 (range $7,500–$10,000)\n\n±20% adjustment shown as reference. Type any amount to override, or click ↺ auto to restore the formula value.'},
+
+  {cat:'CONTINGENCY',item:'Home Depot Materials Buffer',split:0,
+    dp:{val:-1},
+    cT:(p,k)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      return k.val>=0?Math.round(k.val):base;
+    },
+    fT:(p,k,i)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const isAuto=k.val<0;
+      const cur=isAuto?base:Math.round(k.val);
+      const lo=fmt(Math.round(base*0.8)),hi=fmt(Math.round(base*1.2));
+      const reset=isAuto?'':`<span style="cursor:pointer;color:var(--orange2);font-size:.7rem;margin-left:6px" onclick="eP(${i},'val',-1)">↺ auto</span>`;
+      const sqftBand=p.sqft<1000?'under 1,000 sqft':p.sqft<1500?'1,000–1,500 sqft':'1,500–2,000 sqft';
+      return `<div style="margin-bottom:6px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">`+
+          `Amount ${isAuto?`<span style="color:var(--orange2);font-weight:400">(auto: ${sqftBand})</span>`:`<span style="font-weight:400">(manual)</span>`}${reset}`+
+        `</div>`+
+        `$${pIn(i,'val',cur,80)}`+
+      `</div>`+
+      `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;line-height:1.6">`+
+        `💡 Auto tiers: &lt;1,000 sqft → $4,000 &nbsp;·&nbsp; 1,000–1,500 → $7,500 &nbsp;·&nbsp; 1,500+ → $8,750<br>`+
+        `&nbsp;&nbsp;±20% range for this property: ${lo} – ${hi} &nbsp;·&nbsp; Type any amount to override, click ↺ auto to restore.`+
+      `</div>`+
+      `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>Screws, tape, rollers, hardware, cleaning supplies</span>`+
+          `<strong>${fmt(cur)}</strong>`+
+        `</div>`+
+        `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">${fmt(cur)}</span>`+
+        `</div>`+
+      `</div>`;
+    },
+    h:(p,k)=>{
+      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const cur=k.val>=0?Math.round(k.val):base;
+      return`${fmt(cur)} (${k.val>=0?'manual':'auto: '+p.sqft+' sqft'})`;
+    },
+    d:'Misc materials buffer | $4k–$8.75k auto by sqft | screws, tape, hardware, supplies',
+    defNote:'Home Depot Materials Buffer (תקציב חומרים כללי) — allowance for miscellaneous project materials not itemized in trade budgets.\n\nIncludes: screws, nails, tape, paint rollers & brushes, small hardware, caulk, cleaning supplies, drop cloths, etc.\n\nAUTO TIERS (based on total square footage):\n• Under 1,000 sqft → $4,000\n• 1,000–1,500 sqft → $7,500\n• 1,500–2,000 sqft → $8,750\n\n±20% adjustment shown as reference. Type any amount to override, or click ↺ auto to restore the formula value.'},
 
   // ── EXTERIOR ──
   {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,
