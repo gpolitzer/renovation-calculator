@@ -82,8 +82,9 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 ### CONTINGENCY
 | Item | split | Default | Key params |
 |---|---|---|---|
-| General Labor Allowance | 0 | ON | `val` (-1=auto by sqft: <1k→$4k / 1k-1.5k→$7.5k / 1.5k+→$8.75k, else manual amt) |
-| Home Depot Materials Buffer | 0 | ON | `val` (-1=auto by sqft: same tiers as above) |
+| General Labor Allowance | 0 | ON | `val` (-1=auto by sqft: <1k→$2,500 / 1k-1.5k→$4,500 / 1.5k+→$5,250 — 60% of budget) |
+| Home Depot Materials Buffer | 0 | ON | `val` (-1=auto by sqft: <1k→$1,500 / 1k-1.5k→$3,000 / 1.5k+→$3,500 — 40% of budget) |
+| **Combined target** | — | — | <1k→$4,000 · 1k-1.5k→$7,500 · 1.5k+→$8,750 |
 
 ### EXTERIOR
 | Item | split | Default | Key params |

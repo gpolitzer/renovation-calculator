@@ -464,11 +464,11 @@ const ROWS=[
   {cat:'CONTINGENCY',item:'General Labor Allowance',split:0,
     dp:{val:-1},
     cT:(p,k)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?2500:p.sqft<1500?4500:5250;
       return k.val>=0?Math.round(k.val):base;
     },
     fT:(p,k,i)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?2500:p.sqft<1500?4500:5250;
       const isAuto=k.val<0;
       const cur=isAuto?base:Math.round(k.val);
       const lo=fmt(Math.round(base*0.8)),hi=fmt(Math.round(base*1.2));
@@ -481,7 +481,7 @@ const ROWS=[
         `$${pIn(i,'val',cur,80)}`+
       `</div>`+
       `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;line-height:1.6">`+
-        `💡 Auto tiers: &lt;1,000 sqft → $4,000 &nbsp;·&nbsp; 1,000–1,500 → $7,500 &nbsp;·&nbsp; 1,500+ → $8,750<br>`+
+        `💡 Auto tiers (60% of contingency budget): &lt;1,000 sqft → $2,500 &nbsp;·&nbsp; 1,000–1,500 → $4,500 &nbsp;·&nbsp; 1,500+ → $5,250<br>`+
         `&nbsp;&nbsp;±20% range for this property: ${lo} – ${hi} &nbsp;·&nbsp; Type any amount to override, click ↺ auto to restore.`+
       `</div>`+
       `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
@@ -496,21 +496,21 @@ const ROWS=[
       `</div>`;
     },
     h:(p,k)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?2500:p.sqft<1500?4500:5250;
       const cur=k.val>=0?Math.round(k.val):base;
       return`${fmt(cur)} (${k.val>=0?'manual':'auto: '+p.sqft+' sqft'})`;
     },
-    d:'General labor buffer | $4k–$8.75k auto by sqft | ±20% adjustment',
-    defNote:'General Labor Allowance (רזרבה לעבודה כללית) — budget for unforeseen labor not covered in trade quotes.\n\nIncludes: touch-ups (גימורים), odd jobs, site prep, small repairs between trades.\n\nAUTO TIERS (based on total square footage):\n• Under 1,000 sqft → $4,000 (range $3,000–$5,000)\n• 1,000–1,500 sqft → $7,500 (flat)\n• 1,500–2,000 sqft → $8,750 (range $7,500–$10,000)\n\n±20% adjustment shown as reference. Type any amount to override, or click ↺ auto to restore the formula value.'},
+    d:'General labor buffer | auto by sqft (60% of contingency) | touch-ups, site prep, odd jobs',
+    defNote:'General Labor Allowance (רזרבה לעבודה כללית) — budget for unforeseen labor not covered in trade quotes.\n\nIncludes: touch-ups (גימורים), odd jobs, site prep, small repairs between trades.\n\nAUTO TIERS — 60% of total contingency budget:\n• Under 1,000 sqft → $2,500\n• 1,000–1,500 sqft → $4,500\n• 1,500–2,000 sqft → $5,250\n\nCombined with the Materials Buffer below, the two rows together equal the full contingency target:\n• Under 1,000 sqft → $4,000 total ($2,500 labor + $1,500 materials)\n• 1,000–1,500 sqft → $7,500 total ($4,500 + $3,000)\n• 1,500–2,000 sqft → $8,750 total ($5,250 + $3,500)\n\n±20% range shown as reference. Type any amount to override, click ↺ auto to restore.'},
 
   {cat:'CONTINGENCY',item:'Home Depot Materials Buffer',split:0,
     dp:{val:-1},
     cT:(p,k)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?1500:p.sqft<1500?3000:3500;
       return k.val>=0?Math.round(k.val):base;
     },
     fT:(p,k,i)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?1500:p.sqft<1500?3000:3500;
       const isAuto=k.val<0;
       const cur=isAuto?base:Math.round(k.val);
       const lo=fmt(Math.round(base*0.8)),hi=fmt(Math.round(base*1.2));
@@ -523,7 +523,7 @@ const ROWS=[
         `$${pIn(i,'val',cur,80)}`+
       `</div>`+
       `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;line-height:1.6">`+
-        `💡 Auto tiers: &lt;1,000 sqft → $4,000 &nbsp;·&nbsp; 1,000–1,500 → $7,500 &nbsp;·&nbsp; 1,500+ → $8,750<br>`+
+        `💡 Auto tiers (40% of contingency budget): &lt;1,000 sqft → $1,500 &nbsp;·&nbsp; 1,000–1,500 → $3,000 &nbsp;·&nbsp; 1,500+ → $3,500<br>`+
         `&nbsp;&nbsp;±20% range for this property: ${lo} – ${hi} &nbsp;·&nbsp; Type any amount to override, click ↺ auto to restore.`+
       `</div>`+
       `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
@@ -538,12 +538,12 @@ const ROWS=[
       `</div>`;
     },
     h:(p,k)=>{
-      const base=p.sqft<1000?4000:p.sqft<1500?7500:8750;
+      const base=p.sqft<1000?1500:p.sqft<1500?3000:3500;
       const cur=k.val>=0?Math.round(k.val):base;
       return`${fmt(cur)} (${k.val>=0?'manual':'auto: '+p.sqft+' sqft'})`;
     },
-    d:'Misc materials buffer | $4k–$8.75k auto by sqft | screws, tape, hardware, supplies',
-    defNote:'Home Depot Materials Buffer (תקציב חומרים כללי) — allowance for miscellaneous project materials not itemized in trade budgets.\n\nIncludes: screws, nails, tape, paint rollers & brushes, small hardware, caulk, cleaning supplies, drop cloths, etc.\n\nAUTO TIERS (based on total square footage):\n• Under 1,000 sqft → $4,000\n• 1,000–1,500 sqft → $7,500\n• 1,500–2,000 sqft → $8,750\n\n±20% adjustment shown as reference. Type any amount to override, or click ↺ auto to restore the formula value.'},
+    d:'Misc materials buffer | auto by sqft (40% of contingency) | screws, tape, hardware, supplies',
+    defNote:'Home Depot Materials Buffer (תקציב חומרים כללי) — allowance for miscellaneous project materials not itemized in trade budgets.\n\nIncludes: screws, nails, tape, paint rollers & brushes, small hardware, caulk, cleaning supplies, drop cloths, etc.\n\nAUTO TIERS — 40% of total contingency budget:\n• Under 1,000 sqft → $1,500\n• 1,000–1,500 sqft → $3,000\n• 1,500–2,000 sqft → $3,500\n\nCombined with the Labor Allowance above, the two rows together equal the full contingency target:\n• Under 1,000 sqft → $4,000 total\n• 1,000–1,500 sqft → $7,500 total\n• 1,500–2,000 sqft → $8,750 total\n\n±20% range shown as reference. Type any amount to override, click ↺ auto to restore.'},
 
   // ── EXTERIOR ──
   {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,
