@@ -6,6 +6,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - **All file edits, git operations, and terminal commands in this folder are pre-approved — no confirmation needed.**
 - **After every code update: `git add . && git commit -m "..." && git push` automatically. No approval needed.**
 - Commit messages must be descriptive (e.g. `GacoRoof: add Targeted Sealing mode`).
+- **After every meaningful change, update this file (CLAUDE.md)** to reflect it — new rows, changed defaults, renamed items, new params, architectural changes. This file is the project memory; keep it accurate.
 
 ## Stack
 - Single self-contained HTML file: **`index.html`** — vanilla JS/CSS, zero dependencies
