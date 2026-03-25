@@ -69,7 +69,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - GC Fee row = `_gcBase × rate` (default 15%)
 
 ## Categories (render order)
-`DEMOLITION · EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · FLOORING · DOORS · APPLIANCES · GENERAL`
+`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · DEMOLITION · FLOORING · DOORS · APPLIANCES · GENERAL`
 
 ## Row Catalog
 
