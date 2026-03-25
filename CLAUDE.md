@@ -136,7 +136,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 ### WINDOWS
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Window Replacement | 0 | ON | `qtySingle` (0=auto: bath), `qtyDouble` (0=auto: bed+4 — 1/bed+2 living+1 kitchen+1 reserve), `frameType` (0=Block/1=Wood +$20/unit), `repairAmt`=100/unit · labor $150/opening |
+| Window Replacement | 0 | ON | `qtySingle` (-1=auto: bath, 0=none, N=manual), `qtyDouble` (-1=auto: bed+4, 0=none, N=manual), `frameType` (0=Block/1=Wood +$20/unit), `repairAmt`=100/unit · labor $150/opening |
 | Mini Blinds | 0 | **OFF** | `qty` (0=none, independent), `mat`=40 (range $20–$59) · labor $10/unit hardcoded |
 | Spring/Balance Replacement | 0 | **OFF** | `qty`=1 · $125/window flat (labor + parts — broken lift mechanism repair) |
 

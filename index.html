@@ -977,20 +977,20 @@ const ROWS=[
 
   // ── WINDOWS ──
   {cat:'WINDOWS',item:'Window Replacement',split:0,
-    dp:{qtySingle:0,qtyDouble:0,frameType:0,repairAmt:100},
+    dp:{qtySingle:-1,qtyDouble:-1,frameType:0,repairAmt:100},
     cT:(p,k)=>{
-      const qS=k.qtySingle>0?k.qtySingle:p.bath;
-      const qD=k.qtyDouble>0?k.qtyDouble:(p.bed+4);
+      const qS=k.qtySingle<0?p.bath:Math.max(0,Math.round(k.qtySingle));
+      const qD=k.qtyDouble<0?(p.bed+4):Math.max(0,Math.round(k.qtyDouble));
       const openings=qS+qD;
       const units=qS+qD*2;
       const wood=Math.round(k.frameType)===1;
       return Math.round(qS*450+qD*900+openings*150+(wood?units*20:0)+k.repairAmt*units);
     },
     fT:(p,k,i)=>{
-      const autoS=p.bath;
-      const autoD=p.bed+4;
-      const qS=k.qtySingle>0?Math.round(k.qtySingle):autoS;
-      const qD=k.qtyDouble>0?Math.round(k.qtyDouble):autoD;
+      const autoS=p.bath,autoD=p.bed+4;
+      const isAutoS=k.qtySingle<0,isAutoD=k.qtyDouble<0;
+      const qS=isAutoS?autoS:Math.max(0,Math.round(k.qtySingle));
+      const qD=isAutoD?autoD:Math.max(0,Math.round(k.qtyDouble));
       const openings=qS+qD;
       const units=qS+qD*2;
       const wood=Math.round(k.frameType)===1;
@@ -1000,23 +1000,31 @@ const ROWS=[
       const totalRepair=k.repairAmt*units;
       const grandTotal=matS+matD+totalLab+totalFlash+totalRepair;
       const frameSel=`<select class="tree-size-sel" id="fp-${i}-frameType" onchange="ePSel(${i},'frameType',this.value)"><option value="0"${!wood?' selected':''}>Block Frame / Concrete — no extra charge</option><option value="1"${wood?' selected':''}>Wood Frame — $20 Flashing Tape per unit</option></select>`;
+      const resetS=isAutoS?'':`<span style="cursor:pointer;color:var(--orange2);font-size:.7rem;margin-left:6px" onclick="eP(${i},'qtySingle',-1)">↺ auto</span>`;
+      const resetD=isAutoD?'':`<span style="cursor:pointer;color:var(--orange2);font-size:.7rem;margin-left:6px" onclick="eP(${i},'qtyDouble',-1)">↺ auto</span>`;
       return `<div style="margin-bottom:10px">`+
         `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Frame / Install Type</div>`+
         frameSel+`</div>`+
         `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">`+
           `<div>`+
-            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Single Window <span style="font-weight:400">(0=auto: bath)</span></div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Single Window ${isAutoS?`<span style="color:var(--orange2);font-weight:400">(auto: ${autoS})</span>`:`<span style="font-weight:400">(manual)</span>`}${resetS}</div>`+
             `${pIn(i,'qtySingle',qS,55)}`+
           `</div>`+
           `<div>`+
-            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Double Window <span style="font-weight:400">(0=auto: bed+4)</span></div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Double Window ${isAutoD?`<span style="color:var(--orange2);font-weight:400">(auto: ${autoD})</span>`:`<span style="font-weight:400">(manual)</span>`}${resetD}</div>`+
             `${pIn(i,'qtyDouble',qD,55)}`+
           `</div>`+
         `</div>`+
-        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px">💡 Auto: Single = 1 per bathroom (bath=${autoS}) &nbsp;·&nbsp; Double = 1/bed + 2 living + 1 kitchen + 1 reserve (${p.bed}+4=${autoD}) &nbsp;·&nbsp; $450/unit · $150/opening</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px;line-height:1.5">`+
+          `💡 <b>Auto formula:</b><br>`+
+          `&nbsp;&nbsp;Single = 1 per bathroom = <b>${autoS}</b> (bath=${p.bath})<br>`+
+          `&nbsp;&nbsp;Double = 1 per bedroom + 2 living room + 1 kitchen + 1 reserve = <b>${autoD}</b> (bed=${p.bed} + 4)<br>`+
+          `&nbsp;&nbsp;Type any number to override (0 = no windows). Click "↺ auto" to restore formula.`+
+        `</div>`+
         `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
         `<div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Cost Summary</div>`+
-        (qS>0?
+        (openings===0?`<div style="color:var(--muted);font-style:italic">No windows selected — enter qty or click ↺ auto</div>`:
+        ((qS>0?
           `<div style="display:flex;justify-content:space-between">`+
             `<span>${qS} × Single <span style="color:var(--muted);font-size:.76rem">($450 · range $350–$550)</span></span>`+
             `<strong>${fmt(matS)}</strong>`+
@@ -1038,7 +1046,7 @@ const ROWS=[
         `<div style="display:flex;justify-content:space-between">`+
           `<span>${units} × Drywall Patching <span style="color:var(--muted);font-size:.76rem">($${pIn(i,'repairAmt',k.repairAmt,50)}/unit &nbsp;range $50–$150)</span></span>`+
           `<strong>${fmt(totalRepair)}</strong>`+
-        `</div>`+
+        `</div>`))+
         `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
           `<span>Grand Total</span>`+
           `<span style="color:var(--orange2);font-size:.95rem">${fmt(grandTotal)}</span>`+
@@ -1046,16 +1054,16 @@ const ROWS=[
         `</div>`;
     },
     h:(p,k)=>{
-      const qS=k.qtySingle>0?Math.round(k.qtySingle):p.bath;
-      const qD=k.qtyDouble>0?Math.round(k.qtyDouble):(p.bed+4);
+      const qS=k.qtySingle<0?p.bath:Math.max(0,Math.round(k.qtySingle));
+      const qD=k.qtyDouble<0?(p.bed+4):Math.max(0,Math.round(k.qtyDouble));
       const units=qS+qD*2;
       const parts=[];
       if(qS>0)parts.push(`${qS} single`);
       if(qD>0)parts.push(`${qD} double`);
-      return`${qS+qD} openings (${parts.join(' + ')}) · ${units} units`;
+      return parts.length?`${qS+qD} openings (${parts.join(' + ')}) · ${units} units`:'0 windows';
     },
     d:'Double Pane Low-E Vinyl | $450/unit · Single $450 / Double $900 | $150 labor/opening | $100 repair/unit',
-    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nAUTO-DEFAULTS (0 = use formula):\n• Single (חלון בודד): 0 → bath — 1 per bathroom (small window)\n• Double (חלון כפול): 0 → bed+4 — 1 per bedroom + 2 living room + 1 kitchen/dining + 1 reserve\nExample: 3/2 → 2 singles + 7 doubles = 9 openings, 16 units\n\nTo override: type any positive number. Value is stored and formula is ignored.\n\nBoth types are Double Pane Low-E Vinyl, $350–$550/unit (midpoint $450). Double opening = 2 units side-by-side = $900 material.\n\nLABOR: $150 per opening — same for single or double.\n\nFRAME / INSTALL TYPE:\n• Block Frame / Concrete: no extra charge.\n• Wood Frame: add $20 Flashing Tape (גלילת אטם) per unit.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150 per unit (default $100). Mandatory.'},
+    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nAUTO vs MANUAL:\n• Default = auto (-1): formula fills qty based on bed/bath.\n• Type any number (including 0) → manual override.\n• Click "↺ auto" to restore formula.\n\nAUTO FORMULA:\n• Single (חלון בודד) = 1 per bathroom. Example: 2 bath → 2 singles.\n• Double (חלון כפול) = 1 per bedroom + 2 for living room + 1 kitchen/dining + 1 reserve = bed + 4. Example: 3 bed → 7 doubles.\n\nPRICING:\n• Single: $450/unit (range $350–$550).\n• Double: $900/opening ($450 × 2 units side-by-side).\n• Labor: $150/opening — same for single or double.\n\nFRAME TYPE:\n• Block Frame / Concrete (בלוק/בטון): no extra charge.\n• Wood Frame (שלד עץ): +$20 Flashing Tape (גלילת אטם) per unit.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150/unit (default $100). Always included.'},
 
   {cat:'WINDOWS',item:'Mini Blinds',split:0,on:false,
     dp:{qty:0,mat:40},
