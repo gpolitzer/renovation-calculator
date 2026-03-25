@@ -979,20 +979,21 @@ const ROWS=[
   {cat:'WINDOWS',item:'Window Replacement',split:0,
     dp:{qtySingle:0,qtyDouble:0,frameType:0,repairAmt:100},
     cT:(p,k)=>{
-      const qS=Math.max(0,k.qtySingle||0);
-      const qD=Math.max(0,k.qtyDouble||0);
+      const qS=k.qtySingle>0?k.qtySingle:p.bath;
+      const qD=k.qtyDouble>0?k.qtyDouble:(p.bed+4);
       const openings=qS+qD;
       const units=qS+qD*2;
       const wood=Math.round(k.frameType)===1;
       return Math.round(qS*450+qD*900+openings*150+(wood?units*20:0)+k.repairAmt*units);
     },
     fT:(p,k,i)=>{
-      const qS=Math.max(0,Math.round(k.qtySingle||0));
-      const qD=Math.max(0,Math.round(k.qtyDouble||0));
+      const autoS=p.bath;
+      const autoD=p.bed+4;
+      const qS=k.qtySingle>0?Math.round(k.qtySingle):autoS;
+      const qD=k.qtyDouble>0?Math.round(k.qtyDouble):autoD;
       const openings=qS+qD;
       const units=qS+qD*2;
       const wood=Math.round(k.frameType)===1;
-      const suggest=p.bed*2+p.bath+3;
       const matS=qS*450,matD=qD*900;
       const totalLab=openings*150;
       const totalFlash=wood?units*20:0;
@@ -1004,42 +1005,40 @@ const ROWS=[
         frameSel+`</div>`+
         `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">`+
           `<div>`+
-            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Single Window</div>`+
-            `${pIn(i,'qtySingle',k.qtySingle||0,55)} &nbsp;<span style="font-size:.75rem;color:var(--orange2);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="eP(${i},'qtySingle',${suggest})">💡 fill ${suggest}</span>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Single Window <span style="font-weight:400">(0=auto: bath)</span></div>`+
+            `${pIn(i,'qtySingle',qS,55)}`+
           `</div>`+
           `<div>`+
-            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Double Window (wide)</div>`+
-            `${pIn(i,'qtyDouble',k.qtyDouble||0,55)}`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Double Window <span style="font-weight:400">(0=auto: bed+4)</span></div>`+
+            `${pIn(i,'qtyDouble',qD,55)}`+
           `</div>`+
         `</div>`+
-        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px">Double Pane Low-E Vinyl · $450/unit · Double = 2 units ($900/opening) · Labor $150/opening · Suggested total: ${suggest} windows</div>`+
+        `<div style="font-size:.73rem;color:var(--muted);margin-bottom:12px">💡 Auto: Single = 1 per bathroom (bath=${autoS}) &nbsp;·&nbsp; Double = 1/bed + 2 living + 1 kitchen + 1 reserve (${p.bed}+4=${autoD}) &nbsp;·&nbsp; $450/unit · $150/opening</div>`+
         `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
         `<div style="font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Cost Summary</div>`+
-        (openings===0?
-          `<div style="color:var(--muted);font-size:.82rem;padding:4px 0">No windows selected — enter quantities above</div>`:
-          (qS>0?
-            `<div style="display:flex;justify-content:space-between">`+
-              `<span>${qS} × Single <span style="color:var(--muted);font-size:.76rem">($450 · range $350–$550)</span></span>`+
-              `<strong>${fmt(matS)}</strong>`+
-            `</div>`:'')+
-          (qD>0?
-            `<div style="display:flex;justify-content:space-between">`+
-              `<span>${qD} × Double opening <span style="color:var(--muted);font-size:.76rem">($900 = $450×2 units)</span></span>`+
-              `<strong>${fmt(matD)}</strong>`+
-            `</div>`:'')+
+        (qS>0?
           `<div style="display:flex;justify-content:space-between">`+
-            `<span>${openings} × Labor <span style="color:var(--muted);font-size:.76rem">($150/opening)</span></span>`+
-            `<strong>${fmt(totalLab)}</strong>`+
-          `</div>`+
-          (wood?
-            `<div style="display:flex;justify-content:space-between">`+
-              `<span>${units} × Flashing Tape <span style="color:var(--muted);font-size:.76rem">($20/unit — wood frame)</span></span>`+
-              `<strong>${fmt(totalFlash)}</strong>`+
-            `</div>`:'')+
+            `<span>${qS} × Single <span style="color:var(--muted);font-size:.76rem">($450 · range $350–$550)</span></span>`+
+            `<strong>${fmt(matS)}</strong>`+
+          `</div>`:'')+
+        (qD>0?
           `<div style="display:flex;justify-content:space-between">`+
-            `<span>${units} × Drywall Patching <span style="color:var(--muted);font-size:.76rem">($${pIn(i,'repairAmt',k.repairAmt,50)}/unit &nbsp;range $50–$150)</span></span>`+
-            `<strong>${fmt(totalRepair)}</strong>`+
-          `</div>`)+
+            `<span>${qD} × Double opening <span style="color:var(--muted);font-size:.76rem">($900 = $450×2 units)</span></span>`+
+            `<strong>${fmt(matD)}</strong>`+
+          `</div>`:'')+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>${openings} × Labor <span style="color:var(--muted);font-size:.76rem">($150/opening)</span></span>`+
+          `<strong>${fmt(totalLab)}</strong>`+
+        `</div>`+
+        (wood?
+          `<div style="display:flex;justify-content:space-between">`+
+            `<span>${units} × Flashing Tape <span style="color:var(--muted);font-size:.76rem">($20/unit — wood frame)</span></span>`+
+            `<strong>${fmt(totalFlash)}</strong>`+
+          `</div>`:'')+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>${units} × Drywall Patching <span style="color:var(--muted);font-size:.76rem">($${pIn(i,'repairAmt',k.repairAmt,50)}/unit &nbsp;range $50–$150)</span></span>`+
+          `<strong>${fmt(totalRepair)}</strong>`+
+        `</div>`+
         `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
           `<span>Grand Total</span>`+
           `<span style="color:var(--orange2);font-size:.95rem">${fmt(grandTotal)}</span>`+
@@ -1047,9 +1046,8 @@ const ROWS=[
         `</div>`;
     },
     h:(p,k)=>{
-      const qS=Math.max(0,Math.round(k.qtySingle||0));
-      const qD=Math.max(0,Math.round(k.qtyDouble||0));
-      if(!qS&&!qD)return'0 windows — enter qty';
+      const qS=k.qtySingle>0?Math.round(k.qtySingle):p.bath;
+      const qD=k.qtyDouble>0?Math.round(k.qtyDouble):(p.bed+4);
       const units=qS+qD*2;
       const parts=[];
       if(qS>0)parts.push(`${qS} single`);
@@ -1057,7 +1055,7 @@ const ROWS=[
       return`${qS+qD} openings (${parts.join(' + ')}) · ${units} units`;
     },
     d:'Double Pane Low-E Vinyl | $450/unit · Single $450 / Double $900 | $150 labor/opening | $100 repair/unit',
-    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nBoth types are the same product: Double Pane Low-E Vinyl, $350–$550/unit (midpoint $450).\n\nSINGLE vs DOUBLE:\n• Single (חלון יחיד): 1 unit per opening — standard.\n• Double / Wide Opening (חלון כפול): 2 units side-by-side — material $900/opening ($450×2). Enter manually.\n\nQUANTITIES: Enter directly. 0 = no windows of that type (no auto-fill). Use the "💡 fill N" link to populate the suggested count based on bed/bath.\n\nSuggested formula: bed×2 + bath + 3 (bedrooms × 2 + bathrooms + common areas).\n\nLABOR: $150 per opening — same for single or double.\n\nFRAME / INSTALL TYPE:\n• Block Frame / Concrete: no extra charge.\n• Wood Frame: add $20 Flashing Tape (גלילת אטם) per unit.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150 per unit (default $100). Mandatory.'},
+    defNote:'Window Replacement (החלפת חלונות) — Double Pane Low-E Vinyl Single-Hung.\n\nAUTO-DEFAULTS (0 = use formula):\n• Single (חלון בודד): 0 → bath — 1 per bathroom (small window)\n• Double (חלון כפול): 0 → bed+4 — 1 per bedroom + 2 living room + 1 kitchen/dining + 1 reserve\nExample: 3/2 → 2 singles + 7 doubles = 9 openings, 16 units\n\nTo override: type any positive number. Value is stored and formula is ignored.\n\nBoth types are Double Pane Low-E Vinyl, $350–$550/unit (midpoint $450). Double opening = 2 units side-by-side = $900 material.\n\nLABOR: $150 per opening — same for single or double.\n\nFRAME / INSTALL TYPE:\n• Block Frame / Concrete: no extra charge.\n• Wood Frame: add $20 Flashing Tape (גלילת אטם) per unit.\n\nDRYWALL PATCHING (תיקון גבס): $50–$150 per unit (default $100). Mandatory.'},
 
   {cat:'WINDOWS',item:'Mini Blinds',split:0,on:false,
     dp:{qty:0,mat:40},
@@ -1095,6 +1093,31 @@ const ROWS=[
     },
     d:'Mini Blinds (תריסים) | $20–$59 mat + $10 labor per unit',
     defNote:'Mini Blinds (תריסים) — independent add-on, not linked to window count.\n\nQUANTITY: Enter the number of blinds needed. Use "💡 fill N" to populate the suggested count from bed/bath formula, or type any number — you might replace 1 window but install 4 blinds, or install blinds with no window work.\n\nPRICING:\n• Material (חומר): $20–$59 per unit (midpoint $40) — standard cordless mini blind, 1" aluminum slats. Adjust based on your vendor.\n• Labor (עבודה): $10 per unit flat — mount bracket, hang, adjust.\n• Total per blind: ~$50\n\nThis row is OFF by default. Enable it when the project includes blind installation.'},
+
+  {cat:'WINDOWS',item:'Spring/Balance Replacement',split:0,on:false,
+    dp:{qty:1},
+    cT:(p,k)=>Math.round(125*Math.max(0,k.qty||0)),
+    fT:(p,k,i)=>{
+      const q=Math.max(0,Math.round(k.qty||0));
+      const total=125*q;
+      return `<div style="margin-bottom:14px">`+
+        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Quantity (windows)</div>`+
+        `${pIn(i,'qty',q,60)}`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2">`+
+        `<div style="display:flex;justify-content:space-between">`+
+          `<span>${q} × $125/window <span style="color:var(--muted);font-size:.76rem">(labor + parts — spring/balance mechanism)</span></span>`+
+          `<strong>${fmt(total)}</strong>`+
+        `</div>`+
+        `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+          `<span>Total</span>`+
+          `<span style="color:var(--orange2);font-size:.95rem">${fmt(total)}</span>`+
+        `</div>`+
+        `</div>`;
+    },
+    h:(p,k)=>`${Math.round(k.qty||0)} windows · $125/window (labor + parts)`,
+    d:'Spring/Balance Replacement — $125/window (labor + parts)',
+    defNote:'Spring/Balance Replacement (תיקון קפיץ/מאזן) — repair of broken lift mechanisms in modern vinyl windows.\n\nCOST: $125 per window — includes both labor and replacement parts (spring or balance channel).\n\nUSE CASE: Modern single-hung and double-hung vinyl windows use either a coiled spring or a spiral balance rod to hold the sash in position. When these break, the window will not stay open or close properly. This is a common repair in older vinyl windows.\n\nThis row is OFF by default. Enable it when the inspection finds broken window mechanisms.'},
 
   // ── FLOORING ──
   {cat:'FLOORING',item:'Flooring',split:0,
