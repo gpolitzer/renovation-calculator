@@ -69,7 +69,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - GC Fee row = `_gcBase × rate` (default 15%)
 
 ## Categories (render order)
-`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · DEMOLITION · CONTINGENCY · GARDENING · FLOORING · DOORS · APPLIANCES · GENERAL`
+`EXTERIOR · TERMITE · PLUMBING · ELECTRICAL · HVAC · KITCHEN · BATHROOMS · PAINT · GARAGE · FENCE · WINDOWS · DEMOLITION · CONTINGENCY · GARDENING · INSURANCE · FLOORING · DOORS · APPLIANCES · GENERAL`
 
 ## Row Catalog
 
@@ -90,6 +90,11 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 | Item | split | Default | Key params |
 |---|---|---|---|
 | Initial Cleanup | 0 | ON | `t`=750 (flat fee $500–$1,000) · includes mow/edge, trim, weed, mulch |
+
+### INSURANCE (gcExcl)
+| Item | split | Default | Key params |
+|---|---|---|---|
+| Vacant Property Insurance | 0 | ON | `tier` (0=light 2mo/1=standard 3mo/2=heavy 6mo), `monthly`=500, `setup`=250, `months` (auto by tier) |
 
 ### EXTERIOR
 | Item | split | Default | Key params |
