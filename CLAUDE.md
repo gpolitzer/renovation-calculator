@@ -30,6 +30,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - `customCats[]` — user-added categories
 - `customByBuiltin{}` — custom rows added to built-in categories
 - `permitsState[]` — 5 permit tracking entries (Roof, HVAC, Water Heater, Plumbing, Electrical)
+- `miscOn` / `miscRate` — Miscellaneous toggle + rate (default 7.5%, range 5–10%)
 - `editDefaultsMode` — when true, param changes are saved to localStorage
 
 ### Key Functions
