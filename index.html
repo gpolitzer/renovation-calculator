@@ -392,7 +392,7 @@ const CATS=['EXTERIOR','TERMITE','PLUMBING','ELECTRICAL','HVAC','KITCHEN','BATHR
 
 const ROWS=[
   // ── DEMOLITION ──
-  {cat:'DEMOLITION',item:'Dumpster / Waste Disposal',split:0,
+  {cat:'DEMOLITION',item:'Dumpster / Waste Disposal',split:0,on:false,
     dp:{tier:1,dumpCost:475,dumpQty:2,freeTons:2,totalTons:7,overRate:63},
     cT:(p,k)=>{
       const dumpTotal=k.dumpCost*k.dumpQty;
@@ -454,7 +454,7 @@ const ROWS=[
     d:'Dumpster rental + overage fees | 2 free tons/dumpster | $50–$75/ton overage',
     defNote:'Dumpster / Waste Disposal (מכולת פסולת / פינוי) — rental + overage fees.\n\nREHAB LEVELS (choose preset or override manually):\n• Light (קל): 1 dumpster (20-yard, $475), ~3 tons → $538\n• Standard (רגיל): 2 dumpsters (20-yard, $475/ea), ~7 tons → $1,139\n• Heavy (כבד): 2 large dumpsters (30-yard, $650/ea), ~10 tons → $1,690\n\nPRICING:\n• Dumpster rental: $200–$750 range (midpoint $475 for 20-yard, $650 for 30-yard).\n• First 2 tons per dumpster are FREE (כלול במחיר ההשכרה).\n• Overage: $50–$75/ton (midpoint $63) for weight beyond the free allowance.\n\nFORMULA: (dumpCost × qty) + max(0, totalTons − freeTons×qty) × overRate\n\nAll params editable — change tier to load presets, then fine-tune.'},
 
-  {cat:'DEMOLITION',item:'Demo Labor',split:0,
+  {cat:'DEMOLITION',item:'Demo Labor',split:0,on:false,
     dp:{tier:1,rate:325,crew:4,days:2},
     cT:(p,k)=>Math.round(k.rate*k.crew*k.days),
     fT:(p,k,i)=>{
@@ -494,7 +494,7 @@ const ROWS=[
     defNote:'Demo Labor (עבודות פירוק) — unskilled labor for demolition and cleanup.\n\nREHAB LEVELS:\n• Light (קל): 2 workers × 1 day — cosmetic demo (removing fixtures, trim, light flooring).\n• Standard (רגיל): 4 workers × 2 days — full demo (cabinets, tile, flooring, fixtures, broom clean).\n• Heavy (כבד): 4 workers × 3 days — gut job (everything down to studs, heavy tile/mortar removal).\n\nDAILY RATE: $250–$400/person (midpoint $325). These are unskilled day laborers (פועלים לא מקצועיים), not licensed contractors.\n\nSCOPE typically includes:\n• Cabinet removal (פירוק ארונות)\n• Flooring & tile removal (הסרת ריצוף)\n• Fixture removal (פירוק אביזרים — toilets, sinks, tubs)\n• Broom-clean finish (ניקוי גס)\n\nFORMULA: rate × crew × days\n\nAll params editable — change tier to load presets, then fine-tune.'},
 
   // ── CONTINGENCY ──
-  {cat:'CONTINGENCY',item:'General Labor Allowance',split:0,
+  {cat:'CONTINGENCY',item:'General Labor Allowance',split:0,on:false,
     dp:{val:-1},
     cT:(p,k)=>{
       const base=p.sqft<1000?2500:p.sqft<1500?4500:5250;
@@ -536,7 +536,7 @@ const ROWS=[
     d:'General labor buffer | auto by sqft (60% of contingency) | touch-ups, site prep, odd jobs',
     defNote:'General Labor Allowance (רזרבה לעבודה כללית) — budget for unforeseen labor not covered in trade quotes.\n\nIncludes: touch-ups (גימורים), odd jobs, site prep, small repairs between trades.\n\nAUTO TIERS — 60% of total contingency budget:\n• Under 1,000 sqft → $2,500\n• 1,000–1,500 sqft → $4,500\n• 1,500–2,000 sqft → $5,250\n\nCombined with the Materials Buffer below, the two rows together equal the full contingency target:\n• Under 1,000 sqft → $4,000 total ($2,500 labor + $1,500 materials)\n• 1,000–1,500 sqft → $7,500 total ($4,500 + $3,000)\n• 1,500–2,000 sqft → $8,750 total ($5,250 + $3,500)\n\n±20% range shown as reference. Type any amount to override, click ↺ auto to restore.'},
 
-  {cat:'CONTINGENCY',item:'Home Depot Materials Buffer',split:0,
+  {cat:'CONTINGENCY',item:'Home Depot Materials Buffer',split:0,on:false,
     dp:{val:-1},
     cT:(p,k)=>{
       const base=p.sqft<1000?1500:p.sqft<1500?3000:3500;
@@ -579,7 +579,7 @@ const ROWS=[
     defNote:'Home Depot Materials Buffer (תקציב חומרים כללי) — allowance for miscellaneous project materials not itemized in trade budgets.\n\nIncludes: screws, nails, tape, paint rollers & brushes, small hardware, caulk, cleaning supplies, drop cloths, etc.\n\nAUTO TIERS — 40% of total contingency budget:\n• Under 1,000 sqft → $1,500\n• 1,000–1,500 sqft → $3,000\n• 1,500–2,000 sqft → $3,500\n\nCombined with the Labor Allowance above, the two rows together equal the full contingency target:\n• Under 1,000 sqft → $4,000 total\n• 1,000–1,500 sqft → $7,500 total\n• 1,500–2,000 sqft → $8,750 total\n\n±20% range shown as reference. Type any amount to override, click ↺ auto to restore.'},
 
   // ── EXTERIOR ──
-  {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,
+  {cat:'EXTERIOR',item:'Replacing a Tiled Roof',split:1,on:false,
     dp:{r:7,lab:2000},
     cM:(p,k)=>p.sqft*k.r, cL:(p,k)=>k.lab,
     fM:(p,k,i)=>`SqFt × $${pIn(i,'r',k.r)}<br>= ${p.sqft} × ${k.r} = ${fmt(p.sqft*k.r)}`,
@@ -641,7 +641,7 @@ const ROWS=[
     d:'GacoRoof silicone coating — Full Roof Restoration or Targeted Sealing (seams & fasteners)',
     defNote:'Sealing a Metal Roof (GacoRoof) (איטום גג מתכת בסיליקון).\n\nDROPDOWN — Scope of Work:\n\n● Full Roof Restoration (שחזור גג מלא) — GacoRoof 100% silicone coating applied in 2 coats over the entire surface.\n\n  ROOF SIZE ESTIMATE: House sqft × 1.15 factor = roof sqft (accounts for overhangs and eaves).\n\n  Materials:\n  • GacoRoof 5-gallon pails: $320/pail · 1 pail covers 250 sqft (full 2-coat process)\n  • Pails needed = ⌈roof sqft ÷ 250⌉\n  • Ancillary (GacoWash, seam tape, primers): $0.10–$0.25/sqft → default $0.175/sqft\n\n  Labor Type dropdown:\n  • Per Sqft (לפי מ"ר) — contractor: $1.00–$3.00/sqft → default $2.00/sqft (incl. prep)\n  • Hourly (לפי שעה) — handyman: $50–$80/hr → default $65/hr\n\n● Targeted Sealing (איטום ממוקד) — seams (תפרים) and fasteners/screws (ברגים) only, no full coating.\n  Used for high-profile metal panel roofs where only penetration points need sealing.\n  Flat fee pricing — pail count and ancillary do not apply.\n\n  Service Type dropdown:\n  • Standalone Service Call (קריאת שירות עצמאית) — $300–$500 → default $400\n  • Part of Larger Project (כחלק מפרויקט גדול) — $150–$250 → default $200\n\n⚠️ This row is OFF by default — metal roofs are less common than tiled roofs in Jacksonville.'},
 
-  {cat:'EXTERIOR',item:'Gutter Installation',split:0,
+  {cat:'EXTERIOR',item:'Gutter Installation',split:0,on:false,
     dp:{stories:1,wastePct:0.10,contPct:0.05,miters:4,gutRate:6.25,mitRate:15,dsRate1:74,dsRate2:125,splRate:5},
     cT:(p,k)=>{
       const baseLF=Math.round(Math.sqrt(p.sqft)*2.6);
@@ -687,7 +687,7 @@ const ROWS=[
     d:'Gutter installation — seamless aluminum K-style with downspouts & accessories',
     defNote:'Gutter Installation (התקנת מרזבים) — 6-inch K-Style Seamless Aluminum.\n\nESTIMATION LOGIC:\n• Base Linear Feet = √(house sqft) × 2.6\n• +10% waste buffer (חיץ בזבוז חומר) for material cuts/waste\n• Downspouts (מוריד מים): 1 per every 40 LF\n• Miters/Corners (פינות): default 4\n• Splash Blocks (בלוקי מגן): 1 per downspout\n• Elbows (מרפקים): 3 per downspout (included in downspout set price)\n\nUNIT PRICING:\n• Gutter: $6.25/LF\n• Miter: $15/unit\n• Downspout Set: $74 (1-story) or $125 (2-story)\n• Splash Block: $5/unit\n\n+5% project contingency (מקדם ביטחון) for unexpected labor/site costs.\n\nDROPDOWN — Stories:\n• 1-Story (קומה אחת) — shorter downspouts = $74/set\n• 2-Story (שתי קומות) — taller downspouts = $125/set'},
 
-  {cat:'EXTERIOR',item:'Tree Removal',split:0,
+  {cat:'EXTERIOR',item:'Tree Removal',split:0,on:false,
     dp:{trees:1,size:1,
         rem0:325,stu0:104,deb0:100,
         rem1:1100,stu1:180,deb1:220,
@@ -717,7 +717,7 @@ const ROWS=[
     d:"Tree removal, stump grinding & debris haul off — priced by tree size",
     defNote:'Tree removal (כריתת עצים) cost.\nIncludes: cutting the tree (כריתה), stump grinding (שחיקת גדם), and debris haul off (פינוי פסולת).\n\nDROPDOWN — Tree Size: pick Small/Medium/Large based on tree height. Larger trees cost significantly more.\nTREES field: set the number of trees to remove. Cost multiplies per tree.'},
 
-  {cat:'EXTERIOR',item:'Driveway',split:1,
+  {cat:'EXTERIOR',item:'Driveway',split:1,on:false,
     dp:{tier:0,totalSqft:500,repairSqft:45,labRate:12.50,matFlat:150,resLabRate:6.50,resMatRate:1.50,repLabRate:15,repMatRate:5.50,wastePct:0.10,contPct:0.05},
     cM:(p,k)=>{
       const t=Math.min(2,Math.max(0,Math.round(k.tier)));
@@ -778,7 +778,7 @@ const ROWS=[
     d:'Driveway repair — 3 tiers with waste/contingency buffers + ARV impact',
     defNote:'Driveway (כביש גישה / מדרך) repair module.\n\nINPUTS:\n• Total Driveway SQFT (שטח כביש כולל): full driveway area (default 500)\n• Repair Area SQFT (שטח תיקון): targeted patch area (default 45)\n• Labor rate: $12.50/sqft (based on $10–$15 mentor range)\n\nTIER 1 — TARGETED PATCH & SEAL (טלאי ואיטום ממוקד):\nFocuses on repairing a specific section (cracks/potholes) for curb appeal.\nLabor = repair_area × $12.50/sqft · Material = $150 fixed (patching compound + sealant)\nTarget: $600–$850 for a standard 45 SQFT patch.\nBest ROI — "Critical Maintenance / Curb Appeal Fix" with minimal spend.\n\nTIER 2 — FULL SURFACE RESURFACING (שחזור פני שטח):\nGrind + new wear course over the entire driveway.\nLabor = total_sqft × $6.50 · Material = total_sqft × $1.50\nMakes the whole driveway look uniform without full tear-out.\n\nTIER 3 — FULL REPLACEMENT (החלפה מלאה):\nFull demo, haul-away, and new 4" concrete pour.\nLabor = total_sqft × $15.00 · Material = total_sqft × $5.50\nMaximum intensity — complete rebuild.\n\nBUFFERS:\n• +10% material waste (בזבוז חומרים) on all material sub-totals\n• +5% project contingency (עתודה) on grand total\n\nECONOMIC METRIC:\n• Estimated ARV Impact = Total × 1.5 (curb appeal multiplier)\n• Price per SQFT shown in hint bar'},
 
-  {cat:'TERMITE',item:'Termite Treatment',split:0,
+  {cat:'TERMITE',item:'Termite Treatment',split:0,on:false,
     dp:{method:0,tent:0,base0:1500,rate0:1.33,base1:-175,rate1:1.50,tbase:750,trate:3.00,annual:425},
     cT:(p,k)=>{
       const m=Math.min(1,Math.max(0,Math.round(k.method)));
@@ -869,7 +869,7 @@ const ROWS=[
     d:'Termite protection — Jacksonville 2026 | SQF-based formula | Sentricon default | annual renewal $350–$500/yr',
     defNote:'Termite treatment (טיפול בטרמיטים) cost.\nProtects the property from termite damage (נזקי טרמיטים).\n\nDROPDOWN — Prevention Method:\n• Sentricon (תחנות פיתיון) — green bait stations around the house. More common, transferable to new owner.\n• Liquid Injection (הזרקה נוזלית) — Termidor chemical injected into the soil.\n\nDROPDOWN — Active Infestation:\n• No — prevention only (מניעה בלבד).\n• Yes — adds tent fumigation (חיטוי באוהל) with Vikane gas first, then prevention.\n\nNote: Annual bond renewal (חידוש ערבות) of ~$425/yr is shown for reference — this is a recurring yearly cost.'},
 
-  {cat:'PLUMBING',item:'Water Heater',split:1,
+  {cat:'PLUMBING',item:'Water Heater',split:1,on:false,
     dp:{mat:700,lab:350},
     cM:(p,k)=>k.mat, cL:(p,k)=>k.lab,
     fM:(p,k,i)=>`Fixed = $${pIn(i,'mat',k.mat)}`,
@@ -877,7 +877,7 @@ const ROWS=[
     d:'Standard water heater replacement',
     defNote:'Water heater replacement (החלפת דוד חם).\nFixed cost: materials (the unit itself) + labor (installation).\nThis covers a standard tank water heater, not tankless.'},
 
-  {cat:'PLUMBING',item:'Plumbing Repipe',split:0,
+  {cat:'PLUMBING',item:'Plumbing Repipe',split:0,on:false,
     dp:{fc:750,lc:150,df:0.8,dc:400},
     cT:(p,k)=>{const f=3*p.bath+6,l=p.bath+4;return f*k.fc+l*k.lc+k.df*f*k.dc;},
     fT:(p,k,i)=>{const f=3*p.bath+6,l=p.bath+4;
@@ -885,35 +885,35 @@ const ROWS=[
     d:'Full repipe: plumbing points, faucets, drywall repair',
     defNote:'Full plumbing repipe (החלפת צנרת מלאה).\nReplaces all old pipes with new ones. Cost based on number of bathrooms.\n\nBreakdown:\n• Plumbing points (נקודות אינסטלציה) — calculated as 3×bathrooms+6. More bathrooms = more pipe connections.\n• Faucet replacement (החלפת ברזים) — calculated as bathrooms+4.\n• Drywall repair (תיקון גבס) — opening walls to access pipes requires patching afterward.\n\nThis is usually needed in older homes with galvanized or polybutylene pipes.'},
 
-  {cat:'PLUMBING',item:'Drain Line',split:0,
+  {cat:'PLUMBING',item:'Drain Line',split:0,on:false,
     dp:{t:15000},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Main drain line replacement',
     defNote:'Main drain line replacement (החלפת קו ניקוז ראשי).\nThe main sewer pipe (צינור ביוב ראשי) that connects the house to the city sewer.\nFixed cost — this is a major job that involves digging under/around the house.\nNeeded when the existing drain is cracked, collapsed, or has tree root intrusion (חדירת שורשים).'},
 
-  {cat:'ELECTRICAL',item:'Panel Upgrade',split:0,
+  {cat:'ELECTRICAL',item:'Panel Upgrade',split:0,on:false,
     dp:{t:2500},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Electrical panel upgrade to 200A',
     defNote:'Electrical panel upgrade (שדרוג לוח חשמל) to 200 Amps.\nReplaces an old/undersized panel (typically 100A or 150A) with a modern 200A panel.\nRequired when the home needs more electrical capacity — common in older homes.\nThis is a different job than a panel swap (see below).'},
 
-  {cat:'ELECTRICAL',item:'Panel Swap',split:0,
+  {cat:'ELECTRICAL',item:'Panel Swap',split:0,on:false,
     dp:{t:2000},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Panel swap (same amperage)',
     defNote:'Panel swap (החלפת לוח חשמל) — same amperage.\nReplaces a damaged, outdated, or recalled panel with a new one of the same capacity.\nCheaper than an upgrade because no new wiring to the meter is needed.\nCommon reason: Federal Pacific or Zinsco panels (known fire hazards).'},
 
-  {cat:'ELECTRICAL',item:'AlumiConn',split:0,
+  {cat:'ELECTRICAL',item:'AlumiConn',split:0,on:false,
     dp:{t:2000},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Aluminum-to-copper connectors',
     defNote:'AlumiConn connectors (מחברי אלומיניום-נחושת).\nHomes built in the 1960s-70s may have aluminum wiring (חיווט אלומיניום), which is a fire risk.\nAlumiConn connectors safely join aluminum wires to copper at every outlet, switch, and fixture.\nThis is the approved fix — cheaper than full rewiring (חיווט מחדש).'},
 
-  {cat:'ELECTRICAL',item:'Outlets & Switches',split:1,
+  {cat:'ELECTRICAL',item:'Outlets & Switches',split:1,on:false,
     dp:{mat:700,lab:400},
     cM:(p,k)=>k.mat, cL:(p,k)=>k.lab,
     fM:(p,k,i)=>`Fixed = $${pIn(i,'mat',k.mat)}`,
@@ -921,7 +921,7 @@ const ROWS=[
     d:'Replace all outlets and switches',
     defNote:'Replace all outlets and switches (החלפת שקעים ומפסקים).\nSwapping old/discolored outlets and light switches with new ones.\nMaterials = the outlets and switches. Labor = electrician installation.\nGives the home a clean, updated look and ensures safety.'},
 
-  {cat:'ELECTRICAL',item:'GFCI Breakers',split:1,
+  {cat:'ELECTRICAL',item:'GFCI Breakers',split:1,on:false,
     dp:{mat:100,lab:10},
     cM:(p,k)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;return n*k.mat;},
     cL:(p,k)=>{const bb=p.bed+p.bath;let n=8;if(bb>=3)n=10;if(bb>=5)n=11;if(bb>=7)n=12;return n*k.lab;},
@@ -932,7 +932,7 @@ const ROWS=[
     d:'GFCI breakers 8–12 per house × $100 + $10 labor each',
     defNote:'GFCI breakers (ממסרי פחת) — ground fault protection.\nThese breakers trip when they detect a current leak, preventing electrocution.\nRequired by code in kitchens, bathrooms, garages, and outdoor areas.\n\nCount is auto-calculated based on bedrooms + bathrooms:\n• 1-2 bed+bath = 8 breakers\n• 3-4 = 10 breakers\n• 5-6 = 11 breakers\n• 7+ = 12 breakers'},
 
-  {cat:'ELECTRICAL',item:'Light Fixtures',split:1,
+  {cat:'ELECTRICAL',item:'Light Fixtures',split:1,on:false,
     dp:{mat:100,lab:50},
     cM:(p,k)=>(p.bed+p.bath+6)*k.mat,
     cL:(p,k)=>(p.bed+p.bath+6)*k.lab,
@@ -941,7 +941,7 @@ const ROWS=[
     d:'Light fixtures: 1/bed + 1/bath + 6 fixed × $100 + $50 labor',
     defNote:'Light fixtures (גופי תאורה) replacement.\nOne fixture per bedroom, one per bathroom, plus 6 for common rooms (kitchen, living room, hallway, laundry, porch, dining).\nTotal fixtures = bedrooms + bathrooms + 6.\nMaterials = the fixture. Labor = electrician install per fixture.'},
 
-  {cat:'ELECTRICAL',item:'Fans',split:1,
+  {cat:'ELECTRICAL',item:'Fans',split:1,on:false,
     dp:{mat:70,lab:100},
     cM:(p,k)=>(p.bed+1)*k.mat,
     cL:(p,k)=>(p.bed+1)*k.lab,
@@ -950,7 +950,7 @@ const ROWS=[
     d:'Ceiling fans — $70 material + $100 labor per fan (bedrooms + living room)',
     defNote:'Ceiling fans (מאווררי תקרה) installation.\nOne fan per bedroom + one for the living room = bedrooms + 1.\nMaterials = the fan unit. Labor = electrician installation.\nImportant in Florida for air circulation and tenant comfort.'},
 
-  {cat:'HVAC',item:'Central AC',split:0,
+  {cat:'HVAC',item:'Central AC',split:0,on:false,
     dp:{t1:4000,t2:4500,t3:5000,t4:5500,t5:6000},
     cT:(p,k)=>{if(p.sqft<=1759)return k.t1;if(p.sqft<=1850)return k.t2;if(p.sqft<=1950)return k.t3;if(p.sqft<=2050)return k.t4;return k.t5;},
     fT:(p,k,i)=>{const t=[['≤1759',k.t1,'t1',p.sqft<=1759],['≤1850',k.t2,'t2',p.sqft>1759&&p.sqft<=1850],['≤1950',k.t3,'t3',p.sqft>1850&&p.sqft<=1950],['≤2050',k.t4,'t4',p.sqft>1950&&p.sqft<=2050],['>2050',k.t5,'t5',p.sqft>2050]];
@@ -958,21 +958,21 @@ const ROWS=[
     d:'Central AC — sized by sqft',
     defNote:'Central air conditioning (מזגן מרכזי) replacement.\nCost is based on house size (sqft) — bigger house needs a bigger unit.\n\nSize brackets:\n• Up to 1,759 sqft → lowest cost\n• 1,760–1,850 sqft → +$500\n• 1,851–1,950 sqft → +$1,000\n• 1,951–2,050 sqft → +$1,500\n• Over 2,050 sqft → highest cost\n\nIncludes the AC unit (condenser + air handler) and basic installation.'},
 
-  {cat:'HVAC',item:'Ductwork',split:0,
+  {cat:'HVAC',item:'Ductwork',split:0,on:false,
     dp:{t:600},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Ductwork repair / sealing',
     defNote:'Ductwork repair and sealing (תיקון ואיטום תעלות אוויר).\nThe ducts (תעלות) carry cooled/heated air throughout the house.\nLeaky or damaged ducts waste energy and reduce AC efficiency.\nThis covers sealing joints, patching holes, and minor repairs — not full replacement.'},
 
-  {cat:'KITCHEN',item:'Standard Kitchen',split:0,
+  {cat:'KITCHEN',item:'Standard Kitchen',split:0,on:false,
     dp:{t:5000},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
     d:'Standard kitchen renovation',
     defNote:'Standard kitchen renovation (שיפוץ מטבח סטנדרטי).\nA lump sum covering basic kitchen updates: countertops (משטחים), cabinets (ארונות), sink (כיור), and general refresh.\nThis is a budget-friendly renovation — not a full custom kitchen.\nAdjust the amount based on kitchen condition and scope of work.'},
 
-  {cat:'BATHROOMS',item:'Bath Fixtures (per bathroom)',split:1,
+  {cat:'BATHROOMS',item:'Bath Fixtures (per bathroom)',split:1,on:false,
     dp:{wt:150,wtl:150,tl:300,tll:300,dw:15,dwl:35},
     cM:(p,k)=>p.bath*(k.wt+k.tl+k.dw),
     cL:(p,k)=>p.bath*(k.wtl+k.tll+k.dwl),
@@ -981,7 +981,7 @@ const ROWS=[
     d:'Common items per bathroom — water tap, toilet, drywall (delta valve is in shower/tub rows)',
     defNote:'Bathroom fixtures (אביזרי אמבטיה) — per bathroom.\nCost multiplied by number of bathrooms. Includes:\n• Water tap/faucet (ברז) — material + install labor\n• Toilet (אסלה) — material + install labor\n• Drywall/cement board (גבס/לוח צמנט) — patching around fixtures\n\nNote: The shower/tub valve (ברז תערובת) is NOT included here — it is in the Shower Stall or Bathtub rows below.'},
 
-  {cat:'BATHROOMS',item:'Shower Stall (Stand-Up)',split:1,
+  {cat:'BATHROOMS',item:'Shower Stall (Stand-Up)',split:1,on:false,
     dp:{units:1,sqf:80,tileRate:2.5,darkMat:300,laborRate:10,panMat:600,panLab:500,glassMat:1500,glassLab:800,valveMat:350,valveLab:650},
     cM:(p,k)=>k.units*(k.panMat+k.sqf*k.tileRate+k.darkMat+k.glassMat+k.valveMat),
     cL:(p,k)=>k.units*(k.panLab+k.sqf*k.laborRate+k.glassLab+k.valveLab),
@@ -1011,7 +1011,7 @@ const ROWS=[
     d:'Stand-up shower: pan + wall tile (SQF) + luxury glass + delta valve | default 80 SQF',
     defNote:'Stand-up shower stall (מקלחון עומד) remodel.\nIncludes:\n• Shower pan (מאגן מקלחת) — the base/floor of the shower\n• Wall tile (ריצוף קיר) — calculated by wall sqft (default 80 sqft)\n• Dark matter — grout (רובה), adhesive (דבק), waterproofing (איטום)\n• Glass enclosure (מחיצת זכוכית) — custom frameless glass\n• Delta valve (ברז תערובת) — the mixing valve behind the wall\n\nUnits field: set how many shower stalls to build. Cost multiplies per unit.'},
 
-  {cat:'BATHROOMS',item:'Bathtub',split:1,
+  {cat:'BATHROOMS',item:'Bathtub',split:1,on:false,
     dp:{units:1,sqf:80,tileRate:2.5,darkMat:300,laborRate:10,tubMat:600,tubLab:800,curtMat:150,curtLab:50,valveMat:400,valveLab:700},
     cM:(p,k)=>k.units*(k.tubMat+k.sqf*k.tileRate+k.darkMat+k.curtMat+k.valveMat),
     cL:(p,k)=>k.units*(k.tubLab+k.sqf*k.laborRate+k.curtLab+k.valveLab),
@@ -1041,7 +1041,7 @@ const ROWS=[
     defNote:'Bathtub (אמבטיה) remodel.\nSimilar to shower stall but with a tub instead of a pan. Includes:\n• Bathtub (אמבטיה) — the tub unit + installation\n• Wall tile (ריצוף קיר) — calculated by wall sqft (default 80 sqft)\n• Dark matter — grout (רובה), adhesive (דבק), waterproofing (איטום)\n• Curtain + rod (וילון מקלחת + מוט) — instead of glass enclosure\n• Delta valve (ברז תערובת) — the mixing valve behind the wall\n\nBetter for family rentals — tenants with kids prefer bathtubs.\nUnits field: set how many bathtubs to install.'},
 
   // ── PAINT ──
-  {cat:'PAINT',item:'Exterior Painting',split:1,
+  {cat:'PAINT',item:'Exterior Painting',split:1,on:false,
     dp:{wallH:9,waste:1.10,washR:0.20,paintR:2.00,bucketMat:195,cov:1000,cons:200},
     cM:(p,k)=>{
       const wA=Math.round(4*Math.sqrt(p.sqft||1500)*k.wallH*k.waste);
@@ -1080,7 +1080,7 @@ const ROWS=[
     d:'Exterior painting — Behr Ultra premium | Jacksonville 2026 | pressure wash + 2 coats | SQF-based wall area',
     defNote:'Exterior painting (צביעת חוץ) — full job.\nIncludes pressure washing (שטיפה בלחץ) + 2 coats of paint.\n\nMaterials: paint buckets calculated from wall area. Using Behr Ultra premium.\nLabor: pressure wash + painting per sqft of wall area.\n\nWall area is auto-calculated: perimeter × wall height × waste factor.\nThe perimeter is estimated as 4×√sqft (assuming a square footprint).\n\nNote: This row already includes pressure washing — do NOT also enable "Exterior Wash Only" or you will double-count.'},
 
-  {cat:'PAINT',item:'Exterior Wash Only',split:0,
+  {cat:'PAINT',item:'Exterior Wash Only',split:0,on:false,
     dp:{wallH:9,waste:1.10,washR:0.20},
     cT:(p,k)=>{
       const wA=Math.round(4*Math.sqrt(p.sqft||1500)*k.wallH*k.waste);
@@ -1100,7 +1100,7 @@ const ROWS=[
     d:'Pressure wash only — standalone | use when painting separately or for maintenance | ⚠️ Exterior Painting already includes wash',
     defNote:'Pressure wash only (שטיפה בלחץ בלבד).\nStandalone pressure washing of the exterior — no painting.\nUse this when the house just needs cleaning, or when painting is done separately.\n\n⚠️ WARNING: If "Exterior Painting" is ON, do NOT enable this row — the painting row already includes pressure wash. Enabling both = paying twice for the same wash.'},
 
-  {cat:'PAINT',item:'Interior Painting',split:1,
+  {cat:'PAINT',item:'Interior Painting',split:1,on:false,
     dp:{wallFac:1.10,paintR:1.75,bucketMat:155,cov:1000,cons:150},
     cM:(p,k)=>{
       const wA=Math.round((p.sqft||1500)*k.wallFac);
@@ -1131,7 +1131,7 @@ const ROWS=[
     d:'Interior painting — Behr Premium Plus | walls only | Eggshell/Satin for tenants | SQF-based',
     defNote:'Interior painting (צביעת פנים) — walls only.\nUsing Behr Premium Plus paint in Eggshell or Satin finish (גימור חלק/סאטן) — durable and easy to clean for rentals.\n\nMaterials: paint buckets calculated from interior wall area (sqft × wall factor).\nLabor: rolling + cutting-in (חיתוך פינות) per sqft.\n\nDoes not include ceilings, trim, or doors — those are separate items.'},
 
-  {cat:'PAINT',item:'Door Painting',split:1,
+  {cat:'PAINT',item:'Door Painting',split:1,on:false,
     dp:{doors:6,doorMat:17,doorLab:62},
     cM:(p,k)=>k.doors*k.doorMat,
     cL:(p,k)=>k.doors*k.doorLab,
@@ -1144,7 +1144,7 @@ const ROWS=[
     d:'Door painting — Semi-Gloss White | both sides + frame/casing | range $50–$75 labor/door',
     defNote:'Door painting (צביעת דלתות) — both sides + frame.\nSemi-Gloss White finish (גימור חצי-מבריק לבן) — standard for interior doors in rentals.\nIncludes the door (both sides), frame, and casing (משקוף ומסגרת).\n\nDoors field: set the number of doors. Default is 6.\nMaterial cost is low (~$17/door from a shared gallon). Labor is per door.'},
 
-  {cat:'PAINT',item:'Baseboard Painting',split:0,
+  {cat:'PAINT',item:'Baseboard Painting',split:0,on:false,
     dp:{t:400},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t,75)} &nbsp;<span style="color:var(--muted);font-size:.75rem">range $300–$500</span><br>`+
@@ -1238,7 +1238,7 @@ const ROWS=[
     d:'Boots on the Ground — Per Visit | Weekly Rate | Flat Fee Monthly | independent, NOT subject to GC markup',
     defNote:'Boots on the Ground (נציג בשטח) — your local representative at the property.\nAn independent person who visits the site on your behalf: takes photos, meets subcontractors, checks work quality, reports to you.\nEssential for out-of-state investors (משקיעים מרחוק).\n\n⚠️ BOTG is NOT subject to GC markup — they work for YOU, not for the GC.\n\nMARKET PRICING: $400–$600/week · 3 visits per week.\n• Per visit rate: $133–$200/visit (midpoint $167)\n• Weekly rate: $400–$600/week (midpoint $500)\n• Monthly rate: ~$2,000/month (~4 weeks × $500)\n\nPRICING MODES:\n• Per Visit (לפי ביקור) — best for light monitoring or specific milestone checks.\n  Total = visits × price per visit\n• Weekly Rate (שבועי) — best for active renovation phase. Calculator shows duration estimate based on project size.\n  Total = weeks × weekly rate\n• Flat Fee Monthly (חודשי) — best for longer projects.\n  Total = months × monthly rate\n\nDURATION GUIDANCE (based on hard costs):\n• Under $20k → 2–3 weeks\n• $20–40k → 3–5 weeks\n• $40–60k → 5–8 weeks\n• $60k+ → 8–12 weeks'},
 
-  {cat:'GENERAL',item:'GC Fee',gcExcl:true,split:0,
+  {cat:'GENERAL',item:'GC Fee',gcExcl:true,split:0,on:false,
     dp:{rate:0.15},
     cT:(p,k)=>Math.round(_gcBase*k.rate),
     fT:(p,k,i)=>{
@@ -1266,7 +1266,7 @@ const ROWS=[
     defNote:'General Contractor (GC) fee (עמלת קבלן ראשי).\nThe GC manages all subcontractors (חשמלאי, אינסטלטור, etc.) and procures materials on your behalf. They charge a markup on all costs they manage — this is the GC fee.\n\nMarkup Rate: 10%–20% depending on project scope. Default 15%.\n\nHard Cost Base: all active renovation costs EXCEPT:\n• APPLIANCES — you buy these directly at Lowe\'s / Home Depot (owner-supplied / FF&E)\n• Survey + Inspection, Insurance — owner-managed overhead items\n• Boots on the Ground — independent third party, not managed by GC\n\nFormula: GC Fee = Hard Cost Base × markup rate\n\nNote: The GC fee itself is NOT marked up (no markup on markup). The rate input is editable — adjust it based on your actual GC agreement.'},
 
   // ── GARAGE ──
-  {cat:'GARAGE',item:'Garage Door',split:0,
+  {cat:'GARAGE',item:'Garage Door',split:0,on:false,
     dp:{type:0,s1:1400,d1:2000},
     cT:(p,k)=>{const t=Math.min(1,Math.max(0,Math.round(k.type)));return t===0?k.s1:k.d1;},
     fT:(p,k,i)=>{
@@ -1281,7 +1281,7 @@ const ROWS=[
     d:'Garage door — Single ($1,200–$1,400, default $1,400) or Double ($1,800–$2,000, default $2,000)',
     defNote:'Garage door replacement (החלפת דלת מוסך).\n\nDROPDOWN — Door Type:\n• Single (בודדת) — for 1-car garage. Default $1,400.\n• Double (כפולה) — for 2-car garage. Default $2,000.\n\nPick the type that matches the existing garage opening. Includes the door panel and installation.'},
 
-  {cat:'GARAGE',item:'Garage Door Opener',split:1,
+  {cat:'GARAGE',item:'Garage Door Opener',split:1,on:false,
     dp:{mat:300,lab:175},
     cM:(p,k)=>k.mat,
     cL:(p,k)=>k.lab,
@@ -1292,7 +1292,7 @@ const ROWS=[
     defNote:'Garage door opener (מנוע דלת מוסך) — motorized opener with remote.\nMaterials = the motor unit. Labor = installation.\nRecommended brands: Genie or Chamberlain — reliable and widely available.\nIncludes the motor, rail, remote control, and wall button.'},
 
   // ── FENCE ──
-  {cat:'FENCE',item:'Dog-Ear Wood Fence',split:0,
+  {cat:'FENCE',item:'Dog-Ear Wood Fence',split:0,on:false,
     dp:{lf:200,panMat:70,panLab:70,post:13.5,cpb:1,concPr:7,screwBox:30,latch:35},
     cT:(p,k)=>{
       const panels=Math.ceil(k.lf/8);
@@ -1339,7 +1339,7 @@ const ROWS=[
     defNote:'Dog-ear wood fence (גדר עץ) — 6 ft tall, 8 ft wide dog-ear panels.\n\nLINEAR FEET ESTIMATE: Fence size depends on your lot, not house sqft.\n• Typical Jacksonville residential lot: 50 ft wide × 120 ft deep\n• Back + two sides only (no front fence): 120 + 50 + 120 ≈ 290 LF\n• Full perimeter: 50+50+120+120 = 340 LF\n• Default 200 LF — adjust to match your property survey.\n\nFormulas:\n• Panels (לוחות גדר) = ⌈linear feet ÷ 8⌉ (each panel is 8 ft wide)\n• Posts (עמודי תמיכה 4×4×8) = panels + 2 (one post at every joint + 2 end posts)\n• Concrete bags (שקי בטון מהיר) = posts × cpb (default 1 bag per post)\n• Exterior screws (ברגים חיצוניים): ~20 per panel · sold in 100-unit boxes at $30\n• Gate latch (מנגנון שער): $35 — one per gate opening\n\ncpb (bags per post): Quikrete fast-set 50lb bag, 1 per post for standard depth. Increase to 2 if posts go deeper than 30".\n\nLabor ($70/panel): Includes post-setting, pouring concrete, and hanging panels.'},
 
   // ── WINDOWS ──
-  {cat:'WINDOWS',item:'Window Replacement',split:0,
+  {cat:'WINDOWS',item:'Window Replacement',split:0,on:false,
     dp:{qtySingle:-1,qtyDouble:-1,frameType:0,repairAmt:100},
     cT:(p,k)=>{
       const qS=k.qtySingle<0?p.bath:Math.max(0,Math.round(k.qtySingle));
@@ -1491,7 +1491,7 @@ const ROWS=[
     defNote:'Spring/Balance Replacement (תיקון קפיץ/מאזן) — repair of broken lift mechanisms in modern vinyl windows.\n\nCOST: $125 per window — includes both labor and replacement parts (spring or balance channel).\n\nUSE CASE: Modern single-hung and double-hung vinyl windows use either a coiled spring or a spiral balance rod to hold the sash in position. When these break, the window will not stay open or close properly. This is a common repair in older vinyl windows.\n\nThis row is OFF by default. Enable it when the inspection finds broken window mechanisms.'},
 
   // ── GARDENING ──
-  {cat:'GARDENING',item:'Initial Cleanup',split:0,
+  {cat:'GARDENING',item:'Initial Cleanup',split:0,on:false,
     dp:{t:750},
     cT:(p,k)=>Math.round(k.t||0),
     fT:(p,k,i)=>`<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:1.9;margin-bottom:10px">`+
@@ -1516,7 +1516,7 @@ const ROWS=[
     defNote:'Initial Cleanup (סידור ראשוני — חד פעמי) — full yard cleanup before listing or renting.\n\nINCLUDED:\n• Mowing & Edging (כיסוח ויצירת קווים): כיסוח דשא פרוע ועיצוב קצוות לאורך המדרכה והשביל.\n• Trimming (גיזום): חיתוך ענפים נמוכים שצומחים מעל הגג — חשוב במיוחד בפלורידה למניעת נזק בסופות. גיזום שיחים שחוסמים חלונות.\n• Weeding (עקירת עשבים): הסרת עשבים שוטים מהערוגות ומהסדקים בבטון.\n• Mulching (מאלץ\'): פיזור שכבה של 2–3 אינץ\' שבבי עץ בערוגות — נותן מראה מטופח ומניעת צמיחת עשבים חוזרת.\n\nCOST: $500–$1,000 flat (midpoint $750) לניקיון ראשוני מלא. חד-פעמי — לאחר מכן תחזוקה שוטפת בעלות נמוכה יותר.\n\nהחשיבות: Curb appeal (מראה חיצוני) הוא אחד הגורמים הראשונים שמשפיעים על דיירים ושמאים. נכס מסודר מבחוץ = רושם ראשוני חיובי.'},
 
   // ── INSURANCE ──
-  {cat:'INSURANCE',item:'Vacant Property Insurance',split:0,gcExcl:true,
+  {cat:'INSURANCE',item:'Vacant Property Insurance',split:0,on:false,gcExcl:true,
     dp:{monthly:475,setup:250,months:1},
     cT:(p,k)=>Math.round(k.monthly*k.months+k.setup),
     fT:(p,k,i)=>{
@@ -1559,7 +1559,7 @@ const ROWS=[
     defNote:'Vacant Property Insurance (ביטוח נכס ריק / Builders Risk) — Florida.\n\nסוג הפוליסה: Vacant Property / Builders Risk — מכסה נכס שאינו מאוכלס במהלך שיפוץ.\n\nPRICING:\n• Monthly Premium (פרמיה חודשית): $450–$500/month — ברירת מחדל $475 (אמצע הטווח).\n• Policy Setup Fee (דמי פתיחת פוליסה): $250 — חד פעמי.\n• Coverage Months (חודשי כיסוי): ברירת מחדל 1 — ניתן לשינוי ידני.\n\n⚠️ LENDER REQUIREMENT: הפוליסה חייבת להישאר "Vacant" עד לחתימת חוזה שכירות. זו דרישת המלווה (lender requirement).\n\n💡 SWITCH POLICY: ברגע שדייר נכנס — עבור מיד ל-Landlord Policy (DP-3). זה חוסך ~60% על הפרמיה החודשית ($200–$250/month במקום $475).\n\nROW EXCLUDED FROM GC MARKUP — ביטוח אינו נכלל בחישוב עמלת קבלן.'},
 
   // ── FLOORING ──
-  {cat:'FLOORING',item:'Flooring',split:0,
+  {cat:'FLOORING',item:'Flooring',split:0,on:false,
     dp:{type:2,
         // Carpet
         cMat:1.25, cLab:0.75,
@@ -1632,7 +1632,7 @@ const ROWS=[
     d:'Flooring — Carpet / LVP (5mm 12mil, default) / Porcelain Tile 12×24',
     defNote:'Flooring (ריצוף) installation for the entire house.\n\nDROPDOWN — Flooring Type:\n• Carpet (שטיח) — cheapest option. Good for bedrooms.\n• LVP (ויניל יוקרתי) — Luxury Vinyl Plank. Waterproof, durable, good for rentals.\n• Porcelain Tile (אריחי פורצלן) — DEFAULT. Best long-term durability, lowest maintenance for tenants. 12×24 format.\nChanging this dropdown recalculates all costs.\n\nLVP includes underlayment (ריפוד תחתון) — moisture barrier rolls, ~$170/roll (1 roll per 300 sqft).\n\nTile detailed breakdown:\n• Tiles: $1.50–$2.50/sqft (taste dependent — visit flooranddecor.com for options)\n• Labor: $2.50–$5.00/sqft\n• Mapei Thinset (דבק אריחים): ~31 bags per 1,000 sqft @ $15/bag\n• Schluter strips (פסי חיבור): 8–10 units @ $15–$20 each — metal trim at room transitions\n• 1/8" Tile leveling clips (קליפסי יישור): 2 packs per 10,000 sqft @ $250/pack — prevents lippage\n• Red Guard (רובה): 5 bags per 1,000 sqft @ $30/bag — grout applied between the tiles\n\nFor more info and product selection: https://www.flooranddecor.com\n\nFor baseboard (פנל רצפה), use the dedicated "Baseboard" row below.'},
 
-  {cat:'FLOORING',item:'Baseboard',split:1,
+  {cat:'FLOORING',item:'Baseboard',split:1,on:false,
     dp:{lfFac:0.30, matRate:0.50, labRate:1.50},
     cM:(p,k)=>Math.round((p.sqft||1500)*(k.lfFac||0.30)*k.matRate),
     cL:(p,k)=>Math.round((p.sqft||1500)*(k.lfFac||0.30)*k.labRate),
@@ -1656,7 +1656,7 @@ const ROWS=[
     defNote:'Baseboard (פנל רצפה) installation — whole house.\nMDF molding installed along the bottom of every wall.\n\nLinear feet (מטר רץ) is estimated as: sqft × 0.30 factor.\nThis accounts for all room perimeters combined throughout the house.\n\nMaterials ($0.50/LF): standard 3.25" MDF baseboard molding.\nLabor ($1.50/LF): remove old baseboard, cut angles (חיתוך זוויות), nail, and caulk joints.\n\nAfter installation, use the "Baseboard Painting" row in the PAINT section to add the painting cost.'},
 
   // ── DOORS ──
-  {cat:'DOORS',item:'Interior Doors',split:0,
+  {cat:'DOORS',item:'Interior Doors',split:0,on:false,
     dp:{n:5,type:0,mat:82,labPre:100,labSlab:50,knob:10,hinge:3},
     cT:(p,k)=>{
       const t=Math.min(1,Math.max(0,Math.round(k.type)));
@@ -1695,7 +1695,7 @@ const ROWS=[
     d:'Interior doors — Prehung (עם משקוף, $100 labor) or Slab (בלי משקוף, $50 labor) | mat $75–90 + $10 knob + 2×$3 hinges',
     defNote:'Interior doors (דלתות פנים) installation/replacement.\n\nDOOR COUNT ESTIMATE: Use bed + bath as a quick estimate (e.g., 3 bed + 2 bath = 5 doors). Adjust manually if needed. A typical Jacksonville home has 4–6 interior doors.\n\nDROPDOWN — Door Type:\n• Prehung (עם משקוף) — door comes with the frame (מסגרת) already attached. Best when replacing the old frame too. Labor: $100/door.\n• Slab (בלי משקוף) — door panel only, no frame. Use when the existing frame is in good shape. Labor: $50/door.\n\nMaterials per door:\n• Door unit (יחידת דלת): $75–$90 → default $82 (midpoint)\n• Knob (ידית): $10\n• Hinges (ציריות): 2 per door × $3 = $6\n\nNote: Door painting is handled separately under PAINT → Door Painting row.'},
 
-  {cat:'DOORS',item:'Exterior Doors',split:0,
+  {cat:'DOORS',item:'Exterior Doors',split:0,on:false,
     dp:{n:3,type:0,mat:300,labSlab:100,labPre:300,knob:10,hinge:3},
     cT:(p,k)=>{
       const t=Math.min(1,Math.max(0,Math.round(k.type)));
@@ -1733,7 +1733,7 @@ const ROWS=[
     d:'Exterior steel doors — Slab ($100 labor) or Prehung ($250–350 labor) | mat $250–350 | min 3 per home',
     defNote:'Exterior doors (דלתות חוץ) — steel/metal doors facing the outside.\n\nDOOR COUNT ESTIMATE: Every home needs at least 3: front door (כניסה ראשית), back door (כניסה אחורית), and garage entry (כניסה מהמוסך). Estimate: max(3, bedrooms−1). Default is 3.\n\nDROPDOWN — Door Type:\n• Slab only (בלי משקוף) — door panel only. Labor: $100/door. Use when the frame is still in good condition.\n• Prehung (עם משקוף) — door with frame attached. Labor: $250–$350 → default $300 (midpoint). Use when frame is rotted, damaged, or missing.\n\nMaterials per door:\n• Steel door (דלת מתכת) — exterior side is metal for security and Florida weather resistance: $250–$350 → default $300 (midpoint)\n• Knob (ידית): $10\n• Hinges (ציריות): 2 per door × $3 = $6\n\nNote: Exterior steel/metal doors are standard for Jacksonville rentals — wood warps in Florida humidity.'},
 
-  {cat:'DOORS',item:'Bi-Fold Closet Doors',split:0,
+  {cat:'DOORS',item:'Bi-Fold Closet Doors',split:0,on:false,
     dp:{n:6,mat:138,hw:25,lab:40},
     cT:(p,k)=>Math.round(k.n*(k.mat+k.hw+k.lab)),
     fT:(p,k,i)=>{
@@ -1762,7 +1762,7 @@ const ROWS=[
     defNote:'Bi-fold closet doors (דלתות מתקפלות לארונות) from Home Depot.\nFolding doors on a top track — standard for bedroom closets in Jacksonville rentals.\n\nDOOR COUNT ESTIMATE: A standard bedroom closet uses 1 opening with 2 bi-fold panels. So: bedrooms × 2 panels.\nExample: 3 bedrooms → 6 panels (3 closet openings × 2 panels each).\n\nCost per panel:\n• Bi-fold panel (לוח דלת מתקפל): $125–$150 → default $138 (midpoint)\n• Hardware set (סט פירזול איכותי): $25 per panel — includes track (מסילה), pivot pins, door hinges. This is a quality set.\n• Installation labor: $30–$50 per panel → default $40\n\nNote: Count "panels" not "openings." A single closet opening (פתיחת ארון) requires 2 panels.\nNote: Knobs and hinges are NOT added separately here — the $25 hardware set covers all bi-fold-specific hardware.'},
 
   // ── APPLIANCES ──
-  {cat:'APPLIANCES',item:'Appliance Set',gcExcl:true,split:0,
+  {cat:'APPLIANCES',item:'Appliance Set',gcExcl:true,split:0,on:false,
     dp:{t:2750},
     cT:(p,k)=>k.t,
     fT:(p,k,i)=>
