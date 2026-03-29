@@ -74,111 +74,118 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 
 ## Row Catalog
 
+⚠️ **Current State (2026-03-30):** Most rows are OFF. Only enabled:
+- **Survey + Inspection** (GENERAL)
+- **Insurance** (GENERAL)
+- **Boots on the Ground** (GENERAL — already OFF by design)
+- **Miscellaneous** (via `miscOn=true`)
+- **GC Fee** (OFF for now — add back if needed)
+
 ### DEMOLITION
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Dumpster / Waste Disposal | 0 | ON | `tier` (0=light/1=standard/2=heavy), `dumpCost`=475, `dumpQty` (1–2), `freeTons`=2/dumpster, `totalTons` (3/7/10 by tier), `overRate`=63/ton |
-| Demo Labor | 0 | ON | `tier` (0=light/1=standard/2=heavy), `rate`=325/person/day, `crew` (2–4), `days` (1–3) |
+| Dumpster / Waste Disposal | 0 | **OFF** | `tier` (0=light/1=standard/2=heavy), `dumpCost`=475, `dumpQty` (1–2), `freeTons`=2/dumpster, `totalTons` (3/7/10 by tier), `overRate`=63/ton |
+| Demo Labor | 0 | **OFF** | `tier` (0=light/1=standard/2=heavy), `rate`=325/person/day, `crew` (2–4), `days` (1–3) |
 
 ### CONTINGENCY
 | Item | split | Default | Key params |
 |---|---|---|---|
-| General Labor Allowance | 0 | ON | `val` (-1=auto by sqft: <1k→$2,500 / 1k-1.5k→$4,500 / 1.5k+→$5,250 — 60% of budget) |
-| Home Depot Materials Buffer | 0 | ON | `val` (-1=auto by sqft: <1k→$1,500 / 1k-1.5k→$3,000 / 1.5k+→$3,500 — 40% of budget) |
+| General Labor Allowance | 0 | **OFF** | `val` (-1=auto by sqft: <1k→$2,500 / 1k-1.5k→$4,500 / 1.5k+→$5,250 — 60% of budget) |
+| Home Depot Materials Buffer | 0 | **OFF** | `val` (-1=auto by sqft: <1k→$1,500 / 1k-1.5k→$3,000 / 1.5k+→$3,500 — 40% of budget) |
 | **Combined target** | — | — | <1k→$4,000 · 1k-1.5k→$7,500 · 1.5k+→$8,750 |
 
 ### GARDENING
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Initial Cleanup | 0 | ON | `t`=750 (flat fee $500–$1,000) · includes mow/edge, trim, weed, mulch |
+| Initial Cleanup | 0 | **OFF** | `t`=750 (flat fee $500–$1,000) · includes mow/edge, trim, weed, mulch |
 
 ### INSURANCE (gcExcl)
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Vacant Property Insurance | 0 | ON | `monthly`=475 ($450–$500 range midpoint), `setup`=250, `months`=1 (adjustable) |
+| Vacant Property Insurance | 0 | **OFF** | `monthly`=475 ($450–$500 range midpoint), `setup`=250, `months`=1 (adjustable) |
 
 ### EXTERIOR
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Replacing a Tiled Roof | 1 | ON | `r` ($/sqft=7), `lab` (fixed=2000) |
+| Replacing a Tiled Roof | 1 | **OFF** | `r` ($/sqft=7), `lab` (fixed=2000) |
 | Sealing a Metal Roof (GacoRoof) | 0 | **OFF** | `mode` (0=Full Restoration / 1=Targeted Sealing), `rfac`=1.15, `pailCost`=320, `cov`=250, `anc`=0.175, `labType` (0=per sqft / 1=hourly), `labRate`=2, `labHrRate`=65, `labHrs`=10, `subMode` (0=standalone / 1=part of project), `standalone`=400, `partOf`=200 |
-| Gutter Installation | 0 | ON | `stories` (1/2), `wastePct`=0.10, `contPct`=0.05, `miters`=4, `gutRate`=6.25/LF, `mitRate`=15, `dsRate1`=74 (1-story), `dsRate2`=125 (2-story), `splRate`=5 · baseLF=√sqft×2.6, downspouts=⌈baseLF/40⌉, elbows=3/downspout |
-| Tree Removal | 0 | ON | `trees`, `size` (0=small/1=med/2=large) |
-| Driveway | 1 | ON | `tier` (0=Patch & Seal / 1=Resurfacing / 2=Full Replace), `totalSqft`=500, `repairSqft`=45, `labRate`=12.50, `matFlat`=150 (T1 fixed), `resLabRate`=6.50 `resMatRate`=1.50 (T2), `repLabRate`=15 `repMatRate`=5.50 (T3), `wastePct`=0.10, `contPct`=0.05 · hint shows $/sqft + ARV impact (1.5×) |
+| Gutter Installation | 0 | **OFF** | `stories` (1/2), `wastePct`=0.10, `contPct`=0.05, `miters`=4, `gutRate`=6.25/LF, `mitRate`=15, `dsRate1`=74 (1-story), `dsRate2`=125 (2-story), `splRate`=5 · baseLF=√sqft×2.6, downspouts=⌈baseLF/40⌉, elbows=3/downspout |
+| Tree Removal | 0 | **OFF** | `trees`, `size` (0=small/1=med/2=large) |
+| Driveway | 1 | **OFF** | `tier` (0=Patch & Seal / 1=Resurfacing / 2=Full Replace), `totalSqft`=500, `repairSqft`=45, `labRate`=12.50, `matFlat`=150 (T1 fixed), `resLabRate`=6.50 `resMatRate`=1.50 (T2), `repLabRate`=15 `repMatRate`=5.50 (T3), `wastePct`=0.10, `contPct`=0.05 · hint shows $/sqft + ARV impact (1.5×) |
 
 ### TERMITE
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Termite Treatment | 0 | ON | `method` (0=Sentricon/1=Termidor), `tent` (bool — active infestation), `annual`=425 |
+| Termite Treatment | 0 | **OFF** | `method` (0=Sentricon/1=Termidor), `tent` (bool — active infestation), `annual`=425 |
 
 ### PLUMBING
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Water Heater | 1 | ON | `mat`, `lab` (fixed) |
-| Plumbing Repipe | 0 | ON | `fc` ($/point), `lc` ($/faucet), `df` (drywall factor), `dc` |
-| Drain Line | 0 | ON | `t` (flat fee) |
+| Water Heater | 1 | **OFF** | `mat`, `lab` (fixed) |
+| Plumbing Repipe | 0 | **OFF** | `fc` ($/point), `lc` ($/faucet), `df` (drywall factor), `dc` |
+| Drain Line | 0 | **OFF** | `t` (flat fee) |
 
 ### ELECTRICAL
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Panel Upgrade | 0 | ON | `t` (flat fee) |
-| Panel Swap | 0 | ON | `t` (flat fee) |
-| AlumiConn | 0 | ON | `t` (flat fee) |
-| Outlets & Switches | 1 | ON | `mat`, `lab` (fixed) |
-| GFCI Breakers | 1 | ON | `mat`, `lab` per breaker; count = f(bed+bath) |
-| Light Fixtures | 1 | ON | `mat`, `lab` per fixture; count = bed+bath+6 |
-| Fans | 1 | ON | `mat`, `lab` per fan; count = bed+1 |
+| Panel Upgrade | 0 | **OFF** | `t` (flat fee) |
+| Panel Swap | 0 | **OFF** | `t` (flat fee) |
+| AlumiConn | 0 | **OFF** | `t` (flat fee) |
+| Outlets & Switches | 1 | **OFF** | `mat`, `lab` (fixed) |
+| GFCI Breakers | 1 | **OFF** | `mat`, `lab` per breaker; count = f(bed+bath) |
+| Light Fixtures | 1 | **OFF** | `mat`, `lab` per fixture; count = bed+bath+6 |
+| Fans | 1 | **OFF** | `mat`, `lab` per fan; count = bed+1 |
 
 ### HVAC
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Central AC | 0 | ON | `t1–t5` (size tiers by sqft) |
-| Ductwork | 0 | ON | `t` (flat fee) |
+| Central AC | 0 | **OFF** | `t1–t5` (size tiers by sqft) |
+| Ductwork | 0 | **OFF** | `t` (flat fee) |
 
 ### KITCHEN / BATHROOMS
 | Item | split | Default | Notes |
 |---|---|---|---|
-| Standard Kitchen | 0 | ON | lump sum |
-| Bath Fixtures | 1 | ON | multiplied by `bath` count |
-| Shower Stall (Stand-Up) | 1 | ON | units, tile sqft, dark matter, glass, Delta valve |
-| Bathtub | 1 | ON | units, tile sqft, dark matter, curtain, Delta valve |
+| Standard Kitchen | 0 | **OFF** | lump sum |
+| Bath Fixtures | 1 | **OFF** | multiplied by `bath` count |
+| Shower Stall (Stand-Up) | 1 | **OFF** | units, tile sqft, dark matter, glass, Delta valve |
+| Bathtub | 1 | **OFF** | units, tile sqft, dark matter, curtain, Delta valve |
 
 ### PAINT
 | Item | split | Default | Notes |
 |---|---|---|---|
-| Exterior Painting | 1 | ON | includes pressure wash |
-| Exterior Wash Only | 0 | ON | ⚠️ disable if Exterior Painting is ON |
-| Interior Painting | 1 | ON | walls only (not ceiling/trim/doors) |
-| Door Painting | 1 | ON | per door |
-| Baseboard Painting | 0 | ON | flat fee |
+| Exterior Painting | 1 | **OFF** | includes pressure wash |
+| Exterior Wash Only | 0 | **OFF** | ⚠️ disable if Exterior Painting is ON |
+| Interior Painting | 1 | **OFF** | walls only (not ceiling/trim/doors) |
+| Door Painting | 1 | **OFF** | per door |
+| Baseboard Painting | 0 | **OFF** | flat fee |
 
 ### GARAGE / FENCE
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Garage Door | 0 | ON | `type` (single/double) |
-| Garage Door Opener | 1 | ON | `mat`, `lab` |
-| Dog-Ear Wood Fence | 0 | ON | `lf` (linear feet), per-panel pricing |
+| Garage Door | 0 | **OFF** | `type` (single/double) |
+| Garage Door Opener | 1 | **OFF** | `mat`, `lab` |
+| Dog-Ear Wood Fence | 0 | **OFF** | `lf` (linear feet), per-panel pricing |
 
 ### WINDOWS
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Window Replacement | 0 | ON | `qtySingle` (-1=auto: bath, 0=none, N=manual), `qtyDouble` (-1=auto: bed+4, 0=none, N=manual), `frameType` (0=Block/1=Wood +$20/unit), `repairAmt`=100/unit · labor $150/opening |
+| Window Replacement | 0 | **OFF** | `qtySingle` (-1=auto: bath, 0=none, N=manual), `qtyDouble` (-1=auto: bed+4, 0=none, N=manual), `frameType` (0=Block/1=Wood +$20/unit), `repairAmt`=100/unit · labor $150/opening |
 | Mini Blinds | 0 | **OFF** | `qty` (0=none, independent), `mat`=40 (range $20–$59) · labor $10/unit hardcoded |
 | Spring/Balance Replacement | 0 | **OFF** | `qty`=1 · $125/window flat (labor + parts — broken lift mechanism repair) |
 
 ### FLOORING / DOORS
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Flooring | 0 | ON | `type` (0=carpet/1=LVP/2=tile — default tile) |
-| Baseboard | 1 | ON | `lfFac` × sqft |
-| Interior Doors | 0 | ON | `type` (prehung/slab), count = bed+bath |
-| Exterior Doors | 0 | ON | `type` (slab/prehung) |
-| Bi-Fold Closet Doors | 0 | ON | panel count |
+| Flooring | 0 | **OFF** | `type` (0=carpet/1=LVP/2=tile — default tile) |
+| Baseboard | 1 | **OFF** | `lfFac` × sqft |
+| Interior Doors | 0 | **OFF** | `type` (prehung/slab), count = bed+bath |
+| Exterior Doors | 0 | **OFF** | `type` (slab/prehung) |
+| Bi-Fold Closet Doors | 0 | **OFF** | panel count |
 
 ### APPLIANCES (all gcExcl — owner-supplied)
 | Item | split | Default | Notes |
 |---|---|---|---|
-| Appliance Set | 0 | ON | flat $2,750 bundle |
+| Appliance Set | 0 | **OFF** | flat $2,750 bundle |
 | Refrigerator | 0 | **OFF** | $1,350 — use instead of Set |
 | Stove / Range | 0 | **OFF** | $650 |
 | Microwave | 0 | **OFF** | $700 |
@@ -190,7 +197,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 | Survey + Inspection | 0 | ON | flat fee |
 | Insurance | 0 | ON | default $0 — enter actual quote |
 | Boots on the Ground | 0 | **OFF** | `mode` (per-visit/weekly/monthly) — NOT subject to GC markup |
-| GC Fee | 0 | ON | `rate`=15% applied to `_gcBase` |
+| GC Fee | 0 | **OFF** | `rate`=15% applied to `_gcBase` |
 
 ## Permit Tracking (5 built-in)
 `Roof` (15yr) · `HVAC` (12yr) · `Water Heater` (12yr) · `Plumbing` · `Electrical`
