@@ -30,7 +30,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - `customCats[]` — user-added categories
 - `customByBuiltin{}` — custom rows added to built-in categories
 - `permitsState[]` — 5 permit tracking entries (Roof, HVAC, Water Heater, Plumbing, Electrical)
-- `miscOn` / `miscMin` / `miscMax` / `miscRate` — Miscellaneous toggle + user-selectable deviation range (default min=5%, max=10%); `miscRate` is always derived as `(miscMin+miscMax)/200`; `syncMisc()` must be called to update `miscRate` after changing min/max
+- `miscOn` / `miscMin` / `miscMax` / `miscManual` / `miscManualRate` / `miscRate` — Miscellaneous toggle + mode: **Range** (min/max → midpoint, default 5–10%) or **Manual** (user types exact %, default 7.5%); `miscRate` is always derived by `syncMisc()` which must be called after changing any misc param
 - `editDefaultsMode` — when true, param changes are saved to localStorage
 
 ### Key Functions
