@@ -1894,19 +1894,17 @@ function renderMiscCategory(tb){
   htr.className='cat-header';
   const htd=document.createElement('td');
   htd.colSpan=5;
-  const _iStyle='width:38px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:.72rem;text-align:center';
-  const _bBase='font-size:.68rem;padding:1px 7px;border-radius:3px;border:1px solid var(--border);cursor:pointer;';
-  const _bOn=`${_bBase}background:var(--orange2);color:#000;font-weight:600`;
-  const _bOff=`${_bBase}background:var(--bg2);color:var(--muted)`;
+  const _piStyle='padding:2px 5px;background:rgba(233,69,96,.12);border:1px solid var(--orange);border-radius:4px;color:var(--orange2);font-family:"Courier New",monospace;font-size:.82rem;text-align:center;width:46px';
+  const _modeSel=`<select class="tree-size-sel" onchange="miscManual=this.value==='1';syncMisc();build();"><option value="0"${!miscManual?' selected':''}>Range (min – max)</option><option value="1"${miscManual?' selected':''}>Manual (exact %)</option></select>`;
   let _modeUI;
   if(miscManual){
     const _mv=+(miscManualRate).toFixed(1);
-    _modeUI=`<input type="number" value="${_mv}" min="0" max="50" step="0.5" style="${_iStyle};width:44px" title="Custom %" onchange="miscManualRate=parseFloat(this.value)||0;syncMisc();build();">%`;
+    _modeUI=`<input type="number" class="param-input" value="${_mv}" min="0" max="50" step="0.5" style="${_piStyle}" title="Exact %" onchange="miscManualRate=parseFloat(this.value)||0;syncMisc();build();">%`;
   }else{
     const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
-    _modeUI=`<input type="number" value="${_minA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" value="${_maxA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;→ avg <strong style="color:var(--fg)">${_avgA}%</strong>&nbsp;<span style="color:var(--orange2);font-style:italic">rec. 5–10%</span>`;
+    _modeUI=`<input type="number" class="param-input" value="${_minA}" min="0" max="50" step="0.5" style="${_piStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" class="param-input" value="${_maxA}" min="0" max="50" step="0.5" style="${_piStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;→ avg <strong style="color:var(--orange2)">${_avgA}%</strong>&nbsp;<span style="color:var(--muted);font-style:italic">rec. 5–10%</span>`;
   }
-  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(<button style="${miscManual?_bOff:_bOn}" onclick="miscManual=false;syncMisc();build();">Range</button><button style="margin-left:2px;${miscManual?_bOn:_bOff}" onclick="miscManual=true;syncMisc();build();">Manual</button>&nbsp;${_modeUI})</span></div>`;
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.82rem;margin-left:12px">${_modeSel}&nbsp;&nbsp;${_modeUI}</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
 
