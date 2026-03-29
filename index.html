@@ -608,6 +608,52 @@ const ROWS=[
     d:'GacoRoof silicone coating — Full Roof Restoration or Targeted Sealing (seams & fasteners)',
     defNote:'Sealing a Metal Roof (GacoRoof) (איטום גג מתכת בסיליקון).\n\nDROPDOWN — Scope of Work:\n\n● Full Roof Restoration (שחזור גג מלא) — GacoRoof 100% silicone coating applied in 2 coats over the entire surface.\n\n  ROOF SIZE ESTIMATE: House sqft × 1.15 factor = roof sqft (accounts for overhangs and eaves).\n\n  Materials:\n  • GacoRoof 5-gallon pails: $320/pail · 1 pail covers 250 sqft (full 2-coat process)\n  • Pails needed = ⌈roof sqft ÷ 250⌉\n  • Ancillary (GacoWash, seam tape, primers): $0.10–$0.25/sqft → default $0.175/sqft\n\n  Labor Type dropdown:\n  • Per Sqft (לפי מ"ר) — contractor: $1.00–$3.00/sqft → default $2.00/sqft (incl. prep)\n  • Hourly (לפי שעה) — handyman: $50–$80/hr → default $65/hr\n\n● Targeted Sealing (איטום ממוקד) — seams (תפרים) and fasteners/screws (ברגים) only, no full coating.\n  Used for high-profile metal panel roofs where only penetration points need sealing.\n  Flat fee pricing — pail count and ancillary do not apply.\n\n  Service Type dropdown:\n  • Standalone Service Call (קריאת שירות עצמאית) — $300–$500 → default $400\n  • Part of Larger Project (כחלק מפרויקט גדול) — $150–$250 → default $200\n\n⚠️ This row is OFF by default — metal roofs are less common than tiled roofs in Jacksonville.'},
 
+  {cat:'EXTERIOR',item:'Gutter Installation',split:0,
+    dp:{stories:1,wastePct:0.10,contPct:0.05,miters:4,gutRate:6.25,mitRate:15,dsRate1:74,dsRate2:125,splRate:5},
+    cT:(p,k)=>{
+      const baseLF=Math.round(Math.sqrt(p.sqft)*2.6);
+      const totalLF=Math.round(baseLF*(1+(k.wastePct||0.10)));
+      const ds=Math.ceil(baseLF/40);
+      const m=Math.round(k.miters||4);
+      const dsPrice=Math.round(k.stories||1)>=2?(k.dsRate2||125):(k.dsRate1||74);
+      const sub=totalLF*(k.gutRate||6.25)+m*(k.mitRate||15)+ds*dsPrice+ds*(k.splRate||5);
+      return Math.round(sub*(1+(k.contPct||0.05)));
+    },
+    fT:(p,k,i)=>{
+      const baseLF=Math.round(Math.sqrt(p.sqft)*2.6);
+      const wastePct=k.wastePct||0.10;
+      const contPct=k.contPct||0.05;
+      const totalLF=Math.round(baseLF*(1+wastePct));
+      const ds=Math.ceil(baseLF/40);
+      const m=Math.round(k.miters||4);
+      const elbows=ds*3;
+      const stories=Math.round(k.stories||1);
+      const dsPrice=stories>=2?(k.dsRate2||125):(k.dsRate1||74);
+      const gutCost=totalLF*(k.gutRate||6.25);
+      const mitCost=m*(k.mitRate||15);
+      const dsCost=ds*dsPrice;
+      const splCost=ds*(k.splRate||5);
+      const sub=gutCost+mitCost+dsCost+splCost;
+      const grand=Math.round(sub*(1+contPct));
+      const storySel=`<select class="tree-size-sel" id="fp-${i}-stories" onchange="ePSel(${i},'stories',this.value)"><option value="1"${stories<2?' selected':''}>1-Story</option><option value="2"${stories>=2?' selected':''}>2-Story</option></select>`;
+      return `<div style="margin-bottom:8px"><span style="color:var(--muted);font-size:.8rem">STORIES</span>&nbsp; ${storySel}</div>`+
+        `<div style="margin-bottom:6px;color:var(--muted);font-size:.85rem">Base LF = √${p.sqft} × 2.6 = <b>${baseLF}</b> &nbsp;|&nbsp; +${Math.round(wastePct*100)}% waste buffer → <b>${totalLF} LF</b></div>`+
+        `<div class="tree-breakdown">`+
+        `<span class="tb-label">🏗️ Gutter (${totalLF} LF)</span><span>$${pIn(i,'gutRate',k.gutRate,55)}/LF = ${fmt(Math.round(gutCost))}</span><span class="tb-range">6" K-Style Seamless Aluminum</span>`+
+        `<span class="tb-label">📐 Miters/Corners</span><span>${pIn(i,'miters',m,40)} × $${pIn(i,'mitRate',k.mitRate,55)} = ${fmt(Math.round(mitCost))}</span><span class="tb-range">outside/inside corners</span>`+
+        `<span class="tb-label">⬇️ Downspout Sets (×${ds})</span><span>$${pIn(i,stories>=2?'dsRate2':'dsRate1',dsPrice,55)}/ea = ${fmt(Math.round(dsCost))}</span><span class="tb-range">${stories>=2?'2-story':'1-story'} · 1 per 40 LF</span>`+
+        `<span class="tb-label">🧱 Splash Blocks (×${ds})</span><span>$${pIn(i,'splRate',k.splRate,55)}/ea = ${fmt(Math.round(splCost))}</span><span class="tb-range">1 per downspout</span>`+
+        `<span class="tb-label">🔗 Elbows</span><span>${elbows} pcs</span><span class="tb-range">3 per downspout (included)</span>`+
+        `</div>`+
+        `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">`+
+        `Subtotal: ${fmt(Math.round(sub))} &nbsp;→&nbsp; +${Math.round(contPct*100)}% contingency → `+
+        `<strong style="color:var(--orange2)">Grand Total: ${fmt(grand)}</strong></div>`+
+        `<div style="margin-top:4px;color:var(--muted);font-size:.8rem">Waste ${Math.round(wastePct*100)}%: $${pIn(i,'wastePct',wastePct,40)} &nbsp;|&nbsp; Contingency ${Math.round(contPct*100)}%: $${pIn(i,'contPct',contPct,40)}</div>`;
+    },
+    h:(p,k)=>{const baseLF=Math.round(Math.sqrt(p.sqft)*2.6);return`${baseLF} base LF · ${Math.ceil(baseLF/40)} downspouts · ${Math.round(k.stories||1)>=2?'2':'1'}-story`;},
+    d:'Gutter installation — seamless aluminum K-style with downspouts & accessories',
+    defNote:'Gutter Installation (התקנת מרזבים) — 6-inch K-Style Seamless Aluminum.\n\nESTIMATION LOGIC:\n• Base Linear Feet = √(house sqft) × 2.6\n• +10% waste buffer (חיץ בזבוז חומר) for material cuts/waste\n• Downspouts (מוריד מים): 1 per every 40 LF\n• Miters/Corners (פינות): default 4\n• Splash Blocks (בלוקי מגן): 1 per downspout\n• Elbows (מרפקים): 3 per downspout (included in downspout set price)\n\nUNIT PRICING:\n• Gutter: $6.25/LF\n• Miter: $15/unit\n• Downspout Set: $74 (1-story) or $125 (2-story)\n• Splash Block: $5/unit\n\n+5% project contingency (מקדם ביטחון) for unexpected labor/site costs.\n\nDROPDOWN — Stories:\n• 1-Story (קומה אחת) — shorter downspouts = $74/set\n• 2-Story (שתי קומות) — taller downspouts = $125/set'},
+
   {cat:'EXTERIOR',item:'Tree Removal',split:0,
     dp:{trees:1,size:1,
         rem0:325,stu0:104,deb0:100,
