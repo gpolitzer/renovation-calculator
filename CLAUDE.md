@@ -17,7 +17,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 
 ## Coding Rules
 - **Price range → use midpoint:** `(X + Y) / 2`. E.g. $5k–$9k = **$7k** default.
-- Keep calculator as one HTML file. No build tools, no external libs.
+- Keep calculator as one HTML file. N150-o build tools, no external libs.
 - Dark theme (dark blues + orange accents) — preserve it.
 - New line items: follow the `BUILT-IN CATEGORIES & ROWS` pattern in `index.html`.
 - **New rows must include a `defNote`** — clear English explanation + Hebrew translations (בעברית) for professional terms. If the row has dropdowns, explain each option.
@@ -102,6 +102,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 | Replacing a Tiled Roof | 1 | ON | `r` ($/sqft=7), `lab` (fixed=2000) |
 | Sealing a Metal Roof (GacoRoof) | 0 | **OFF** | `mode` (0=Full Restoration / 1=Targeted Sealing), `rfac`=1.15, `pailCost`=320, `cov`=250, `anc`=0.175, `labType` (0=per sqft / 1=hourly), `labRate`=2, `labHrRate`=65, `labHrs`=10, `subMode` (0=standalone / 1=part of project), `standalone`=400, `partOf`=200 |
 | Tree Removal | 0 | ON | `trees`, `size` (0=small/1=med/2=large) |
+| Driveway | 1 | ON | `tier` (0=Minor $300–$700 / 1=Moderate $1,500–$3,000 / 2=Major $2,500–$5,500), `sqft`=500, `jobRate`=12.5 ($/sqft), `matCost`=250 |
 
 ### TERMITE
 | Item | split | Default | Key params |
