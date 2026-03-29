@@ -213,6 +213,10 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .zoom-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;width:28px;height:28px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .zoom-btn:hover{background:rgba(255,255,255,.22)}
 .zoom-lbl{font-size:.78rem;color:rgba(255,255,255,.75);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+/* Footer disclaimer */
+.site-footer{border-top:1px solid var(--border);margin-top:40px;padding:18px 24px;text-align:center}
+.site-footer p{font-size:.72rem;color:#5a7090;line-height:1.65;max-width:860px;margin:0 auto}
+.site-footer strong{color:#6b8aaa;font-weight:600}
 /* About modal */
 .about-btn{position:absolute;top:14px;right:16px;background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 12px;font-size:.75rem;cursor:pointer;transition:all .2s}
 .about-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.5)}
@@ -236,11 +240,15 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 
 <div class="about-overlay" id="aboutOverlay" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="about-box">
-    <h2>אודות האפליקציה</h2>
-    <p>אפליקציה זו נבנתה למטרות תרגול בלבד של עלויות שיפוצים בשיטת BRRRR</p>
-    <p style="margin-top:14px;color:var(--muted);font-size:.85rem">להצעות לשיפור ניתן לפנות לגיא פוליצר</p>
-    <p><a href="mailto:guy.poli@gmail.com">guy.poli@gmail.com</a></p>
-    <button class="about-close" onclick="document.getElementById('aboutOverlay').classList.remove('open')">סגור</button>
+    <h2>About This App</h2>
+    <p>This application is a professional simulation tool designed for practicing renovation cost estimations within the <strong style="color:var(--orange)">BRRRR strategy</strong> (Buy, Rehab, Rent, Refinance, Repeat).</p>
+    <p style="margin-top:12px">It was developed for personal educational purposes as part of <strong>Michael Assido's</strong> US Real Estate Investment Training Program.</p>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <p style="color:var(--muted);font-size:.82rem">Developer</p>
+      <p style="font-weight:600;margin-top:2px">Guy Politzer</p>
+      <p style="margin-top:4px"><a href="mailto:guy.poli@gmail.com">guy.poli@gmail.com</a></p>
+    </div>
+    <button class="about-close" onclick="document.getElementById('aboutOverlay').classList.remove('open')">Close</button>
   </div>
 </div>
 
@@ -2944,5 +2952,8 @@ build();
 buildPermits();
 initProjectDir().then(updateFolderUI);
 </script>
+<footer class="site-footer">
+  <p><strong>Disclaimer:</strong> All calculations, estimates, and data points provided by this application are for informational and educational purposes only and do not constitute financial, investment, or legal advice. Real-world construction costs vary significantly based on location, material quality, contractor labor rates, and market conditions. The developer, <strong>Guy Politzer</strong>, assumes no liability for any financial decisions made based on this tool. Always conduct your own due diligence and obtain formal quotes from licensed professionals.</p>
+</footer>
 </body>
 </html>
