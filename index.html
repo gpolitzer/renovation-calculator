@@ -1128,11 +1128,46 @@ const ROWS=[
     defNote:'Property survey and home inspection (מדידת מגרש ובדיקת בית).\n• Survey (מדידה) — maps the property boundaries and confirms lot size.\n• Home inspection (בדיקת בית) — professional inspector checks structure, roof, plumbing, electrical, HVAC, etc.\n\nThis is a one-time cost before purchasing. Essential for identifying hidden problems.'},
 
   {cat:'GENERAL',item:'Insurance',gcExcl:true,split:0,
-    dp:{t:0},
-    cT:(p,k)=>k.t,
-    fT:(p,k,i)=>`Fixed = $${pIn(i,'t',k.t)}`,
-    d:'Insurance costs',
-    defNote:'Insurance (ביטוח) costs.\nCovers property insurance during renovation and/or landlord insurance.\nSet to $0 by default — enter your actual quote.\nIn Florida, insurance can be expensive due to hurricane risk (סיכון הוריקן).'},
+    dp:{monthly:475,setup:250,months:1},
+    cT:(p,k)=>Math.round(k.monthly*k.months+k.setup),
+    fT:(p,k,i)=>{
+      const total=Math.round(k.monthly*k.months+k.setup);
+      return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Coverage Months</div>`+
+            `${pIn(i,'months',k.months,45)}`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Monthly Premium</div>`+
+            `$${pIn(i,'monthly',k.monthly,55)}`+
+          `</div>`+
+          `<div>`+
+            `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Setup Fee</div>`+
+            `$${pIn(i,'setup',k.setup,55)}`+
+          `</div>`+
+        `</div>`+
+        `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2;margin-bottom:10px">`+
+          `<div style="display:flex;justify-content:space-between">`+
+            `<span>${k.months} month${k.months!==1?'s':''} × $${k.monthly}/mo <span style="color:var(--muted);font-size:.76rem">(Vacant / Builders Risk)</span></span>`+
+            `<strong>${fmt(k.monthly*k.months)}</strong>`+
+          `</div>`+
+          `<div style="display:flex;justify-content:space-between">`+
+            `<span>Policy setup fee</span>`+
+            `<strong>${fmt(k.setup)}</strong>`+
+          `</div>`+
+          `<div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700">`+
+            `<span>Total</span>`+
+            `<span style="color:var(--orange2);font-size:.95rem">${fmt(total)}</span>`+
+          `</div>`+
+        `</div>`+
+        `<div style="font-size:.75rem;line-height:1.6;padding:10px 12px;border-radius:6px;background:rgba(255,160,0,.08);border:1px solid rgba(255,160,0,.2)">`+
+          `⚠️ <b>Lender requirement:</b> Policy must remain "Vacant" until Tenant Lease is signed.<br>`+
+          `💡 <b>Tip:</b> Switch to a Landlord Policy (DP-3) immediately upon occupancy — saves ~60% on premium.`+
+        `</div>`;
+    },
+    h:(p,k)=>`${k.months} mo × $${k.monthly}/mo + $${k.setup} setup = ${fmt(k.monthly*k.months+k.setup)}`,
+    d:'Vacant / Builders Risk Insurance | $450–$500/mo + $250 setup | adjustable months',
+    defNote:'Insurance (ביטוח נכס ריק / Builders Risk) — Florida.\n\nסוג הפוליסה: Vacant Property / Builders Risk — מכסה נכס שאינו מאוכלס במהלך שיפוץ.\n\nPRICING:\n• Monthly Premium (פרמיה חודשית): $450–$500/month — ברירת מחדל $475 (אמצע הטווח).\n• Policy Setup Fee (דמי פתיחת פוליסה): $250 — חד פעמי.\n• Coverage Months (חודשי כיסוי): ברירת מחדל 1 — ניתן לשינוי ידני.\n\n⚠️ LENDER REQUIREMENT: הפוליסה חייבת להישאר "Vacant" עד לחתימת חוזה שכירות.\n\n💡 SWITCH POLICY: ברגע שדייר נכנס — עבור מיד ל-Landlord Policy (DP-3). חוסך ~60% על הפרמיה.\n\nROW EXCLUDED FROM GC MARKUP.'},
 
   {cat:'GENERAL',item:'Boots on the Ground',gcExcl:true,split:0,
     dp:{mode:1,visitPr:167,visits:12,weekPr:500,weeks:4,monthPr:2000,months:1},
