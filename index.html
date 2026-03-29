@@ -1785,7 +1785,7 @@ let customByBuiltin={};
 CATS.forEach(c=>customByBuiltin[c]=[]);
 let miscOn=true,miscExp=false;
 let miscMin=5,miscMax=10; /* range inputs (%) — recommended 5–10 */
-let miscManual=false,miscManualRate=7.5; /* manual override mode */
+let miscManual=true,miscManualRate=7.5; /* manual override mode — default 7.5%, recommended range 5–10% */
 let miscRate=0.075; /* derived by syncMisc() */
 function syncMisc(){
   if(miscManual){
@@ -1933,6 +1933,17 @@ function renderMiscCategory(tb){
   htr.appendChild(htd);
   tb.appendChild(htr);
 
+  /* Subtotal before misc */
+  const str=document.createElement('tr');
+  str.innerHTML=`
+    <td colspan="4" style="padding:7px 14px 7px 0;text-align:right;color:var(--muted);font-size:.82rem;letter-spacing:.02em;">
+      סה"כ עלויות שיפוץ לפני מגוון &nbsp;|&nbsp; <span style="opacity:.7">Subtotal before Misc</span>
+    </td>
+    <td class="total-cell" style="padding:7px 0;border-top:1px solid var(--border);">
+      <span id="misc-base-val" style="font-variant-numeric:tabular-nums;color:var(--fg)">—</span>
+    </td>`;
+  tb.appendChild(str);
+
   /* Misc row */
   const mtr=document.createElement('tr');
   mtr.id='misc-row';
@@ -1957,7 +1968,7 @@ function renderMiscCategory(tb){
   if(miscManual){
     const _mv=+(miscManualRate).toFixed(1);
     _inputUI=`${pIn(-1,'_miscManualRate',_mv,55).replace('oninput="eP(-1','oninput="miscManualRate=parseFloat(this.value)||0;syncMisc();calc();void(0')} %`;
-    _inputUI=`<input type="number" class="param-input" value="${_mv}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscManualRate=parseFloat(this.value)||0;syncMisc();calc();">%`;
+    _inputUI=`<input type="number" class="param-input" value="${_mv}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscManualRate=parseFloat(this.value)||0;syncMisc();calc();">% &nbsp;<span style="color:var(--muted);font-style:italic">recommended 5–10%</span>`;
   }else{
     const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
     _inputUI=`<input type="number" class="param-input" value="${_minA}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscMin=parseFloat(this.value)||0;syncMisc();calc();">% &nbsp;–&nbsp; <input type="number" class="param-input" value="${_maxA}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscMax=parseFloat(this.value)||0;syncMisc();calc();">% &nbsp;→ avg <strong style="color:var(--orange2)">${_avgA}%</strong> &nbsp;<span style="color:var(--muted);font-style:italic">recommended 5–10%</span>`;
@@ -2138,6 +2149,10 @@ function calc(){
   }
 
   const base=gcHardTotal+gcFeeAmt+ownedTotal+botgTotal+overheadTotal;
+
+  /* Subtotal display before misc row */
+  const miscBaseEl=$('misc-base-val');
+  if(miscBaseEl)miscBaseEl.textContent=fmt(base);
 
   /* Miscellaneous — % of full subtotal (incl. GC markup) */
   const misc=miscOn?Math.round(base*miscRate):0;
