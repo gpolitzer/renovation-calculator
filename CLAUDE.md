@@ -101,6 +101,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 |---|---|---|---|
 | Replacing a Tiled Roof | 1 | ON | `r` ($/sqft=7), `lab` (fixed=2000) |
 | Sealing a Metal Roof (GacoRoof) | 0 | **OFF** | `mode` (0=Full Restoration / 1=Targeted Sealing), `rfac`=1.15, `pailCost`=320, `cov`=250, `anc`=0.175, `labType` (0=per sqft / 1=hourly), `labRate`=2, `labHrRate`=65, `labHrs`=10, `subMode` (0=standalone / 1=part of project), `standalone`=400, `partOf`=200 |
+| Gutter Installation | 0 | ON | `stories` (1/2), `wastePct`=0.10, `contPct`=0.05, `miters`=4, `gutRate`=6.25/LF, `mitRate`=15, `dsRate1`=74 (1-story), `dsRate2`=125 (2-story), `splRate`=5 · baseLF=√sqft×2.6, downspouts=⌈baseLF/40⌉, elbows=3/downspout |
 | Tree Removal | 0 | ON | `trees`, `size` (0=small/1=med/2=large) |
 | Driveway | 1 | ON | `tier` (0=Minor $300–$700 / 1=Moderate $1,500–$3,000 / 2=Major $2,500–$5,500), `sqft`=40, `jobRate`=10 ($/sqft), `matCost`=300 ($150–$450 range) · Minor default=$700 |
 
