@@ -1449,16 +1449,11 @@ const ROWS=[
 
   // ── INSURANCE ──
   {cat:'INSURANCE',item:'Vacant Property Insurance',split:0,gcExcl:true,
-    dp:{tier:1,monthly:500,setup:250,months:3},
+    dp:{monthly:475,setup:250,months:1},
     cT:(p,k)=>Math.round(k.monthly*k.months+k.setup),
     fT:(p,k,i)=>{
-      const t=Math.round(k.tier||0);
       const total=Math.round(k.monthly*k.months+k.setup);
-      const tierSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="(function(v){var m=[2,3,6][v];st[${i}].k.tier=+v;st[${i}].k.months=m;build();})(this.value)"><option value="0"${t===0?' selected':''}>🔨 Light Rehab — 2 months (1 rehab + 1 leasing)</option><option value="1"${t===1?' selected':''}>🏗️ Standard Rehab — 3 months (2 rehab + 1 leasing)</option><option value="2"${t===2?' selected':''}>🏚️ Heavy / Gut Rehab — 6 months (5 rehab + 1 leasing)</option></select>`;
-      return `<div style="margin-bottom:10px">`+
-        `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Rehab Duration</div>`+
-        tierSel+`</div>`+
-        `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">`+
+      return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">`+
           `<div>`+
             `<div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Coverage Months</div>`+
             `${pIn(i,'months',k.months,45)}`+
@@ -1474,7 +1469,7 @@ const ROWS=[
         `</div>`+
         `<div style="background:rgba(0,0,0,.2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:2;margin-bottom:10px">`+
           `<div style="display:flex;justify-content:space-between">`+
-            `<span>${k.months} months × $${k.monthly}/mo <span style="color:var(--muted);font-size:.76rem">(Vacant / Builders Risk)</span></span>`+
+            `<span>${k.months} month${k.months!==1?'s':''} × $${k.monthly}/mo <span style="color:var(--muted);font-size:.76rem">(Vacant / Builders Risk)</span></span>`+
             `<strong>${fmt(k.monthly*k.months)}</strong>`+
           `</div>`+
           `<div style="display:flex;justify-content:space-between">`+
@@ -1491,9 +1486,9 @@ const ROWS=[
           `💡 <b>Tip:</b> Switch to a Landlord Policy (DP-3) immediately upon occupancy — saves ~60% on premium.`+
         `</div>`;
     },
-    h:(p,k)=>`${k.months} months × $${k.monthly}/mo + $${k.setup} setup = ${fmt(k.monthly*k.months+k.setup)}`,
-    d:'Vacant / Builders Risk Insurance | Florida | $500/mo + $250 setup | tier-based duration',
-    defNote:'Vacant Property Insurance (ביטוח נכס ריק / Builders Risk) — Florida.\n\nסוג הפוליסה: Vacant Property / Builders Risk — מכסה נכס שאינו מאוכלס במהלך שיפוץ.\n\nPRICING:\n• Monthly Premium (פרמיה חודשית): $500/month — סטנדרטי לנכסי פלורידה.\n• Policy Setup Fee (דמי פתיחת פוליסה): $250 — חד פעמי.\n\nDURATION TIERS (זמן שיפוץ + חודש אחד למציאת דייר):\n• Light (קל): 2 months = 1 month rehab + 1 month leasing buffer\n• Standard (רגיל): 3 months = 2 months rehab + 1 month leasing buffer\n• Heavy (כבד): 6 months = 5 months rehab + 1 month leasing buffer\n\n⚠️ LENDER REQUIREMENT: הפוליסה חייבת להישאר "Vacant" עד לחתימת חוזה שכירות. זו דרישת המלווה (lender requirement).\n\n💡 SWITCH POLICY: ברגע שדייר נכנס — עבור מיד ל-Landlord Policy (DP-3). זה חוסך ~60% על הפרמיה החודשית ($200–$250/month במקום $500).\n\nROW EXCLUDED FROM GC MARKUP — ביטוח אינו נכלל בחישוב עמלת קבלן.'},
+    h:(p,k)=>`${k.months} mo × $${k.monthly}/mo + $${k.setup} setup = ${fmt(k.monthly*k.months+k.setup)}`,
+    d:'Vacant / Builders Risk Insurance | Florida | $450–$500/mo + $250 setup | adjustable months',
+    defNote:'Vacant Property Insurance (ביטוח נכס ריק / Builders Risk) — Florida.\n\nסוג הפוליסה: Vacant Property / Builders Risk — מכסה נכס שאינו מאוכלס במהלך שיפוץ.\n\nPRICING:\n• Monthly Premium (פרמיה חודשית): $450–$500/month — ברירת מחדל $475 (אמצע הטווח).\n• Policy Setup Fee (דמי פתיחת פוליסה): $250 — חד פעמי.\n• Coverage Months (חודשי כיסוי): ברירת מחדל 1 — ניתן לשינוי ידני.\n\n⚠️ LENDER REQUIREMENT: הפוליסה חייבת להישאר "Vacant" עד לחתימת חוזה שכירות. זו דרישת המלווה (lender requirement).\n\n💡 SWITCH POLICY: ברגע שדייר נכנס — עבור מיד ל-Landlord Policy (DP-3). זה חוסך ~60% על הפרמיה החודשית ($200–$250/month במקום $475).\n\nROW EXCLUDED FROM GC MARKUP — ביטוח אינו נכלל בחישוב עמלת קבלן.'},
 
   // ── FLOORING ──
   {cat:'FLOORING',item:'Flooring',split:0,

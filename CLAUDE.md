@@ -95,7 +95,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 ### INSURANCE (gcExcl)
 | Item | split | Default | Key params |
 |---|---|---|---|
-| Vacant Property Insurance | 0 | ON | `tier` (0=light 2mo/1=standard 3mo/2=heavy 6mo), `monthly`=500, `setup`=250, `months` (auto by tier) |
+| Vacant Property Insurance | 0 | ON | `monthly`=475 ($450–$500 range midpoint), `setup`=250, `months`=1 (adjustable) |
 
 ### EXTERIOR
 | Item | split | Default | Key params |
