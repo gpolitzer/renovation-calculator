@@ -43,9 +43,10 @@ tr.cat-header td{padding:0}
 .cat-del-btn:hover{opacity:1}
 
 /* Disabled */
-tr.disabled td{opacity:.35}
-tr.disabled td:nth-child(2){opacity:1}
-tr.disabled .money-input{pointer-events:none;opacity:.3}
+tr.disabled td{color:#6b8aaa}
+tr.disabled td:nth-child(2){color:inherit}
+tr.disabled .total-cell{color:#6b8aaa!important}
+tr.disabled .money-input{pointer-events:none;color:#6b8aaa;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
 
 /* Toggle */
 .toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 14px;border-radius:20px;border:none;cursor:pointer;font-size:.78rem;font-weight:700;transition:all .2s}
