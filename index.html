@@ -1754,12 +1754,19 @@ let customCats=[];
 let customByBuiltin={};
 CATS.forEach(c=>customByBuiltin[c]=[]);
 let miscOn=true;
-let miscRate=0.075; /* 7.5% default (range 5–10%) */
+let miscMin=5,miscMax=10; /* range inputs (%) — recommended 5–10 */
+let miscRate=0.075; /* derived: (miscMin+miscMax)/200 */
+function syncMisc(){
+  miscMin=Math.max(0,Math.min(50,miscMin));
+  miscMax=Math.max(miscMin,Math.min(50,miscMax));
+  miscRate=(miscMin+miscMax)/200;
+}
 let _pmBase=0; // legacy — kept for any saved projects that reference it
 let _gcBase=0; // Hard Cost base for GC markup (non-gcExcl rows)
 
 /* ═══════ BUILD ═══════ */
 function build(){
+  syncMisc();
   const tb=$('tbody');
   tb.innerHTML='';
   const p=getP();
@@ -1886,7 +1893,9 @@ function renderMiscCategory(tb){
   htr.className='cat-header';
   const htd=document.createElement('td');
   htd.colSpan=5;
-  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(<input type="number" value="${+(miscRate*100).toFixed(1)}" min="5" max="10" step="0.5" style="width:42px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:.72rem;text-align:center" onchange="miscRate=Math.min(0.10,Math.max(0.05,parseFloat(this.value)/100||0.075));build();">% of subtotal · range 5–10%)</span></div>`;
+  const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
+  const _iStyle='width:38px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:.72rem;text-align:center';
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(deviation range: <input type="number" value="${_minA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" value="${_maxA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">% &nbsp;→ avg <strong style="color:var(--fg)">${_avgA}%</strong> &nbsp;<span style="color:var(--orange2);font-style:italic">recommended 5–10%</span>)</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
 
@@ -2002,6 +2011,7 @@ function delCategory(cci){customCats.splice(cci,1);build();}
 
 /* ═══════ CALCULATION ═══════ */
 function calc(){
+  syncMisc();
   const p=getP();
   const gcFeeIdx=ROWS.findIndex(r=>r.item==='GC Fee');
   let gcHardTotal=0, ownedTotal=0, botgTotal=0, overheadTotal=0;
@@ -2081,7 +2091,7 @@ function calc(){
     `<div class="summary-row"><span>Boots on the Ground</span><span>${fmt(botgTotal)}</span></div>`+
     `<div class="summary-row"><span>Overhead <span style="font-size:.78rem;color:var(--muted)">(survey / insurance)</span></span><span>${fmt(overheadTotal)}</span></div>`+
     `<div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px"><span>Subtotal</span><span>${fmt(base)}</span></div>`+
-    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(${+(miscRate*100).toFixed(1)}%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
+    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(${miscMin}%–${miscMax}% → avg ${+(miscRate*100).toFixed(1)}%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
     `<div class="summary-row"><span><strong>TOTAL RENOVATION COST</strong></span><span><strong>${fmt(grand)}</strong></span></div>`;
 }
 
@@ -2095,7 +2105,7 @@ let editDefaultsMode=false;
 function buildStateSnapshot(){
   return{
     st:st.map((s,i)=>({...s,_cat:ROWS[i]?.cat,_item:ROWS[i]?.item})),
-    customByBuiltin,customCats,miscOn,miscRate,
+    customByBuiltin,customCats,miscOn,miscMin,miscMax,miscRate,
     permits:permitsState,
     prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value}
   };
@@ -2183,7 +2193,11 @@ function loadState(){
 
 
     if(data.miscOn!==undefined)miscOn=data.miscOn;
-    if(data.miscRate!==undefined)miscRate=Math.min(0.10,Math.max(0.05,data.miscRate));
+    /* Range inputs — backward compat: if old file only has miscRate, derive min/max */
+    if(data.miscMin!==undefined)miscMin=parseFloat(data.miscMin)||5;
+    if(data.miscMax!==undefined)miscMax=parseFloat(data.miscMax)||10;
+    else if(data.miscRate!==undefined){const r=+(data.miscRate*100).toFixed(1);miscMin=r;miscMax=r;}
+    syncMisc();
 
     /* Restore permits */
     if(data.permits&&Array.isArray(data.permits)){
