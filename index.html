@@ -1754,6 +1754,7 @@ let customCats=[];
 let customByBuiltin={};
 CATS.forEach(c=>customByBuiltin[c]=[]);
 let miscOn=true;
+let miscRate=0.075; /* 7.5% default (range 5–10%) */
 let _pmBase=0; // legacy — kept for any saved projects that reference it
 let _gcBase=0; // Hard Cost base for GC markup (non-gcExcl rows)
 
@@ -1885,7 +1886,7 @@ function renderMiscCategory(tb){
   htr.className='cat-header';
   const htd=document.createElement('td');
   htd.colSpan=5;
-  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(15% of subtotal)</span></div>`;
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(<input type="number" value="${+(miscRate*100).toFixed(1)}" min="5" max="10" step="0.5" style="width:42px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:.72rem;text-align:center" onchange="miscRate=Math.min(0.10,Math.max(0.05,parseFloat(this.value)/100||0.075));build();">% of subtotal · range 5–10%)</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
 
@@ -2065,8 +2066,8 @@ function calc(){
 
   const base=gcHardTotal+gcFeeAmt+ownedTotal+botgTotal+overheadTotal;
 
-  /* Miscellaneous 15% of full subtotal (incl. GC markup) */
-  const misc=miscOn?Math.round(base*.15):0;
+  /* Miscellaneous — % of full subtotal (incl. GC markup) */
+  const misc=miscOn?Math.round(base*miscRate):0;
   const miscEl=$('misc-total');
   if(miscEl)miscEl.textContent=miscOn?fmt(misc):'$0';
 
@@ -2080,7 +2081,7 @@ function calc(){
     `<div class="summary-row"><span>Boots on the Ground</span><span>${fmt(botgTotal)}</span></div>`+
     `<div class="summary-row"><span>Overhead <span style="font-size:.78rem;color:var(--muted)">(survey / insurance)</span></span><span>${fmt(overheadTotal)}</span></div>`+
     `<div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px"><span>Subtotal</span><span>${fmt(base)}</span></div>`+
-    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(15%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
+    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(${+(miscRate*100).toFixed(1)}%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
     `<div class="summary-row"><span><strong>TOTAL RENOVATION COST</strong></span><span><strong>${fmt(grand)}</strong></span></div>`;
 }
 
@@ -2094,7 +2095,7 @@ let editDefaultsMode=false;
 function buildStateSnapshot(){
   return{
     st:st.map((s,i)=>({...s,_cat:ROWS[i]?.cat,_item:ROWS[i]?.item})),
-    customByBuiltin,customCats,miscOn,
+    customByBuiltin,customCats,miscOn,miscRate,
     permits:permitsState,
     prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value}
   };
@@ -2182,6 +2183,7 @@ function loadState(){
 
 
     if(data.miscOn!==undefined)miscOn=data.miscOn;
+    if(data.miscRate!==undefined)miscRate=Math.min(0.10,Math.max(0.05,data.miscRate));
 
     /* Restore permits */
     if(data.permits&&Array.isArray(data.permits)){
@@ -2337,12 +2339,12 @@ function exportData(){
     if(catTotals[cc.name]===undefined)catTotals[cc.name]=0;
     cc.rows.forEach(cr=>{const t=crTot(cr);sub+=t;catTotals[cc.name]+=t;});
   });
-  const misc=miscOn?Math.round(sub*.15):0;
+  const misc=miscOn?Math.round(sub*miscRate):0;
   if(miscOn){catTotals['MISCELLANEOUS']=(catTotals['MISCELLANEOUS']||0)+misc;sub+=misc;}
   const grand=sub;
 
   const data={
-    st,customByBuiltin,customCats,miscOn,
+    st,customByBuiltin,customCats,miscOn,miscRate,
     permits:permitsState,
     prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value},
     computed:{sub,misc,grand,catTotals},
