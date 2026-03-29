@@ -189,7 +189,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 |---|---|---|---|
 | Survey + Inspection | 0 | ON | flat fee |
 | Insurance | 0 | ON | default $0 — enter actual quote |
-| Boots on the Ground | 0 | ON | `mode` (per-visit/weekly/monthly) — NOT subject to GC markup |
+| Boots on the Ground | 0 | **OFF** | `mode` (per-visit/weekly/monthly) — NOT subject to GC markup |
 | GC Fee | 0 | ON | `rate`=15% applied to `_gcBase` |
 
 ## Permit Tracking (5 built-in)
