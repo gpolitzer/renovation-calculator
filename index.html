@@ -49,7 +49,7 @@ tr.disabled .total-cell{color:#6b8aaa!important}
 tr.disabled .money-input{pointer-events:none;color:#6b8aaa;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
 
 /* Toggle */
-.toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 14px;border-radius:20px;border:none;cursor:pointer;font-size:.78rem;font-weight:700;transition:all .2s}
+.toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s}
 .toggle-btn.yes{background:rgba(0,200,83,.2);color:var(--yes);border:2px solid rgba(0,200,83,.5)}
 .toggle-btn.no{background:rgba(255,82,82,.2);color:var(--no);border:2px solid rgba(255,82,82,.5)}
 .toggle-btn:hover{transform:scale(1.05);filter:brightness(1.2)}
@@ -64,6 +64,7 @@ tr.disabled .money-input{pointer-events:none;color:#6b8aaa;border-color:rgba(107
 /* Item cell */
 .item-cell{display:flex;align-items:center;gap:6px}
 .item-info{display:flex;flex-direction:column;min-width:0}
+.item-info>span:first-child,.item-cell>span{font-size:.94rem}
 .item-hint{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.3;font-style:italic;letter-spacing:.1px}
 .expand-btn{background:none;border:1px solid var(--border);color:var(--muted);width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:.65rem;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-weight:700}
 .expand-btn:hover,.expand-btn.open{color:var(--orange);border-color:var(--orange);background:rgba(233,69,96,.1)}
@@ -82,7 +83,7 @@ tr.disabled .money-input{pointer-events:none;color:#6b8aaa;border-color:rgba(107
 .fp-left{flex:1;min-width:0;overflow:hidden}
 .fp-right{width:380px;flex-shrink:0;display:flex;flex-direction:column;min-width:0}
 .fp-right .fp-label{margin-bottom:6px}
-.fp-notes{flex:1;min-height:80px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:vertical;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-y:auto;box-sizing:border-box}
+.fp-notes{flex:1;min-height:60px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:none;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-x:hidden;overflow-y:hidden;touch-action:pan-y;box-sizing:border-box}
 .fp-notes:focus{outline:none;border-color:var(--orange);background:rgba(0,0,0,.35)}
 .fp-notes::placeholder{color:var(--muted);font-style:italic}
 .fp-desc{color:var(--muted);font-size:.78rem;margin-bottom:8px}
@@ -1932,7 +1933,7 @@ function renderFormulaRow(tb,r,i,p){
   }
   if(showRst) leftH+=`<div style="font-size:.75rem;color:var(--orange2);margin-top:4px">⚠ Manual override active — click ↺ to reset</div>`;
   const notesVal=esc(s.notes||'');
-  const rightH=`<div class="fp-right"><div class="fp-label">📝 Notes</div><textarea class="fp-notes" id="notes-${i}" placeholder="Add notes, context, tips..." oninput="eN(${i},this.value)">${notesVal}</textarea></div>`;
+  const rightH=`<div class="fp-right"><div class="fp-label">📝 Notes</div><textarea class="fp-notes" id="notes-${i}" placeholder="Add notes, context, tips..." oninput="eN(${i},this.value);autoExpand(this)">${notesVal}</textarea></div>`;
   ftd.innerHTML=`<div class="formula-panel${s.exp?' open':''}"><div class="fp-layout"><div class="fp-left" id="fpl-${i}">${leftH}</div>${rightH}</div></div>`;
   ftr.appendChild(ftd);
   tb.appendChild(ftr);
@@ -2019,7 +2020,7 @@ function esc(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
 
 /* ═══════ FORMULA ROW INTERACTIONS ═══════ */
 function togOn(i){st[i].on=!st[i].on;build();}
-function togExp(i){st[i].exp=!st[i].exp;build();}
+function togExp(i){st[i].exp=!st[i].exp;build();const ta=document.getElementById('notes-'+i);if(ta)autoExpand(ta);}
 function eF(i,f,v){
   st[i][f]=(v===''?'':v);
   calc();
@@ -2031,6 +2032,7 @@ function rstRow(i){st[i].oM='';st[i].oL='';st[i].oT='';st[i].k={...ROWS[i].dp};b
 
 /* ═══════ NOTES EDITING ═══════ */
 function eN(i,v){st[i].notes=v;saveState();}
+function autoExpand(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
 /* ═══════ PARAM EDITING ═══════ */
 function ePLite(i,name,v){
