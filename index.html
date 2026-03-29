@@ -166,16 +166,19 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   /* Hide Mat/Labor columns on small phones — show only Total */
   thead th:nth-child(3),thead th:nth-child(4),
   tbody td:nth-child(3),tbody td:nth-child(4){display:none}
-  /* Item column: shrink to fit, text wraps */
-  tbody td:first-child,thead th:first-child{max-width:180px;word-break:break-word}
+  /* Item col: expand to fill; toggle + total: shrink to content */
+  table{table-layout:fixed}
+  tbody td:first-child,thead th:first-child{width:auto;word-break:break-word}
+  tbody td:nth-child(2),thead th:nth-child(2){width:1%;white-space:nowrap}
+  tbody td:nth-child(5),thead th:nth-child(5){width:1%;white-space:nowrap}
+  .money-input{width:60px}
 }
 @media(max-width:400px){
   .container{padding:8px 8px}
   table{min-width:0}
   thead th,tbody td{padding:5px 3px;font-size:.74rem}
-  .money-input{width:60px;font-size:.75rem;padding:4px 4px}
-  .toggle-btn{padding:2px 8px;font-size:.71rem}
-  tbody td:first-child,thead th:first-child{max-width:150px}
+  .money-input{width:54px;font-size:.75rem;padding:4px 3px}
+  .toggle-btn{padding:2px 7px;font-size:.71rem}
 }
 
 /* Edit-defaults banner */
