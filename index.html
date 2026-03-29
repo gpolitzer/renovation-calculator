@@ -639,7 +639,7 @@ const ROWS=[
     defNote:'Tree removal (כריתת עצים) cost.\nIncludes: cutting the tree (כריתה), stump grinding (שחיקת גדם), and debris haul off (פינוי פסולת).\n\nDROPDOWN — Tree Size: pick Small/Medium/Large based on tree height. Larger trees cost significantly more.\nTREES field: set the number of trees to remove. Cost multiplies per tree.'},
 
   {cat:'EXTERIOR',item:'Driveway',split:1,
-    dp:{tier:0,sqft:40,jobRate:10,matCost:100},
+    dp:{tier:0,sqft:40,jobRate:10,matCost:300},
     cM:(p,k)=>k.matCost,
     cL:(p,k)=>Math.round(k.sqft*k.jobRate),
     cT:(p,k)=>Math.round(k.matCost+k.sqft*k.jobRate),
