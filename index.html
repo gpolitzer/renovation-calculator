@@ -1783,7 +1783,7 @@ let st=ROWS.map(r=>({on:r.on!==false,oM:'',oL:'',oT:'',exp:false,k:{...r.dp},not
 let customCats=[];
 let customByBuiltin={};
 CATS.forEach(c=>customByBuiltin[c]=[]);
-let miscOn=true;
+let miscOn=true,miscExp=false;
 let miscMin=5,miscMax=10; /* range inputs (%) — recommended 5–10 */
 let miscManual=false,miscManualRate=7.5; /* manual override mode */
 let miscRate=0.075; /* derived by syncMisc() */
@@ -1929,17 +1929,7 @@ function renderMiscCategory(tb){
   htr.className='cat-header';
   const htd=document.createElement('td');
   htd.colSpan=5;
-  const _piStyle='padding:2px 5px;background:rgba(233,69,96,.12);border:1px solid var(--orange);border-radius:4px;color:var(--orange2);font-family:"Courier New",monospace;font-size:.82rem;text-align:center;width:46px';
-  const _modeSel=`<select class="tree-size-sel" onchange="miscManual=this.value==='1';syncMisc();build();"><option value="0"${!miscManual?' selected':''}>Range (min – max)</option><option value="1"${miscManual?' selected':''}>Manual (exact %)</option></select>`;
-  let _modeUI;
-  if(miscManual){
-    const _mv=+(miscManualRate).toFixed(1);
-    _modeUI=`<input type="number" class="param-input" value="${_mv}" min="0" max="50" step="0.5" style="${_piStyle}" title="Exact %" onchange="miscManualRate=parseFloat(this.value)||0;syncMisc();build();">%`;
-  }else{
-    const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
-    _modeUI=`<input type="number" class="param-input" value="${_minA}" min="0" max="50" step="0.5" style="${_piStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" class="param-input" value="${_maxA}" min="0" max="50" step="0.5" style="${_piStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;→ avg <strong style="color:var(--orange2)">${_avgA}%</strong>&nbsp;<span style="color:var(--muted);font-style:italic">rec. 5–10%</span>`;
-  }
-  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.82rem;margin-left:12px">${_modeSel}&nbsp;&nbsp;${_modeUI}</span></div>`;
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
 
@@ -1947,13 +1937,38 @@ function renderMiscCategory(tb){
   const mtr=document.createElement('tr');
   mtr.id='misc-row';
   if(!miscOn)mtr.className='disabled';
+  const _expC=miscExp?'expand-btn open':'expand-btn';
+  const _rateLabel=miscManual?`${+(miscRate*100).toFixed(1)}% manual`:`${miscMin}–${miscMax}% range`;
   mtr.innerHTML=`
-    <td><div class="item-cell"><span>Miscellaneous</span></div></td>
+    <td><div class="item-cell"><button class="${_expC}" onclick="miscExp=!miscExp;build();">▶</button><span>Miscellaneous</span><span class="item-hint">${_rateLabel}</span></div></td>
     <td><button class="${miscOn?'toggle-btn yes':'toggle-btn no'}" onclick="miscOn=!miscOn;build();">${miscOn?'✓ Yes':'✗ No'}</button></td>
     <td><span style="color:var(--muted)">—</span></td>
     <td><span style="color:var(--muted)">—</span></td>
     <td class="total-cell"><span id="misc-total" style="font-variant-numeric:tabular-nums">—</span></td>`;
   tb.appendChild(mtr);
+
+  /* Misc formula panel */
+  const mftr=document.createElement('tr');
+  mftr.className='formula-row';
+  const mftd=document.createElement('td');
+  mftd.colSpan=5;
+  const _modeSel=`<select class="tree-size-sel" onchange="miscManual=this.value==='1';syncMisc();build();"><option value="0"${!miscManual?' selected':''}>Range (min – max)</option><option value="1"${miscManual?' selected':''}>Manual (exact %)</option></select>`;
+  let _inputUI;
+  if(miscManual){
+    const _mv=+(miscManualRate).toFixed(1);
+    _inputUI=`${pIn(-1,'_miscManualRate',_mv,55).replace('oninput="eP(-1','oninput="miscManualRate=parseFloat(this.value)||0;syncMisc();calc();void(0')} %`;
+    _inputUI=`<input type="number" class="param-input" value="${_mv}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscManualRate=parseFloat(this.value)||0;syncMisc();calc();">%`;
+  }else{
+    const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
+    _inputUI=`<input type="number" class="param-input" value="${_minA}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscMin=parseFloat(this.value)||0;syncMisc();calc();">% &nbsp;–&nbsp; <input type="number" class="param-input" value="${_maxA}" min="0" max="50" step="0.5" style="width:55px" onfocus="this.select()" oninput="miscMax=parseFloat(this.value)||0;syncMisc();calc();">% &nbsp;→ avg <strong style="color:var(--orange2)">${_avgA}%</strong> &nbsp;<span style="color:var(--muted);font-style:italic">recommended 5–10%</span>`;
+  }
+  const _panelInner=`
+    <div class="fp-desc">Miscellaneous — % of full subtotal (incl. GC markup). Buffer for surprises, small purchases, and items not captured elsewhere.</div>
+    <div style="margin-top:10px"><span style="color:var(--muted);font-size:.8rem">MODE</span>&nbsp; ${_modeSel}</div>
+    <div style="margin-top:10px"><span style="color:var(--muted);font-size:.8rem">${miscManual?'RATE':'RANGE'}</span>&nbsp; ${_inputUI}</div>`;
+  mftd.innerHTML=`<div class="formula-panel${miscExp?' open':''}"><div class="fp-layout"><div class="fp-left">${_panelInner}</div></div></div>`;
+  mftr.appendChild(mftd);
+  tb.appendChild(mftr);
 }
 
 function esc(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
@@ -2149,7 +2164,7 @@ let editDefaultsMode=false;
 function buildStateSnapshot(){
   return{
     st:st.map((s,i)=>({...s,_cat:ROWS[i]?.cat,_item:ROWS[i]?.item})),
-    customByBuiltin,customCats,miscOn,miscMin,miscMax,miscManual,miscManualRate,miscRate,
+    customByBuiltin,customCats,miscOn,miscExp,miscMin,miscMax,miscManual,miscManualRate,miscRate,
     permits:permitsState,
     prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value}
   };
@@ -2243,6 +2258,7 @@ function loadState(){
     else if(data.miscRate!==undefined){const r=+(data.miscRate*100).toFixed(1);miscMin=r;miscMax=r;}
     if(data.miscManual!==undefined)miscManual=!!data.miscManual;
     if(data.miscManualRate!==undefined)miscManualRate=parseFloat(data.miscManualRate)||7.5;
+    if(data.miscExp!==undefined)miscExp=!!data.miscExp;
     syncMisc();
 
     /* Restore permits */
