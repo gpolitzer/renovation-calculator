@@ -639,15 +639,19 @@ const ROWS=[
     defNote:'Tree removal (כריתת עצים) cost.\nIncludes: cutting the tree (כריתה), stump grinding (שחיקת גדם), and debris haul off (פינוי פסולת).\n\nDROPDOWN — Tree Size: pick Small/Medium/Large based on tree height. Larger trees cost significantly more.\nTREES field: set the number of trees to remove. Cost multiplies per tree.'},
 
   {cat:'EXTERIOR',item:'Driveway',split:1,
-    dp:{tier:0,sqft:500,jobRate:12.5,matCost:250},
+    dp:{tier:0,sqft:40,jobRate:10,matCost:100},
     cM:(p,k)=>k.matCost,
     cL:(p,k)=>Math.round(k.sqft*k.jobRate),
     cT:(p,k)=>Math.round(k.matCost+k.sqft*k.jobRate),
-    fM:(p,k,i)=>`Material (flat): $${pIn(i,'matCost',k.matCost,60)}`,
+    fM:(p,k,i)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      const tSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="ePSel(${i},'tier',this.value)"><option value="0"${t===0?' selected':''}>Minor — Clean, Fill Cracks, Seal ($300–$700)</option><option value="1"${t===1?' selected':''}>Moderate — Resurfacing/Overlay ($1,500–$3,000)</option><option value="2"${t===2?' selected':''}>Major — Structural/Patching ($2,500–$5,500)</option></select>`;
+      return tSel+`<div style="margin-top:10px">Material (flat): $${pIn(i,'matCost',k.matCost,60)}</div>`;
+    },
     fL:(p,k,i)=>`${Math.round(k.sqft)} sqft × $${pIn(i,'jobRate',k.jobRate,60)}/sqft = ${fmt(Math.round(k.sqft*k.jobRate))}`,
-    h:(p,k)=>`Tier ${['Minor','Moderate','Major'][Math.min(2,Math.max(0,Math.round(k.tier)))]} · ${fmt(k.matCost)} materials + ${fmt(Math.round(k.sqft*k.jobRate))} job`,
-    d:'Driveway repair/resurfacing — tiered pricing by scope',
-    defNote:'Driveway (מדרך) repair cost.\n\nTIER SELECTION:\n● Minor (ניקיון, סתם סדקים) — Clean, Fill Cracks, Seal: $300–$700\n  Cleaning, crack repair, seal coating only.\n\n● Moderate (שחזור/ציפוי) — Resurfacing/Overlay: $1,500–$3,000\n  Resurfacing (new top layer) or overlay application.\n\n● Major (הרמה מובנית/טלאים) — Structural Lifting/Section Patching: $2,500–$5,500\n  Structural lifting (raising sunken sections), section patching, or combination repairs.\n\nEDIT MANUALLY:\n• Material cost ($): Default $150–$350 range depending on tier/materials.\n• Job rate ($/sqft): Default $10–$15 per sqft for labor (adjust by tier).\n• Total sqft: Driveway square footage.'},
+    h:(p,k)=>{const t=['Minor','Moderate','Major'][Math.min(2,Math.max(0,Math.round(k.tier)))];return `${t} · ${fmt(Math.round(k.matCost+k.sqft*k.jobRate))} total`;},
+    d:'Driveway repair — tiered by scope + editable sqft & rates',
+    defNote:'Driveway (מדרך) repair cost.\n\nTIER RANGES (reference):\n● Minor (ניקיון, סתם סדקים) — Clean, Fill Cracks, Seal: $300–$700\n● Moderate (שחזור/ציפוי) — Resurfacing/Overlay: $1,500–$3,000\n● Major (הרמה מובנית/טלאים) — Structural/Patching: $2,500–$5,500\n\nDEFAULT for Minor: 40 sqft × $10/sqft labor + $100 materials = $500 total\n\nEDIT MANUALLY:\n• Material cost ($): adjust for actual material expenses\n• Job rate ($/sqft): $10–$15 range; adjust per actual labor rates\n• Total sqft: patch/repair square footage'},
 
   {cat:'TERMITE',item:'Termite Treatment',split:0,
     dp:{method:0,tent:0,base0:1500,rate0:1.33,base1:-175,rate1:1.50,tbase:750,trate:3.00,annual:425},
