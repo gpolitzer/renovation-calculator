@@ -685,19 +685,65 @@ const ROWS=[
     defNote:'Tree removal (כריתת עצים) cost.\nIncludes: cutting the tree (כריתה), stump grinding (שחיקת גדם), and debris haul off (פינוי פסולת).\n\nDROPDOWN — Tree Size: pick Small/Medium/Large based on tree height. Larger trees cost significantly more.\nTREES field: set the number of trees to remove. Cost multiplies per tree.'},
 
   {cat:'EXTERIOR',item:'Driveway',split:1,
-    dp:{tier:0,sqft:40,jobRate:10,matCost:300},
-    cM:(p,k)=>k.matCost,
-    cL:(p,k)=>Math.round(k.sqft*k.jobRate),
-    cT:(p,k)=>Math.round(k.matCost+k.sqft*k.jobRate),
+    dp:{tier:0,totalSqft:500,repairSqft:45,labRate:12.50,matFlat:150,resLabRate:6.50,resMatRate:1.50,repLabRate:15,repMatRate:5.50,wastePct:0.10,contPct:0.05},
+    cM:(p,k)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      let mat=0;
+      if(t===0) mat=k.matFlat;
+      else if(t===1) mat=k.totalSqft*(k.resMatRate||1.50);
+      else mat=k.totalSqft*(k.repMatRate||5.50);
+      return Math.round(mat*(1+(k.wastePct||0.10)));
+    },
+    cL:(p,k)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      if(t===0) return Math.round((k.repairSqft||45)*(k.labRate||12.50));
+      if(t===1) return Math.round(k.totalSqft*(k.resLabRate||6.50));
+      return Math.round(k.totalSqft*(k.repLabRate||15));
+    },
+    cT:(p,k)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      let lab=0,mat=0;
+      if(t===0){lab=(k.repairSqft||45)*(k.labRate||12.50);mat=k.matFlat||150;}
+      else if(t===1){lab=k.totalSqft*(k.resLabRate||6.50);mat=k.totalSqft*(k.resMatRate||1.50);}
+      else{lab=k.totalSqft*(k.repLabRate||15);mat=k.totalSqft*(k.repMatRate||5.50);}
+      const matW=mat*(1+(k.wastePct||0.10));
+      return Math.round((lab+matW)*(1+(k.contPct||0.05)));
+    },
     fM:(p,k,i)=>{
       const t=Math.min(2,Math.max(0,Math.round(k.tier)));
-      const tSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="ePSel(${i},'tier',this.value)"><option value="0"${t===0?' selected':''}>Minor — Clean, Fill Cracks, Seal ($300–$700)</option><option value="1"${t===1?' selected':''}>Moderate — Resurfacing/Overlay ($1,500–$3,000)</option><option value="2"${t===2?' selected':''}>Major — Structural/Patching ($2,500–$5,500)</option></select>`;
-      return tSel+`<div style="margin-top:10px">Material (flat): $${pIn(i,'matCost',k.matCost,60)}</div>`;
+      const tSel=`<select class="tree-size-sel" id="fp-${i}-tier" onchange="ePSel(${i},'tier',this.value)"><option value="0"${t===0?' selected':''}>Tier 1 — Targeted Patch & Seal ($600–$850)</option><option value="1"${t===1?' selected':''}>Tier 2 — Full Surface Resurfacing</option><option value="2"${t===2?' selected':''}>Tier 3 — Full Replacement (Demo + Pour)</option></select>`;
+      let mat=0,matLabel='';
+      if(t===0){mat=k.matFlat||150;matLabel=`Fixed patching compound + sealant: $${pIn(i,'matFlat',k.matFlat,60)}`;}
+      else if(t===1){mat=k.totalSqft*(k.resMatRate||1.50);matLabel=`${Math.round(k.totalSqft)} sqft × $${pIn(i,'resMatRate',k.resMatRate,50)}/sqft = ${fmt(Math.round(mat))}`;}
+      else{mat=k.totalSqft*(k.repMatRate||5.50);matLabel=`${Math.round(k.totalSqft)} sqft × $${pIn(i,'repMatRate',k.repMatRate,50)}/sqft = ${fmt(Math.round(mat))}`;}
+      const matW=Math.round(mat*(1+(k.wastePct||0.10)));
+      return tSel+`<div style="margin-top:8px"><span style="color:var(--muted);font-size:.8rem">DRIVEWAY TOTAL SQFT</span>&nbsp; ${pIn(i,'totalSqft',k.totalSqft,60)}</div>`+
+        `<div style="margin-top:6px">${matLabel}</div>`+
+        `<div style="margin-top:4px;font-size:.78rem;color:var(--muted)">+${Math.round((k.wastePct||0.10)*100)}% waste → ${fmt(matW)}</div>`;
     },
-    fL:(p,k,i)=>`${Math.round(k.sqft)} sqft × $${pIn(i,'jobRate',k.jobRate,60)}/sqft = ${fmt(Math.round(k.sqft*k.jobRate))}`,
-    h:(p,k)=>{const t=['Minor','Moderate','Major'][Math.min(2,Math.max(0,Math.round(k.tier)))];return `${t} · ${fmt(Math.round(k.matCost+k.sqft*k.jobRate))} total`;},
-    d:'Driveway repair — tiered by scope + editable sqft & rates',
-    defNote:'Driveway (מדרך) repair cost.\n\nTIER RANGES (reference):\n● Minor (ניקיון, סתם סדקים) — Clean, Fill Cracks, Seal: $300–$700\n● Moderate (שחזור/ציפוי) — Resurfacing/Overlay: $1,500–$3,000\n● Major (הרמה מובנית/טלאים) — Structural/Patching: $2,500–$5,500\n\nDEFAULT for Minor: 40 sqft × $10/sqft labor + $100 materials = $500 total\n\nEDIT MANUALLY:\n• Material cost ($): adjust for actual material expenses\n• Job rate ($/sqft): $10–$15 range; adjust per actual labor rates\n• Total sqft: patch/repair square footage'},
+    fL:(p,k,i)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      if(t===0) return `<div><span style="color:var(--muted);font-size:.8rem">REPAIR AREA</span>&nbsp; ${pIn(i,'repairSqft',k.repairSqft,50)} sqft × $${pIn(i,'labRate',k.labRate,50)}/sqft = ${fmt(Math.round((k.repairSqft||45)*(k.labRate||12.50)))}</div><div style="font-size:.75rem;color:var(--muted);margin-top:3px">Note: Based on ${Math.round(k.repairSqft||45)} SQFT targeted repair area</div>`;
+      if(t===1) return `${Math.round(k.totalSqft)} sqft × $${pIn(i,'resLabRate',k.resLabRate,50)}/sqft = ${fmt(Math.round(k.totalSqft*(k.resLabRate||6.50)))}`;
+      return `${Math.round(k.totalSqft)} sqft × $${pIn(i,'repLabRate',k.repLabRate,50)}/sqft = ${fmt(Math.round(k.totalSqft*(k.repLabRate||15)))}`;
+    },
+    h:(p,k)=>{
+      const t=Math.min(2,Math.max(0,Math.round(k.tier)));
+      const tName=['Patch & Seal','Resurfacing','Full Replace'][t];
+      const total=(()=>{
+        let lab=0,mat=0;
+        if(t===0){lab=(k.repairSqft||45)*(k.labRate||12.50);mat=k.matFlat||150;}
+        else if(t===1){lab=k.totalSqft*(k.resLabRate||6.50);mat=k.totalSqft*(k.resMatRate||1.50);}
+        else{lab=k.totalSqft*(k.repLabRate||15);mat=k.totalSqft*(k.repMatRate||5.50);}
+        return Math.round((lab+mat*(1+(k.wastePct||0.10)))*(1+(k.contPct||0.05)));
+      })();
+      const sqUsed=t===0?(k.repairSqft||45):k.totalSqft;
+      const perSqft=(total/sqUsed).toFixed(2);
+      const arv=Math.round(total*1.5);
+      return `${tName} · ${fmt(total)} · $${perSqft}/sqft · ARV impact ~${fmt(arv)}`;
+    },
+    d:'Driveway repair — 3 tiers with waste/contingency buffers + ARV impact',
+    defNote:'Driveway (כביש גישה / מדרך) repair module.\n\nINPUTS:\n• Total Driveway SQFT (שטח כביש כולל): full driveway area (default 500)\n• Repair Area SQFT (שטח תיקון): targeted patch area (default 45)\n• Labor rate: $12.50/sqft (based on $10–$15 mentor range)\n\nTIER 1 — TARGETED PATCH & SEAL (טלאי ואיטום ממוקד):\nFocuses on repairing a specific section (cracks/potholes) for curb appeal.\nLabor = repair_area × $12.50/sqft · Material = $150 fixed (patching compound + sealant)\nTarget: $600–$850 for a standard 45 SQFT patch.\nBest ROI — "Critical Maintenance / Curb Appeal Fix" with minimal spend.\n\nTIER 2 — FULL SURFACE RESURFACING (שחזור פני שטח):\nGrind + new wear course over the entire driveway.\nLabor = total_sqft × $6.50 · Material = total_sqft × $1.50\nMakes the whole driveway look uniform without full tear-out.\n\nTIER 3 — FULL REPLACEMENT (החלפה מלאה):\nFull demo, haul-away, and new 4" concrete pour.\nLabor = total_sqft × $15.00 · Material = total_sqft × $5.50\nMaximum intensity — complete rebuild.\n\nBUFFERS:\n• +10% material waste (בזבוז חומרים) on all material sub-totals\n• +5% project contingency (עתודה) on grand total\n\nECONOMIC METRIC:\n• Estimated ARV Impact = Total × 1.5 (curb appeal multiplier)\n• Price per SQFT shown in hint bar'},
 
   {cat:'TERMITE',item:'Termite Treatment',split:0,
     dp:{method:0,tent:0,base0:1500,rate0:1.33,base1:-175,rate1:1.50,tbase:750,trate:3.00,annual:425},
