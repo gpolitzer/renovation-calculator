@@ -213,13 +213,37 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .zoom-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;width:28px;height:28px;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .zoom-btn:hover{background:rgba(255,255,255,.22)}
 .zoom-lbl{font-size:.78rem;color:rgba(255,255,255,.75);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+/* About modal */
+.about-btn{position:absolute;top:14px;right:16px;background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);border-radius:20px;padding:4px 12px;font-size:.75rem;cursor:pointer;transition:all .2s}
+.about-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.5)}
+.about-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
+.about-overlay.open{display:flex}
+.about-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.about-box h2{color:var(--orange);font-size:1.1rem;margin-bottom:18px;letter-spacing:.5px}
+.about-box p{color:var(--text);font-size:.92rem;line-height:1.7;margin-bottom:8px}
+.about-box a{color:var(--orange2);text-decoration:none}
+.about-box a:hover{text-decoration:underline}
+.about-close{margin-top:22px;background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.4);color:var(--orange);padding:7px 24px;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.about-close:hover{background:rgba(233,69,96,.3)}
 </style>
 </head>
 <body>
-<header>
+<header style="position:relative">
   <h1>🏠 <span>BRRRR</span> Renovation Calculator</h1>
   <p>Buy · Rehab · Rent · Refinance · Repeat</p>
+  <button class="about-btn" onclick="document.getElementById('aboutOverlay').classList.add('open')">אודות</button>
 </header>
+
+<div class="about-overlay" id="aboutOverlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="about-box">
+    <h2>אודות האפליקציה</h2>
+    <p>אפליקציה זו נבנתה למטרות תרגול בלבד של עלויות שיפוצים בשיטת BRRRR</p>
+    <p style="margin-top:14px;color:var(--muted);font-size:.85rem">להצעות לשיפור ניתן לפנות לגיא פוליצר</p>
+    <p><a href="mailto:guy.poli@gmail.com">guy.poli@gmail.com</a></p>
+    <button class="about-close" onclick="document.getElementById('aboutOverlay').classList.remove('open')">סגור</button>
+  </div>
+</div>
+
 <div class="edit-banner" id="edit-banner">
   <button class="ebtn enter" onclick="toggleEditDefaults()" id="edit-defaults-btn" title="Unlock editing of default formula values">⚙️ Edit Calculator</button>
   <span class="edit-details">⚙️ Edit Calculator Defaults Mode — changes to formula parameters are saved as new defaults</span>
