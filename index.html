@@ -351,7 +351,7 @@ function getP(){return{sqft:val('sqft'),bed:val('bed'),bath:val('bath')};}
 
 /* ═══════ PARAM INPUT HELPER ═══════ */
 function pIn(i,name,val,w){
-  return `<input class="param-input" id="fp-${i}-${name}" type="number" value="${val}" style="width:${w||65}px" oninput="eP(${i},'${name}',this.value)" onfocus="this.select()" step="any">`;
+  return `<input class="param-input" id="fp-${i}-${name}" type="number" value="${val}" style="width:${w||65}px" oninput="ePLite(${i},'${name}',this.value)" onchange="eP(${i},'${name}',this.value)" onfocus="this.select()" step="any">`;
 }
 
 /* ═══════ BUILT-IN CATEGORIES & ROWS ═══════ */
@@ -1989,6 +1989,10 @@ function rstRow(i){st[i].oM='';st[i].oL='';st[i].oT='';st[i].k={...ROWS[i].dp};b
 function eN(i,v){st[i].notes=v;saveState();}
 
 /* ═══════ PARAM EDITING ═══════ */
+function ePLite(i,name,v){
+  st[i].k[name]=(v===''?0:parseFloat(v)||0);
+  calc();
+}
 function eP(i,name,v){
   st[i].k[name]=(v===''?0:parseFloat(v)||0);
   /* Re-render only this row's formula panel left side (not entire table) */
