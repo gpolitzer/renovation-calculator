@@ -1755,11 +1755,17 @@ let customByBuiltin={};
 CATS.forEach(c=>customByBuiltin[c]=[]);
 let miscOn=true;
 let miscMin=5,miscMax=10; /* range inputs (%) — recommended 5–10 */
-let miscRate=0.075; /* derived: (miscMin+miscMax)/200 */
+let miscManual=false,miscManualRate=7.5; /* manual override mode */
+let miscRate=0.075; /* derived by syncMisc() */
 function syncMisc(){
-  miscMin=Math.max(0,Math.min(50,miscMin));
-  miscMax=Math.max(miscMin,Math.min(50,miscMax));
-  miscRate=(miscMin+miscMax)/200;
+  if(miscManual){
+    miscManualRate=Math.max(0,Math.min(50,miscManualRate));
+    miscRate=miscManualRate/100;
+  }else{
+    miscMin=Math.max(0,Math.min(50,miscMin));
+    miscMax=Math.max(miscMin,Math.min(50,miscMax));
+    miscRate=(miscMin+miscMax)/200;
+  }
 }
 let _pmBase=0; // legacy — kept for any saved projects that reference it
 let _gcBase=0; // Hard Cost base for GC markup (non-gcExcl rows)
@@ -1893,9 +1899,19 @@ function renderMiscCategory(tb){
   htr.className='cat-header';
   const htd=document.createElement('td');
   htd.colSpan=5;
-  const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
   const _iStyle='width:38px;background:var(--bg2);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:1px 3px;font-size:.72rem;text-align:center';
-  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(deviation range: <input type="number" value="${_minA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" value="${_maxA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">% &nbsp;→ avg <strong style="color:var(--fg)">${_avgA}%</strong> &nbsp;<span style="color:var(--orange2);font-style:italic">recommended 5–10%</span>)</span></div>`;
+  const _bBase='font-size:.68rem;padding:1px 7px;border-radius:3px;border:1px solid var(--border);cursor:pointer;';
+  const _bOn=`${_bBase}background:var(--orange2);color:#000;font-weight:600`;
+  const _bOff=`${_bBase}background:var(--bg2);color:var(--muted)`;
+  let _modeUI;
+  if(miscManual){
+    const _mv=+(miscManualRate).toFixed(1);
+    _modeUI=`<input type="number" value="${_mv}" min="0" max="50" step="0.5" style="${_iStyle};width:44px" title="Custom %" onchange="miscManualRate=parseFloat(this.value)||0;syncMisc();build();">%`;
+  }else{
+    const _minA=+(miscMin).toFixed(1),_maxA=+(miscMax).toFixed(1),_avgA=+((miscMin+miscMax)/2).toFixed(1);
+    _modeUI=`<input type="number" value="${_minA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Min %" onchange="miscMin=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;–&nbsp;<input type="number" value="${_maxA}" min="0" max="50" step="0.5" style="${_iStyle}" title="Max %" onchange="miscMax=parseFloat(this.value)||0;syncMisc();build();">%&nbsp;→ avg <strong style="color:var(--fg)">${_avgA}%</strong>&nbsp;<span style="color:var(--orange2);font-style:italic">rec. 5–10%</span>`;
+  }
+  htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span><span style="font-size:.72rem;color:var(--muted);margin-left:8px">(<button style="${miscManual?_bOff:_bOn}" onclick="miscManual=false;syncMisc();build();">Range</button><button style="margin-left:2px;${miscManual?_bOn:_bOff}" onclick="miscManual=true;syncMisc();build();">Manual</button>&nbsp;${_modeUI})</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
 
@@ -2091,7 +2107,7 @@ function calc(){
     `<div class="summary-row"><span>Boots on the Ground</span><span>${fmt(botgTotal)}</span></div>`+
     `<div class="summary-row"><span>Overhead <span style="font-size:.78rem;color:var(--muted)">(survey / insurance)</span></span><span>${fmt(overheadTotal)}</span></div>`+
     `<div class="summary-row" style="border-top:1px solid var(--border);margin-top:4px"><span>Subtotal</span><span>${fmt(base)}</span></div>`+
-    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(${miscMin}%–${miscMax}% → avg ${+(miscRate*100).toFixed(1)}%)</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
+    `<div class="summary-row"><span>Misc / Contingency <span style="font-size:.78rem;color:var(--muted)">(${miscManual?+(miscRate*100).toFixed(1)+'% manual':miscMin+'%–'+miscMax+'% → avg '+(+(miscRate*100).toFixed(1))+'%'})</span></span><span style="color:var(--orange2)">+${fmt(misc)}</span></div>`+
     `<div class="summary-row"><span><strong>TOTAL RENOVATION COST</strong></span><span><strong>${fmt(grand)}</strong></span></div>`;
 }
 
@@ -2105,7 +2121,7 @@ let editDefaultsMode=false;
 function buildStateSnapshot(){
   return{
     st:st.map((s,i)=>({...s,_cat:ROWS[i]?.cat,_item:ROWS[i]?.item})),
-    customByBuiltin,customCats,miscOn,miscMin,miscMax,miscRate,
+    customByBuiltin,customCats,miscOn,miscMin,miscMax,miscManual,miscManualRate,miscRate,
     permits:permitsState,
     prop:{address:$('address').value,sqft:$('sqft').value,bed:$('bed').value,bath:$('bath').value,listingUrl:$('listingUrl').value}
   };
@@ -2193,10 +2209,12 @@ function loadState(){
 
 
     if(data.miscOn!==undefined)miscOn=data.miscOn;
-    /* Range inputs — backward compat: if old file only has miscRate, derive min/max */
+    /* Range/manual — backward compat: if old file only has miscRate, derive min/max */
     if(data.miscMin!==undefined)miscMin=parseFloat(data.miscMin)||5;
     if(data.miscMax!==undefined)miscMax=parseFloat(data.miscMax)||10;
     else if(data.miscRate!==undefined){const r=+(data.miscRate*100).toFixed(1);miscMin=r;miscMax=r;}
+    if(data.miscManual!==undefined)miscManual=!!data.miscManual;
+    if(data.miscManualRate!==undefined)miscManualRate=parseFloat(data.miscManualRate)||7.5;
     syncMisc();
 
     /* Restore permits */
