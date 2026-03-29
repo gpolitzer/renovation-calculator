@@ -23,7 +23,7 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px}
 .field input:focus{outline:none;border-color:var(--orange)}
 
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:4px;max-width:100%}
-table{width:100%;border-collapse:collapse;min-width:520px}
+table{width:100%;border-collapse:collapse;min-width:520px;table-layout:auto}
 thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:center;position:sticky;top:0;border-bottom:2px solid var(--orange);z-index:2}
 thead th:first-child{text-align:left}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
@@ -152,26 +152,30 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 }
 @media(max-width:600px){
   header h1{font-size:1.2rem}
-  .container{padding:10px 12px}
+  .container{padding:10px 10px}
   .prop-grid{grid-template-columns:1fr 1fr}
-  .money-input{width:70px;font-size:.8rem;padding:5px 6px}
-  table{min-width:360px}
+  .money-input{width:68px;font-size:.8rem;padding:5px 5px}
+  .table-wrap{overflow-x:hidden}
+  table{min-width:0;width:100%}
   tbody td,thead th{padding:6px 4px;font-size:.78rem}
-  .formula-panel{margin-left:10px;margin-right:4px}
+  .formula-panel{margin-left:8px;margin-right:4px}
   .fp-layout{flex-direction:column}
   .fp-right{width:100%;min-width:0}
-  .fp-notes{min-height:50px;width:100%}
+  .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain}
   .param-input{width:55px;font-size:.78rem}
   /* Hide Mat/Labor columns on small phones — show only Total */
   thead th:nth-child(3),thead th:nth-child(4),
   tbody td:nth-child(3),tbody td:nth-child(4){display:none}
+  /* Item column: shrink to fit, text wraps */
+  tbody td:first-child,thead th:first-child{max-width:180px;word-break:break-word}
 }
 @media(max-width:400px){
-  .container{padding:8px}
-  table{min-width:300px}
+  .container{padding:8px 8px}
+  table{min-width:0}
   thead th,tbody td{padding:5px 3px;font-size:.74rem}
-  .money-input{width:62px;font-size:.76rem;padding:4px 5px}
-  .toggle-btn{padding:3px 8px;font-size:.72rem}
+  .money-input{width:60px;font-size:.75rem;padding:4px 4px}
+  .toggle-btn{padding:2px 8px;font-size:.71rem}
+  tbody td:first-child,thead th:first-child{max-width:150px}
 }
 
 /* Edit-defaults banner */
