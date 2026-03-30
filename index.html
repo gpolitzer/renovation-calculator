@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#1a1a2e;--card:#16213e;--card2:#0f3460;--orange:#e94560;--orange2:#ff6b35;--text:#eee;--muted:#888;--border:#2a2a4a;--input-bg:#0d1b2a;--yes:#00c853;--no:#ff5252}
 html{overflow-x:hidden}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;overflow-x:hidden;max-width:100vw}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 120px;overflow-x:hidden;max-width:100vw}
 header{background:linear-gradient(135deg,#0f3460,#1a1a2e);padding:36px 20px 28px;text-align:center;border-bottom:3px solid var(--orange)}
 header h1{font-size:1.6rem;font-weight:800;letter-spacing:1px;margin-top:1.1rem}
 header h1 span{color:var(--orange)}
@@ -27,9 +27,10 @@ table{width:100%;border-collapse:collapse;min-width:520px;table-layout:auto}
 thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:center;position:sticky;top:0;border-bottom:2px solid var(--orange);z-index:2}
 thead th:first-child{text-align:left}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:60px}
 tbody tr:hover:not(.disabled):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
 tbody td{padding:8px;text-align:center;font-size:.88rem;vertical-align:middle}
-tbody td:first-child{text-align:left}
+tbody td:first-child{text-align:left;overflow-wrap:break-word;word-break:break-word;padding-right:16px}
 
 /* Category header */
 tr.cat-header{background:var(--card2)}
@@ -42,24 +43,25 @@ tr.cat-header td{padding:0}
 .cat-del-btn{background:none;border:none;color:var(--no);cursor:pointer;font-size:.75rem;opacity:.4;transition:opacity .15s;padding:3px 6px}
 .cat-del-btn:hover{opacity:1}
 
-/* Disabled */
-tr.disabled td{color:#6b8aaa}
-tr.disabled td:nth-child(2){color:inherit}
-tr.disabled .total-cell{color:#6b8aaa!important}
-tr.disabled .money-input{pointer-events:none;color:#6b8aaa;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
+/* Disabled / muted row */
+tr.disabled td{color:#616e88}
+tr.disabled .total-cell{color:#616e88!important}
+tr.disabled .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
+tr.row-muted{opacity:0.5}
 
 /* Toggle */
-.toggle-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s}
-.toggle-btn.yes{background:rgba(0,200,83,.2);color:var(--yes);border:2px solid rgba(0,200,83,.5)}
-.toggle-btn.no{background:rgba(255,82,82,.2);color:var(--no);border:2px solid rgba(255,82,82,.5)}
-.toggle-btn:hover{transform:scale(1.05);filter:brightness(1.2)}
+.toggle-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s;min-height:48px;min-width:90px}
+.toggle-btn.yes{background:#88c0d0;color:#2e3440;font-weight:800}
+.toggle-btn.no{background:#4c566a;color:#d8dee9}
+.toggle-btn:hover{filter:brightness(1.15)}
+.toggle-btn:active{transform:scale(0.95)}
 
 /* Money inputs */
 .money-input{width:84px;padding:6px 8px;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;text-align:right;transition:border .2s;font-variant-numeric:tabular-nums}
 .money-input:focus{outline:none;border-color:var(--orange);background:#101d30}
 .money-input.user-edited{border-color:var(--orange2);background:#1a1510}
 .money-input::-webkit-inner-spin-button{opacity:0;width:0}
-.total-cell{font-weight:700;color:var(--orange2);font-variant-numeric:tabular-nums}
+.total-cell{font-weight:700;color:var(--orange2);font-variant-numeric:tabular-nums;font-family:'JetBrains Mono','Consolas','Courier New',monospace;text-align:right}
 
 /* Item cell */
 .item-cell{display:flex;align-items:center;gap:6px}
@@ -178,7 +180,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   table{min-width:0}
   thead th,tbody td{padding:5px 3px;font-size:.74rem}
   .money-input{width:54px;font-size:.75rem;padding:4px 3px}
-  .toggle-btn{padding:2px 7px;font-size:.71rem}
+  .toggle-btn{padding:4px 8px;font-size:.71rem;min-height:48px;min-width:90px}
 }
 
 /* Edit-defaults banner */
@@ -324,10 +326,10 @@ tr.custom-row{background:rgba(233,69,96,.03)}
       <table>
         <thead><tr>
           <th>Item</th>
-          <th style="width:72px">Include</th>
+          <th style="width:95px">Include</th>
           <th style="width:88px">Materials</th>
           <th style="width:88px">Labor</th>
-          <th style="width:88px">Total</th>
+          <th style="width:85px">Total</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
       </table>
@@ -1886,7 +1888,7 @@ function renderFormulaRow(tb,r,i,p){
   const s=st[i], on=s.on, k=s.k;
   const tr=document.createElement('tr');
   tr.id='row-'+i;
-  if(!on)tr.className='disabled';
+  if(!on)tr.className='disabled row-muted';
 
   const btnC=on?'toggle-btn yes':'toggle-btn no';
   const btnT=on?'✓ Yes':'✗ No';
@@ -1948,7 +1950,7 @@ function renderFormulaRow(tb,r,i,p){
 
 function renderCustomRow(tb,cr,catKey,ci){
   const tr=document.createElement('tr');
-  tr.className='custom-row'+(cr.on?'':' disabled');
+  tr.className='custom-row'+(cr.on?'':' disabled row-muted');
   const btnC=cr.on?'toggle-btn yes':'toggle-btn no';
   const btnT=cr.on?'✓ Yes':'✗ No';
   const m=parseFloat(cr.mat)||0, l=parseFloat(cr.lab)||0;
@@ -1988,7 +1990,7 @@ function renderMiscCategory(tb){
   /* Misc row */
   const mtr=document.createElement('tr');
   mtr.id='misc-row';
-  if(!miscOn)mtr.className='disabled';
+  if(!miscOn)mtr.className='disabled row-muted';
   const _expC=miscExp?'expand-btn open':'expand-btn';
   const _rateLabel=miscManual?`${+(miscRate*100).toFixed(1)}% manual`:`${miscMin}–${miscMax}% range`;
   mtr.innerHTML=`

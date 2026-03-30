@@ -23,6 +23,32 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - **New rows must include a `defNote`** — clear English explanation + Hebrew translations (בעברית) for professional terms. If the row has dropdowns, explain each option.
 - Permit search needs US VPN. If selectors break, run `discover_site.py` to re-map.
 
+## Renovation Row Standards (Mobile-First)
+All table rows and toggle buttons must follow these standards:
+
+### Toggle Button (Yes/No)
+- `min-height: 48px`, `min-width: 90px` — tap-safe for iPhone
+- **Yes (active):** `background: #88c0d0` (Frost Blue), `color: #2e3440` (bold/800)
+- **No (inactive):** `background: #4c566a` (Muted Grey), `color: #d8dee9`
+- **Active press:** `transform: scale(0.95)` on `:active` — tactile feedback
+- CSS classes: `.toggle-btn.yes` / `.toggle-btn.no`
+
+### Row Columns
+| Column | Rule |
+|---|---|
+| Col 1 — Description | `flex:1`, `overflow-wrap:break-word`, `padding-right:16px` gap before toggle |
+| Col 2 — Toggle | Fixed `width:95px`, centered vertically |
+| Col 3 — Cost/Total | Fixed `width:85px`, `text-align:right`, `font-family:'JetBrains Mono','Consolas',monospace` |
+
+### Inactive State
+- Off rows get CSS classes: `disabled row-muted`
+- `tr.row-muted { opacity: 0.5 }` — entire row dims to 50%
+- `tr.disabled td { color: #616e88 }` — text color before opacity
+
+### Layout
+- Min row height: `height: 60px` on `tbody tr` (excluding formula/cat-header/add rows)
+- Body: `padding-bottom: 120px` — clears iOS home indicator + browser bars
+
 ## Architecture
 
 ### Core State
