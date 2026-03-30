@@ -23,6 +23,19 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - **New rows must include a `defNote`** — clear English explanation + Hebrew translations (בעברית) for professional terms. If the row has dropdowns, explain each option.
 - Permit search needs US VPN. If selectors break, run `discover_site.py` to re-map.
 
+## Mobile-First Global Rules
+Applied globally across the app:
+- **Base font:** `html { font-size: 16px }` — prevents iOS auto-zoom on input focus
+- **Body:** `line-height: 1.5` — readability on small screens
+- **All inputs/selects/textareas:** `font-size: 16px` — critical iOS auto-zoom prevention
+- **Body:** `max-width:100vw; overflow-x:hidden; padding-bottom:120px`
+- **Container:** `display:flex; flex-direction:column; gap:16px` — single-column mobile layout
+- **Nord color theme** applied to `:root` vars:
+  - `--bg: #2e3440`, `--card: #3b4252`, `--card2: #434c5e`
+  - `--text: #d8dee9`, `--border: #4c566a`, `--input-bg: #2e3440`
+  - Orange accents (`--orange`, `--orange2`) preserved for emphasis
+- **Touch targets:** standalone buttons (`add-cat-btn`, `fetch-btn`, `ebtn`, `about-close`) have `min-height:48px`
+
 ## Renovation Row Standards (Mobile-First)
 All table rows and toggle buttons must follow these standards:
 

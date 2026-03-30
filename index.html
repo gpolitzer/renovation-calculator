@@ -6,16 +6,18 @@
 <title>BRRRR Renovation Cost Calculator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#1a1a2e;--card:#16213e;--card2:#0f3460;--orange:#e94560;--orange2:#ff6b35;--text:#eee;--muted:#888;--border:#2a2a4a;--input-bg:#0d1b2a;--yes:#00c853;--no:#ff5252}
+html{font-size:16px}
+input,select,textarea{font-size:16px}
+:root{--bg:#2e3440;--card:#3b4252;--card2:#434c5e;--orange:#e94560;--orange2:#ff6b35;--text:#d8dee9;--muted:#8896a8;--border:#4c566a;--input-bg:#2e3440;--yes:#a3be8c;--no:#bf616a}
 html{overflow-x:hidden}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 120px;overflow-x:hidden;max-width:100vw}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 120px;overflow-x:hidden;max-width:100vw;line-height:1.5}
 header{background:linear-gradient(135deg,#0f3460,#1a1a2e);padding:36px 20px 28px;text-align:center;border-bottom:3px solid var(--orange)}
 header h1{font-size:1.6rem;font-weight:800;letter-spacing:1px;margin-top:1.1rem}
 header h1 span{color:var(--orange)}
 header p{color:var(--muted);font-size:.85rem;margin-top:4px}
-.container{max-width:1400px;width:100%;margin:0 auto;padding:16px 24px}
+.container{max-width:1400px;width:100%;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;gap:16px}
 
-.prop-card{background:var(--card);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid var(--border)}
+.prop-card{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border)}
 .prop-card h2{font-size:1.05rem;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .prop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .field label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
@@ -114,7 +116,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 
 /* Add new category */
 .new-cat-area{text-align:center;padding:12px 0 4px}
-.add-cat-btn{background:rgba(233,69,96,.08);border:1px dashed var(--orange);color:var(--orange);padding:8px 24px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+.add-cat-btn{background:rgba(233,69,96,.08);border:1px dashed var(--orange);color:var(--orange);padding:12px 24px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s;min-height:48px}
 .add-cat-btn:hover{background:rgba(233,69,96,.18);border-style:solid}
 
 /* Summary */
@@ -188,11 +190,11 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .edit-banner.active{background:linear-gradient(90deg,rgba(255,165,0,.12),rgba(255,165,0,.06));border-bottom:2px solid #ffa500;color:#ffa500;padding:9px 20px}
 .edit-banner .edit-details{display:none}
 .edit-banner.active .edit-details{display:contents}
-.edit-banner .ebtn{background:rgba(255,165,0,.2);border:1px solid #ffa500;color:#ffa500;padding:3px 12px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:700;transition:background .2s}
+.edit-banner .ebtn{background:rgba(255,165,0,.2);border:1px solid #ffa500;color:#ffa500;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:700;transition:background .2s;min-height:48px}
 .edit-banner .ebtn:hover{background:rgba(255,165,0,.38)}
 .edit-banner .ebtn.exit{background:rgba(255,82,82,.15);border-color:var(--no);color:var(--no)}
 .edit-banner .ebtn.exit:hover{background:rgba(255,82,82,.3)}
-.edit-banner .ebtn.enter{background:none;border:1px solid var(--border);color:var(--muted);font-size:.72rem;padding:4px 10px;transition:all .2s}
+.edit-banner .ebtn.enter{background:none;border:1px solid var(--border);color:var(--muted);font-size:.72rem;padding:12px 16px;transition:all .2s;min-height:48px}
 .edit-banner .ebtn.enter:hover{border-color:var(--orange2);color:var(--orange2);background:rgba(255,165,0,.08)}
 .edit-banner.active .ebtn.enter{display:none}
 /* Folder tag */
@@ -200,7 +202,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .folder-tag:hover{border-color:var(--orange);color:var(--orange2)}
 
 /* ── City Permits (fetched live from JAX EPICS API) ─────────────────────── */
-.fetch-btn{background:none;border:1px solid rgba(233,69,96,.45);color:var(--orange);padding:3px 13px;border-radius:12px;cursor:pointer;font-size:.72rem;font-weight:700;transition:all .2s;vertical-align:middle;margin-left:6px}
+.fetch-btn{background:none;border:1px solid rgba(233,69,96,.45);color:var(--orange);padding:12px 16px;border-radius:12px;cursor:pointer;font-size:.82rem;font-weight:700;transition:all .2s;vertical-align:middle;margin-left:6px;min-height:48px}
 .fetch-btn:hover:not(:disabled){background:rgba(233,69,96,.15);border-color:var(--orange)}
 .fetch-btn:disabled{opacity:.45;cursor:not-allowed}
 .city-permits-wrap{margin-top:16px;border-top:1px dashed var(--border);padding-top:12px}
@@ -237,7 +239,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .about-box p{color:var(--text);font-size:.92rem;line-height:1.7;margin-bottom:8px}
 .about-box a{color:var(--orange2);text-decoration:none}
 .about-box a:hover{text-decoration:underline}
-.about-close{margin-top:22px;background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.4);color:var(--orange);padding:7px 24px;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.about-close{margin-top:22px;background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.4);color:var(--orange);padding:12px 24px;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s;min-height:48px}
 .about-close:hover{background:rgba(233,69,96,.3)}
 </style>
 </head>
