@@ -30,9 +30,9 @@ thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transfor
 thead th:first-child{text-align:left}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
 tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:60px}
-tbody tr:hover:not(.disabled):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
+tbody tr:hover:not(.disabled):not(.row-inactive):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
 tbody td{padding:8px;text-align:center;font-size:.88rem;vertical-align:middle}
-tbody td:first-child{text-align:left;overflow-wrap:break-word;word-break:break-word;padding-right:16px}
+tbody td:first-child{text-align:left;overflow-wrap:break-word;word-break:break-word;padding-right:16px;line-height:1.4}
 
 /* Category header */
 tr.cat-header{background:var(--card2)}
@@ -49,7 +49,12 @@ tr.cat-header td{padding:0}
 tr.disabled td{color:#616e88}
 tr.disabled .total-cell{color:#616e88!important}
 tr.disabled .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
-tr.row-muted{opacity:0.5}
+tr.row-muted{opacity:0.6}
+/* .row-inactive — semantic class for 'No' rows (replaces disabled+row-muted combo) */
+tr.row-inactive{opacity:0.6}
+tr.row-inactive td{color:#616e88}
+tr.row-inactive .total-cell{color:#616e88!important}
+tr.row-inactive .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
 
 /* Toggle */
 .toggle-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s;min-height:48px;min-width:90px}
@@ -328,7 +333,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
       <table>
         <thead><tr>
           <th>Item</th>
-          <th style="width:95px">Include</th>
+          <th style="width:90px">Include</th>
           <th style="width:88px">Materials</th>
           <th style="width:88px">Labor</th>
           <th style="width:85px">Total</th>
@@ -1890,7 +1895,7 @@ function renderFormulaRow(tb,r,i,p){
   const s=st[i], on=s.on, k=s.k;
   const tr=document.createElement('tr');
   tr.id='row-'+i;
-  if(!on)tr.className='disabled row-muted';
+  if(!on)tr.className='disabled row-muted row-inactive';
 
   const btnC=on?'toggle-btn yes':'toggle-btn no';
   const btnT=on?'✓ Yes':'✗ No';
@@ -1952,7 +1957,7 @@ function renderFormulaRow(tb,r,i,p){
 
 function renderCustomRow(tb,cr,catKey,ci){
   const tr=document.createElement('tr');
-  tr.className='custom-row'+(cr.on?'':' disabled row-muted');
+  tr.className='custom-row'+(cr.on?'':' disabled row-muted row-inactive');
   const btnC=cr.on?'toggle-btn yes':'toggle-btn no';
   const btnT=cr.on?'✓ Yes':'✗ No';
   const m=parseFloat(cr.mat)||0, l=parseFloat(cr.lab)||0;
@@ -1992,7 +1997,7 @@ function renderMiscCategory(tb){
   /* Misc row */
   const mtr=document.createElement('tr');
   mtr.id='misc-row';
-  if(!miscOn)mtr.className='disabled row-muted';
+  if(!miscOn)mtr.className='disabled row-muted row-inactive';
   const _expC=miscExp?'expand-btn open':'expand-btn';
   const _rateLabel=miscManual?`${+(miscRate*100).toFixed(1)}% manual`:`${miscMin}–${miscMax}% range`;
   mtr.innerHTML=`
