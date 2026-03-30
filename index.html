@@ -46,15 +46,22 @@ tr.cat-header td{padding:0}
 .cat-del-btn:hover{opacity:1}
 
 /* Disabled / muted row */
-tr.disabled td{color:#616e88}
-tr.disabled .total-cell{color:#616e88!important}
-tr.disabled .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
+tr.disabled td{color:#7b8496}
+tr.disabled .total-cell{color:#7b8496!important}
+tr.disabled .money-input{pointer-events:none;color:#7b8496;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
 tr.row-muted{opacity:0.5}
 /* .row-inactive — semantic class for 'No' rows (replaces disabled+row-muted combo) */
 tr.row-inactive{opacity:0.5}
-tr.row-inactive td{color:#616e88}
-tr.row-inactive .total-cell{color:#616e88!important}
-tr.row-inactive .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
+tr.row-inactive td{color:#7b8496;font-weight:400}
+tr.row-inactive .total-cell{color:#7b8496!important}
+tr.row-inactive .money-input{pointer-events:none;color:#7b8496;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
+/* Dashed left border on first cell — signals 'addable' item */
+tr.row-inactive td:first-child{border-left:2px dashed rgba(123,132,150,.4);padding-left:6px}
+/* Hover/tap — high-contrast activation hint */
+tr.row-inactive:hover{background:rgba(136,192,208,.09);opacity:.82}
+tr.row-inactive:hover td{color:#c8cfd9!important;font-weight:500}
+tr.row-inactive:hover .total-cell{color:#88c0d0!important}
+tr.row-inactive:hover td:first-child{border-left-color:rgba(136,192,208,.7)}
 
 /* Toggle */
 .toggle-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s;min-height:48px;min-width:90px}

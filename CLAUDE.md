@@ -57,10 +57,12 @@ All table rows and toggle buttons must follow these standards:
 - Off rows get CSS classes: `disabled row-muted row-inactive`
 - `.row-inactive` is the canonical semantic class for 'No' rows — used in new CSS and JS
 - `tr.row-inactive { opacity: 0.5 }` — entire row dims to 50% (same as `row-muted`)
-- `tr.row-inactive td { color: #616e88 }` — text color for inactive rows
-- `tr.row-inactive .total-cell { color: #616e88 !important }`
+- `tr.row-inactive td { color: #7b8496; font-weight: 400 }` — readable in daylight, regular weight
+- `tr.row-inactive .total-cell { color: #7b8496 !important }`
+- `tr.row-inactive td:first-child { border-left: 2px dashed rgba(123,132,150,.4) }` — 'addable' visual hint
 - `tr.row-inactive .money-input { pointer-events: none; ... }` — inputs locked when row off
 - `tr.disabled` rules kept for backward compat; `tr.row-muted` opacity also set to 0.5
+- **Hover state:** `opacity:.82`, Frost Blue tint bg, text lifts to `#c8cfd9` (500 weight), total cell → `#88c0d0`, dashed border intensifies — signals row is activatable
 
 ### Layout
 - Min row height: `height: 60px` on `tbody tr` (excluding formula/cat-header/add rows) — satisfies ≥56px touch target requirement
