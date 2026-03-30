@@ -17,7 +17,8 @@
       "Bash(git add CLAUDE.md)",
       "Bash(git commit -m \"CLAUDE.md: expand to full project memory \\(row catalog, architecture, auto-push rule\\)\")",
       "Bash(git commit -m \"CLAUDE.md: add rule to keep project memory up to date after changes\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git add index.html CLAUDE.md)"
     ]
   }
 }

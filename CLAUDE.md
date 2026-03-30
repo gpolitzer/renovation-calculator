@@ -56,17 +56,17 @@ All table rows and toggle buttons must follow these standards:
 ### Inactive State
 - Off rows get CSS classes: `disabled row-muted row-inactive`
 - `.row-inactive` is the canonical semantic class for 'No' rows — used in new CSS and JS
-- `tr.row-inactive { opacity: 0.6 }` — entire row dims to 60% (same as `row-muted`)
+- `tr.row-inactive { opacity: 0.5 }` — entire row dims to 50% (same as `row-muted`)
 - `tr.row-inactive td { color: #616e88 }` — text color for inactive rows
 - `tr.row-inactive .total-cell { color: #616e88 !important }`
 - `tr.row-inactive .money-input { pointer-events: none; ... }` — inputs locked when row off
-- `tr.disabled` rules kept for backward compat; `tr.row-muted` opacity also set to 0.6
+- `tr.disabled` rules kept for backward compat; `tr.row-muted` opacity also set to 0.5
 
 ### Layout
 - Min row height: `height: 60px` on `tbody tr` (excluding formula/cat-header/add rows) — satisfies ≥56px touch target requirement
 - Body: `padding-bottom: 120px` — clears iOS home indicator + browser bars
 - Col 1 (Item): `line-height: 1.4`, `overflow-wrap: break-word` — text wraps cleanly on mobile
-- Col 2 (Toggle): fixed `width: 90px` in thead
+- Col 2 (Toggle): fixed `width: 95px` in thead (and mobile breakpoint)
 - Col 5 (Total): `width: 85px`, `text-align: right`, monospace font, `font-weight: 700`
 - Hover rule excludes `.row-inactive` (in addition to `.disabled`)
 

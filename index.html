@@ -49,9 +49,9 @@ tr.cat-header td{padding:0}
 tr.disabled td{color:#616e88}
 tr.disabled .total-cell{color:#616e88!important}
 tr.disabled .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
-tr.row-muted{opacity:0.6}
+tr.row-muted{opacity:0.5}
 /* .row-inactive — semantic class for 'No' rows (replaces disabled+row-muted combo) */
-tr.row-inactive{opacity:0.6}
+tr.row-inactive{opacity:0.5}
 tr.row-inactive td{color:#616e88}
 tr.row-inactive .total-cell{color:#616e88!important}
 tr.row-inactive .money-input{pointer-events:none;color:#616e88;border-color:rgba(107,138,170,.25);background:rgba(13,27,42,.4)}
@@ -178,7 +178,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   /* Item col: expand to fill; toggle + total: shrink to content */
   table{table-layout:fixed}
   tbody td:first-child,thead th:first-child{width:auto;word-break:break-word}
-  tbody td:nth-child(2),thead th:nth-child(2){width:1%;white-space:nowrap}
+  tbody td:nth-child(2),thead th:nth-child(2){width:95px;white-space:nowrap}
   tbody td:nth-child(5),thead th:nth-child(5){width:1%;white-space:nowrap}
   .money-input{width:60px}
 }
@@ -333,7 +333,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
       <table>
         <thead><tr>
           <th>Item</th>
-          <th style="width:90px">Include</th>
+          <th style="width:95px">Include</th>
           <th style="width:88px">Materials</th>
           <th style="width:88px">Labor</th>
           <th style="width:85px">Total</th>
