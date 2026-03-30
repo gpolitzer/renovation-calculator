@@ -25,19 +25,18 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px}
 .field input:focus{outline:none;border-color:var(--orange)}
 
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:4px;max-width:100%}
-table{width:100%;border-collapse:collapse;min-width:520px;table-layout:fixed}
+table{width:100%;border-collapse:collapse}
 thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:center;position:sticky;top:48px;border-bottom:2px solid var(--orange);z-index:2}
 thead th:first-child{text-align:left}
-/* Column widths — defined in CSS so breakpoints can override (no inline styles on <th>) */
-thead th:nth-child(2){width:95px}
-thead th:nth-child(3){width:88px}
-thead th:nth-child(4){width:88px}
-thead th:nth-child(5){width:85px}
+/* Greedy-column pattern: item col expands, all others shrink to content */
+thead th:first-child,tbody td:first-child{width:100%}
+thead th:nth-child(2),thead th:nth-child(3),thead th:nth-child(4),thead th:nth-child(5),
+tbody td:nth-child(2),tbody td:nth-child(3),tbody td:nth-child(4),tbody td:nth-child(5){width:1%;white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
 tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:60px}
 tbody tr:hover:not(.disabled):not(.row-inactive):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
 tbody td{padding:8px;text-align:center;font-size:.88rem;vertical-align:middle}
-tbody td:first-child{text-align:left;overflow-wrap:break-word;padding-right:16px;line-height:1.4}
+tbody td:first-child{text-align:left;padding-right:16px;line-height:1.4}
 
 /* Category header */
 tr.cat-header{background:var(--card2)}
@@ -176,7 +175,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .container{padding:10px 10px}
   .prop-grid{grid-template-columns:1fr 1fr}
   .money-input{width:68px;font-size:.8rem;padding:5px 5px}
-  .table-wrap{overflow-x:hidden}
+  .table-wrap{overflow-x:auto}
   table{min-width:0;width:100%}
   tbody td,thead th{padding:6px 4px;font-size:.78rem}
   .formula-panel{margin-left:8px;margin-right:4px}
@@ -186,13 +185,9 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .param-input{width:55px;font-size:.78rem}
   /* Hide Mat/Labor columns on small phones — show only Total */
   thead th:nth-child(3),thead th:nth-child(4),
-  tbody td:nth-child(3),tbody td:nth-child(4){display:none;width:0!important;padding:0!important}
-  /* Item col: expand to fill; toggle + total: fixed widths */
-  table{table-layout:fixed}
-  thead th:nth-child(2),tbody td:nth-child(2){width:95px;white-space:nowrap}
-  thead th:nth-child(5),tbody td:nth-child(5){width:80px;white-space:nowrap}
-  /* Item col fills all remaining space; ellipsis prevents stacking on narrow screens */
-  tbody td:first-child,thead th:first-child{width:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  tbody td:nth-child(3),tbody td:nth-child(4){display:none}
+  /* Item col: greedy (width:100% already set globally); text wraps normally */
+  tbody td:first-child,thead th:first-child{white-space:normal;overflow-wrap:break-word;word-break:break-word}
   .money-input{width:60px}
 }
 @media(max-width:400px){
