@@ -23,6 +23,34 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - **New rows must include a `defNote`** — clear English explanation + Hebrew translations (בעברית) for professional terms. If the row has dropdowns, explain each option.
 - Permit search needs US VPN. If selectors break, run `discover_site.py` to re-map.
 
+## Focus Mode (View Toggle + Bulk Actions)
+
+Sticky toolbar at `top:0; z-index:100` between the edit-banner and the container.
+
+### State
+- `focusMode` (bool, default `false`) — JS variable; adds/removes `body.focus-mode` class.
+
+### View Toggle — Segmented Control
+- `[Show All]` / `[Active Only]` — IDs `seg-all` / `seg-active`
+- Active segment: `background:#88c0d0; color:#2e3440` (Nord Frost Blue)
+- `toggleFocusMode(bool)` switches mode and re-syncs button states
+
+### Active Only behavior
+- CSS: `body.focus-mode tr.row-inactive { display:none!important }`
+- CSS: `body.focus-mode tr.row-inactive + tr.formula-row { display:none!important }`
+- JS `hideFocusEmptyCats()` — hides `tr.cat-header` rows with no visible children; called after every `build()` in focus mode and when toggling mode
+
+### Bulk Actions — "≡ Select" button + popover
+- `.bulk-btn` → opens `.bulk-menu` popover (position:absolute, right-aligned)
+- **Enable All** — `selectAllRows(true)` sets `st[i].on=true` + `miscOn=true`, calls `build()`
+- **Reset All** — `selectAllRows(false)` sets `st[i].on=false` + `miscOn=false`, calls `build()`
+- Popover auto-closes on outside click
+
+### CSS classes added
+`.focus-toolbar` · `.seg-ctrl` · `.seg-btn` · `.seg-btn.active` · `.bulk-btn` · `.bulk-menu` · `.bulk-menu.open` · `.bulk-menu-item`
+
+---
+
 ## Mobile-First Global Rules
 Applied globally across the app:
 - **Base font:** `html { font-size: 16px }` — prevents iOS auto-zoom on input focus

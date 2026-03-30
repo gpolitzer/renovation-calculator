@@ -253,6 +253,24 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .about-box a:hover{text-decoration:underline}
 .about-close{margin-top:22px;background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.4);color:var(--orange);padding:12px 24px;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s;min-height:48px}
 .about-close:hover{background:rgba(233,69,96,.3)}
+
+/* ── Focus Toolbar ───────────────────────────────────────────────────────── */
+.focus-toolbar{position:sticky;top:0;z-index:100;background:rgba(30,38,54,.97);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:48px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.seg-ctrl{display:flex;background:rgba(0,0,0,.3);border-radius:10px;padding:3px;height:38px;align-items:center;gap:0}
+.seg-btn{background:transparent;border:none;color:rgba(216,222,233,.55);border-radius:7px;padding:0 14px;height:32px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
+.seg-btn.active{background:#88c0d0;color:#2e3440;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.seg-btn:not(.active):hover{background:rgba(136,192,208,.15);color:#d8dee9}
+.bulk-wrap{position:relative;margin-left:auto}
+.bulk-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--muted);border-radius:8px;height:34px;padding:0 12px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.bulk-btn:hover,.bulk-btn.open{background:rgba(136,192,208,.15);border-color:#88c0d0;color:#88c0d0}
+.bulk-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#2e3440;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);overflow:hidden;min-width:145px;z-index:200}
+.bulk-menu.open{display:block}
+.bulk-menu-item{display:block;width:100%;background:none;border:none;color:var(--text);text-align:left;padding:11px 16px;font-size:.85rem;font-weight:500;cursor:pointer;transition:background .12s}
+.bulk-menu-item:hover{background:rgba(136,192,208,.12);color:#88c0d0}
+.bulk-menu-item:first-child{border-bottom:1px solid var(--border)}
+/* Focus mode — hide inactive rows and their formula expand panels */
+body.focus-mode tr.row-inactive{display:none!important}
+body.focus-mode tr.row-inactive+tr.formula-row{display:none!important}
 </style>
 </head>
 <body>
@@ -287,6 +305,22 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     <button class="zoom-btn" onclick="zoomAdj(+1)" title="Increase font size">A+</button>
   </div>
 </div>
+
+<!-- Focus Toolbar: View Toggle + Bulk Actions -->
+<div class="focus-toolbar" id="focus-toolbar">
+  <div class="seg-ctrl" role="group" aria-label="View filter">
+    <button class="seg-btn active" id="seg-all" onclick="toggleFocusMode(false)">Show All</button>
+    <button class="seg-btn" id="seg-active" onclick="toggleFocusMode(true)">Active Only</button>
+  </div>
+  <div class="bulk-wrap">
+    <button class="bulk-btn" id="bulk-btn" onclick="toggleBulkMenu(event)" aria-label="Bulk row actions">≡ Select</button>
+    <div class="bulk-menu" id="bulk-menu">
+      <button class="bulk-menu-item" onclick="selectAllRows(true)">✓ Enable All</button>
+      <button class="bulk-menu-item" onclick="selectAllRows(false)">✗ Reset All</button>
+    </div>
+  </div>
+</div>
+
 <div class="container">
   <div class="prop-card">
     <h2>📋 Property Details</h2>
@@ -1844,6 +1878,53 @@ let miscOn=true,miscExp=false;
 let miscMin=5,miscMax=10; /* range inputs (%) — recommended 5–10 */
 let miscManual=true,miscManualRate=7.5; /* manual override mode — default 7.5%, recommended range 5–10% */
 let miscRate=0.075; /* derived by syncMisc() */
+
+/* ─── Focus Mode + Bulk Actions ─── */
+let focusMode=false;
+
+function toggleFocusMode(active){
+  focusMode=!!active;
+  document.body.classList.toggle('focus-mode',focusMode);
+  document.getElementById('seg-all').classList.toggle('active',!focusMode);
+  document.getElementById('seg-active').classList.toggle('active',focusMode);
+  if(focusMode) hideFocusEmptyCats();
+  else document.querySelectorAll('tbody tr.cat-header').forEach(tr=>tr.style.display='');
+}
+
+function hideFocusEmptyCats(){
+  const rows=[...document.querySelectorAll('tbody tr')];
+  let catTr=null, hasVisible=false;
+  rows.forEach(tr=>{
+    if(tr.classList.contains('cat-header')){
+      if(catTr&&!hasVisible) catTr.style.display='none';
+      catTr=tr; hasVisible=false;
+    } else if(!tr.classList.contains('row-inactive')&&!tr.classList.contains('formula-row')&&!tr.classList.contains('add-row')){
+      hasVisible=true;
+    }
+  });
+  if(catTr&&!hasVisible) catTr.style.display='none';
+}
+
+function toggleBulkMenu(e){
+  e.stopPropagation();
+  const m=document.getElementById('bulk-menu');
+  const b=document.getElementById('bulk-btn');
+  const open=m.classList.toggle('open');
+  b.classList.toggle('open',open);
+  if(open) setTimeout(()=>document.addEventListener('click',closeBulkMenu,{once:true}),0);
+}
+
+function closeBulkMenu(){
+  document.getElementById('bulk-menu')?.classList.remove('open');
+  document.getElementById('bulk-btn')?.classList.remove('open');
+}
+
+function selectAllRows(on){
+  st.forEach(s=>s.on=on);
+  miscOn=on;
+  closeBulkMenu();
+  build();
+}
 function syncMisc(){
   if(miscManual){
     miscManualRate=Math.max(0,Math.min(50,miscManualRate));
@@ -1878,6 +1959,7 @@ function build(){
 
   renderMiscCategory(tb);
   calc();
+  if(focusMode) hideFocusEmptyCats();
 }
 
 function renderCatHeader(tb,name,isCustom,cci){
