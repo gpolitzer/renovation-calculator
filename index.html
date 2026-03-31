@@ -40,7 +40,7 @@ tbody td{padding:8px;text-align:center;font-size:.88rem;vertical-align:middle}
 tbody td:first-child{text-align:left;padding-right:16px;line-height:1.4}
 
 /* Category header */
-tr.cat-header{background:var(--card2)}
+tr.cat-header{background:var(--card2);border-top:8px solid var(--bg)}
 tr.cat-header td{padding:0}
 .cat-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 8px}
 .cat-bar .cat-name{font-weight:700;font-size:.85rem;color:var(--orange);letter-spacing:.5px}
@@ -198,10 +198,15 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%}
   tbody td:first-child{min-width:0;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
   /* Per-category mobile column headers */
-  tr.mobile-col-header{display:grid;grid-template-columns:1fr 90px 85px;align-items:center;background:var(--card2);border-bottom:1px solid var(--border)}
-  tr.mobile-col-header th{padding:5px 4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left}
+  tr.mobile-col-header{display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%;background:var(--card2);border-bottom:1px solid var(--border)}
+  tr.mobile-col-header th{padding:6px 4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left}
   tr.mobile-col-header th:nth-child(2){text-align:center}
-  tr.mobile-col-header th:last-child{text-align:right}
+  tr.mobile-col-header th:last-child{text-align:right;padding-right:4px}
+  /* Center toggle in its grid column */
+  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) td:nth-child(2){display:flex;justify-content:center;align-items:center}
+  /* Uniform total-cell font size across all row types */
+  .total-cell{font-size:.85rem}
+  .total-cell input.money-input{font-size:.85rem}
   /* Shrink toggle button */
   .toggle-btn{min-width:62px;padding:4px 6px;font-size:.72rem}
   .item-info>span:first-child{font-size:.86rem}
