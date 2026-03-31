@@ -203,12 +203,12 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tr.mobile-col-header th:nth-child(2){text-align:center}
   tr.mobile-col-header th:last-child{text-align:right;padding-right:4px}
   /* Center toggle in its grid column */
-  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) td:nth-child(2){display:flex;justify-content:center;align-items:center}
+  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) td:nth-child(2){text-align:center}
   /* Uniform total-cell font size across all row types */
   .total-cell{font-size:.85rem}
   .total-cell input.money-input{font-size:.85rem}
-  /* Shrink toggle button */
-  .toggle-btn{min-width:62px;padding:4px 6px;font-size:.72rem}
+  /* Shrink toggle button — reduce height to avoid dominating tall rows */
+  .toggle-btn{min-width:62px;min-height:38px;padding:4px 6px;font-size:.72rem}
   .item-info>span:first-child{font-size:.86rem}
 }
 @media(max-width:400px){
