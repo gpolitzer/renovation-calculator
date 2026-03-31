@@ -28,6 +28,7 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px}
 table{width:100%;border-collapse:collapse}
 thead th{background:var(--card2);padding:10px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:center;position:sticky;top:48px;border-bottom:2px solid var(--orange);z-index:2}
 thead th:first-child{text-align:left}
+thead th:last-child{text-align:right}
 /* Greedy-column pattern: item col expands, all others shrink to content */
 thead th:first-child,tbody td:first-child{width:100%}
 thead th:nth-child(2),thead th:nth-child(3),thead th:nth-child(4),thead th:nth-child(5),
@@ -72,7 +73,7 @@ tr.row-inactive:hover .total-cell{color:#88c0d0!important}
 tr.row-inactive:hover td:first-child{border-left-color:rgba(136,192,208,.7)}
 
 /* Toggle */
-.toggle-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.74rem;font-weight:700;transition:all .2s;min-height:48px;min-width:90px}
+.toggle-btn{display:inline-flex;align-items:center;justify-content:center;padding:3px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.82rem;font-weight:700;transition:all .2s;min-height:48px;min-width:90px}
 .toggle-btn.yes{background:#88c0d0;color:#2e3440;font-weight:800}
 .toggle-btn.no{background:#4c566a;color:#d8dee9}
 .toggle-btn:hover{filter:brightness(1.15)}
@@ -90,9 +91,9 @@ tr.row-inactive:hover td:first-child{border-left-color:rgba(136,192,208,.7)}
 .item-info{display:flex;flex-direction:column;min-width:0}
 .item-info>span:first-child,.item-cell>span{font-size:.94rem}
 .item-hint{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.3;font-style:italic;letter-spacing:.1px}
-.expand-btn{background:none;border:1px solid var(--border);color:var(--muted);width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:.65rem;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-weight:700}
-.expand-btn:hover,.expand-btn.open{color:var(--orange);border-color:var(--orange);background:rgba(233,69,96,.1)}
-.expand-btn.open{transform:rotate(90deg)}
+.extend-btn{display:inline-block;background:rgba(136,192,208,.1);border:1px solid rgba(136,192,208,.28);color:#88c0d0;padding:2px 8px;border-radius:10px;cursor:pointer;font-size:.64rem;font-weight:600;letter-spacing:.2px;line-height:1.5;transition:all .15s;margin-top:3px;white-space:nowrap;flex-shrink:0}
+.extend-btn:hover{background:rgba(136,192,208,.22);border-color:#88c0d0}
+.extend-btn.open{background:rgba(136,192,208,.25);border-color:#88c0d0;color:#a3cfd8}
 .reset-btn{background:none;border:none;color:var(--orange2);cursor:pointer;font-size:.72rem;padding:2px 6px;border-radius:4px;transition:color .2s;font-weight:600;white-space:nowrap}
 .reset-btn:hover{color:var(--orange)}
 .del-btn{background:none;border:none;color:var(--no);cursor:pointer;font-size:.8rem;opacity:.4;transition:opacity .15s;padding:2px;flex-shrink:0}
@@ -2011,8 +2012,8 @@ function renderFormulaRow(tb,r,i,p){
   if(!on)tr.className='disabled row-muted row-inactive';
 
   const btnC=on?'toggle-btn yes':'toggle-btn no';
-  const btnT=on?'✓ Yes':'✗ No';
-  const expC=s.exp?'expand-btn open':'expand-btn';
+  const btnT=on?'Yes':'No';
+  const expC=s.exp?'extend-btn open':'extend-btn';
 
   let matC,labC;
   if(r.split){
@@ -2026,8 +2027,8 @@ function renderFormulaRow(tb,r,i,p){
 
   let totC;
   if(!r.split){
-    const tE=s.oT!=='';
-    totC=`<input class="money-input${tE?' user-edited':''}" id="tot-${i}" type="number" value="${tE?s.oT:Math.round(r.cT(p,k))}" onfocus="this.select()" oninput="eF(${i},'oT',this.value)" style="font-weight:700">`;
+    const initVal=s.oT!==''?parseFloat(s.oT):r.cT(p,k);
+    totC=`<span id="tot-${i}">${fmt(initVal)}</span>`;
   } else {
     totC=`<span id="tot-${i}" style="font-size:.9rem">—</span>`;
   }
@@ -2037,12 +2038,13 @@ function renderFormulaRow(tb,r,i,p){
   const showRst=hasO||kChanged;
   const rst=showRst?`<button class="reset-btn" onclick="rstRow(${i})">↺</button>`:'';
   const hintTxt=r.h?r.h(p,k):'';
+  const extBtn=`<button class="${expC}" onclick="togExp(${i})">Extend</button>`;
   const itemInner=hintTxt
-    ?`<div class="item-info"><span>${r.item}</span><span class="item-hint">${hintTxt}</span></div>`
-    :`<span>${r.item}</span>`;
+    ?`<div class="item-info"><span>${r.item}</span><span class="item-hint">${hintTxt}</span>${extBtn}</div>`
+    :`<div class="item-info"><span>${r.item}</span>${extBtn}</div>`;
 
   tr.innerHTML=`
-    <td><div class="item-cell"><button class="${expC}" onclick="togExp(${i})">▶</button>${itemInner}${rst}</div></td>
+    <td><div class="item-cell">${itemInner}${rst}</div></td>
     <td><button class="${btnC}" onclick="togOn(${i})">${btnT}</button></td>
     <td>${matC}</td><td>${labC}</td>
     <td class="total-cell">${totC}</td>`;
@@ -2072,7 +2074,7 @@ function renderCustomRow(tb,cr,catKey,ci){
   const tr=document.createElement('tr');
   tr.className='custom-row'+(cr.on?'':' disabled row-muted row-inactive');
   const btnC=cr.on?'toggle-btn yes':'toggle-btn no';
-  const btnT=cr.on?'✓ Yes':'✗ No';
+  const btnT=cr.on?'Yes':'No';
   const m=parseFloat(cr.mat)||0, l=parseFloat(cr.lab)||0;
   const hasOT=cr.oT!==undefined&&cr.oT!=='';
   const totVal=hasOT?cr.oT:Math.round(m+l);
@@ -2111,11 +2113,11 @@ function renderMiscCategory(tb){
   const mtr=document.createElement('tr');
   mtr.id='misc-row';
   if(!miscOn)mtr.className='disabled row-muted row-inactive';
-  const _expC=miscExp?'expand-btn open':'expand-btn';
+  const _expC=miscExp?'extend-btn open':'extend-btn';
   const _rateLabel=miscManual?`${+(miscRate*100).toFixed(1)}% manual`:`${miscMin}–${miscMax}% range`;
   mtr.innerHTML=`
-    <td><div class="item-cell"><button class="${_expC}" onclick="miscExp=!miscExp;build();">▶</button><span>Miscellaneous</span><span class="item-hint">${_rateLabel}</span></div></td>
-    <td><button class="${miscOn?'toggle-btn yes':'toggle-btn no'}" onclick="miscOn=!miscOn;build();">${miscOn?'✓ Yes':'✗ No'}</button></td>
+    <td><div class="item-cell"><div class="item-info"><span>Miscellaneous</span><span class="item-hint">${_rateLabel}</span><button class="${_expC}" onclick="miscExp=!miscExp;build();">Extend</button></div></div></td>
+    <td><button class="${miscOn?'toggle-btn yes':'toggle-btn no'}" onclick="miscOn=!miscOn;build();">${miscOn?'Yes':'No'}</button></td>
     <td><span style="color:var(--muted)">—</span></td>
     <td><span style="color:var(--muted)">—</span></td>
     <td class="total-cell"><span id="misc-total" style="font-variant-numeric:tabular-nums">—</span></td>`;
@@ -2272,7 +2274,8 @@ function calc(){
     } else {
       const fv=r.cT(p,k);
       const tv=s.oT!==''?parseFloat(s.oT):fv;
-      if(s.oT==='')sIV('tot-'+i,Math.round(fv));
+      const te=$('tot-'+i);
+      if(te)te.textContent=fmt(isNaN(tv)?0:tv);
       rowT=isNaN(tv)?0:tv;
     }
     /* Classify by gcExcl flag */
