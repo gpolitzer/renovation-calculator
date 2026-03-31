@@ -49,6 +49,7 @@ tr.cat-header td{padding:0}
 .cat-add-btn:hover{background:rgba(233,69,96,.15);border-color:var(--orange)}
 .cat-del-btn{background:none;border:none;color:var(--no);cursor:pointer;font-size:.75rem;opacity:.4;transition:opacity .15s;padding:3px 6px}
 .cat-del-btn:hover{opacity:1}
+tr.mobile-col-header{display:none}
 /* Cat sub-header — thin action strip below section title */
 tr.cat-subheader{background:rgba(46,52,64,.55)}
 tr.cat-subheader td{padding:2px 8px;border-bottom:1px solid rgba(76,86,106,.35)}
@@ -189,13 +190,18 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-right{width:100%;min-width:0}
   .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
   .param-input{width:55px;font-size:.78rem}
-  /* Hide Mat/Labor columns on small phones — show only Total */
-  thead th:nth-child(3),thead th:nth-child(4),
+  /* Hide global thead on mobile — per-category column headers replace it */
+  thead{display:none}
+  /* Hide Mat/Labor columns on mobile */
   tbody td:nth-child(3),tbody td:nth-child(4){display:none}
-  /* Flex layout for data rows — item col greedy, toggle+total shrink to content */
-  thead tr,tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:flex;align-items:center;width:100%}
-  thead th:first-child,tbody td:first-child{flex:1 1 0;min-width:0;width:auto;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
-  thead th:nth-child(2),tbody td:nth-child(2),thead th:last-child,tbody td:last-child{flex:0 0 auto;width:auto}
+  /* Grid layout for data rows — item col greedy, toggle+total fixed */
+  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%}
+  tbody td:first-child{min-width:0;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
+  /* Per-category mobile column headers */
+  tr.mobile-col-header{display:grid;grid-template-columns:1fr 90px 85px;align-items:center;background:var(--card2);border-bottom:1px solid var(--border)}
+  tr.mobile-col-header th{padding:5px 4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left}
+  tr.mobile-col-header th:nth-child(2){text-align:center}
+  tr.mobile-col-header th:last-child{text-align:right}
   /* Shrink toggle button */
   .toggle-btn{min-width:62px;padding:4px 6px;font-size:.72rem}
   .item-info>span:first-child{font-size:.86rem}
@@ -1901,7 +1907,7 @@ function toggleFocusMode(active){
   document.getElementById('seg-all').classList.toggle('active',!focusMode);
   document.getElementById('seg-active').classList.toggle('active',focusMode);
   if(focusMode) hideFocusEmptyCats();
-  else document.querySelectorAll('tbody tr.cat-header,tbody tr.cat-subheader').forEach(tr=>tr.style.display='');
+  else document.querySelectorAll('tbody tr.cat-header,tbody tr.mobile-col-header').forEach(tr=>tr.style.display='');
 }
 
 function hideFocusEmptyCats(){
@@ -1911,7 +1917,7 @@ function hideFocusEmptyCats(){
     if(tr.classList.contains('cat-header')){
       if(catTr&&!hasVisible){catTr.style.display='none';if(subTr)subTr.style.display='none';}
       catTr=tr;subTr=null;hasVisible=false;
-    } else if(tr.classList.contains('cat-subheader')){
+    } else if(tr.classList.contains('mobile-col-header')){
       subTr=tr;
     } else if(!tr.classList.contains('row-inactive')&&!tr.classList.contains('formula-row')&&!tr.classList.contains('add-row')){
       hasVisible=true;
@@ -1995,6 +2001,10 @@ function renderCatHeader(tb,name,isCustom,cci){
   td.innerHTML=`<div class="cat-bar">${catLabel}<div class="cat-actions">${addBtn}${delBtn}</div></div>`;
   tr.appendChild(td);
   tb.appendChild(tr);
+  const colHdr=document.createElement('tr');
+  colHdr.className='mobile-col-header';
+  ['ITEM','INCLUDE','TOTAL'].forEach(l=>{const th=document.createElement('th');th.textContent=l;colHdr.appendChild(th);});
+  tb.appendChild(colHdr);
 }
 
 function renderCatSubHeader(tb,cat,isCustom,cci){
@@ -2102,6 +2112,10 @@ function renderMiscCategory(tb){
   htd.innerHTML=`<div class="cat-bar"><span class="cat-name">MISCELLANEOUS</span></div>`;
   htr.appendChild(htd);
   tb.appendChild(htr);
+  const mColHdr=document.createElement('tr');
+  mColHdr.className='mobile-col-header';
+  ['ITEM','INCLUDE','TOTAL'].forEach(l=>{const th=document.createElement('th');th.textContent=l;mColHdr.appendChild(th);});
+  tb.appendChild(mColHdr);
 
   /* Subtotal before misc */
   const str=document.createElement('tr');
