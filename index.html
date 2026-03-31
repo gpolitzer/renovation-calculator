@@ -108,7 +108,7 @@ tr.row-inactive:hover td:first-child{border-left-color:rgba(136,192,208,.7)}
 .fp-left{flex:1;min-width:0;overflow:hidden}
 .fp-right{width:380px;flex-shrink:0;display:flex;flex-direction:column;min-width:0}
 .fp-right .fp-label{margin-bottom:6px}
-.fp-notes{flex:1;min-height:60px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:none;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-x:hidden;overflow-y:hidden;touch-action:pan-y;box-sizing:border-box}
+.fp-notes{flex:1;min-height:60px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:none;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-x:hidden;overflow-y:auto;touch-action:pan-y;box-sizing:border-box}
 .fp-notes:focus{outline:none;border-color:var(--orange);background:rgba(0,0,0,.35)}
 .fp-notes::placeholder{color:var(--muted);font-style:italic}
 .fp-desc{color:var(--muted);font-size:.78rem;margin-bottom:8px}
@@ -180,26 +180,25 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .container{padding:8px 4px}
   .prop-card{padding-left:6px!important;padding-right:6px!important}
   .prop-grid{grid-template-columns:1fr 1fr}
-  .money-input{width:68px;font-size:.8rem;padding:5px 5px}
-  .table-wrap{overflow-x:auto}
+  .money-input{width:60px;font-size:.8rem;padding:5px 4px}
+  .table-wrap{overflow-x:hidden}
   table{min-width:0;width:100%}
   tbody td,thead th{padding:6px 4px;font-size:.78rem}
-  tbody td:first-child{padding-right:8px}
   .formula-panel{margin-left:8px;margin-right:4px}
   .fp-layout{flex-direction:column}
   .fp-right{width:100%;min-width:0}
-  .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain}
+  .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
   .param-input{width:55px;font-size:.78rem}
   /* Hide Mat/Labor columns on small phones — show only Total */
   thead th:nth-child(3),thead th:nth-child(4),
-  tbody td:nth-child(3),tbody td:nth-child(4),
-  tr.cat-subheader td:nth-child(3),tr.cat-subheader td:nth-child(4){display:none}
-  /* Shrink toggle buttons — item column gets priority width */
+  tbody td:nth-child(3),tbody td:nth-child(4){display:none}
+  /* Flex layout for data rows — item col greedy, toggle+total shrink to content */
+  thead tr,tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:flex;align-items:center;width:100%}
+  thead th:first-child,tbody td:first-child{flex:1 1 0;min-width:0;width:auto;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
+  thead th:nth-child(2),tbody td:nth-child(2),thead th:last-child,tbody td:last-child{flex:0 0 auto;width:auto}
+  /* Shrink toggle button */
   .toggle-btn{min-width:62px;padding:4px 6px;font-size:.72rem}
-  /* Item col: greedy; overflow-wrap prevents mid-word breaks */
-  tbody td:first-child,thead th:first-child{white-space:normal;overflow-wrap:break-word;word-break:normal}
   .item-info>span:first-child{font-size:.86rem}
-  .money-input{width:60px}
 }
 @media(max-width:400px){
   .container{padding:6px 2px}
@@ -1964,20 +1963,19 @@ function build(){
   CATS.forEach(cat=>{
     const rows=ROWS.map((r,i)=>({r,i})).filter(x=>x.r.cat===cat);
     renderCatHeader(tb,cat,false);
-    renderCatSubHeader(tb,cat,false);
     rows.forEach(({r,i})=>renderFormulaRow(tb,r,i,p));
     (customByBuiltin[cat]||[]).forEach((cr,ci)=>renderCustomRow(tb,cr,cat,ci));
   });
 
   customCats.forEach((cc,cci)=>{
     renderCatHeader(tb,cc.name,true,cci);
-    renderCatSubHeader(tb,cc.name,true,cci);
     cc.rows.forEach((cr,ci)=>renderCustomRow(tb,cr,'__custom__'+cci,ci));
   });
 
   renderMiscCategory(tb);
   calc();
   if(focusMode) hideFocusEmptyCats();
+  setTimeout(()=>document.querySelectorAll('.formula-panel.open .fp-notes').forEach(ta=>autoExpand(ta)),0);
 }
 
 function renderCatHeader(tb,name,isCustom,cci){
@@ -1992,7 +1990,9 @@ function renderCatHeader(tb,name,isCustom,cci){
     catLabel=`<span class="cat-name">${name}</span>`;
   }
   const delBtn=isCustom?`<button class="cat-del-btn" onclick="delCategory(${cci})" title="Delete category">✕</button>`:'';
-  td.innerHTML=`<div class="cat-bar">${catLabel}${delBtn?`<div class="cat-actions">${delBtn}</div>`:''}</div>`;
+  const addKey=isCustom?`addCustomRowToCat('__custom__${cci}')`:`addCustomRowToCat('${name}')`;
+  const addBtn=`<button class="cat-add-btn" onclick="${addKey}">+ item</button>`;
+  td.innerHTML=`<div class="cat-bar">${catLabel}<div class="cat-actions">${addBtn}${delBtn}</div></div>`;
   tr.appendChild(td);
   tb.appendChild(tr);
 }
