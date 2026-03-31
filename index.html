@@ -177,12 +177,14 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 }
 @media(max-width:600px){
   header h1{font-size:1.2rem}
-  .container{padding:10px 10px}
+  .container{padding:8px 4px}
+  .prop-card{padding-left:6px!important;padding-right:6px!important}
   .prop-grid{grid-template-columns:1fr 1fr}
   .money-input{width:68px;font-size:.8rem;padding:5px 5px}
   .table-wrap{overflow-x:auto}
   table{min-width:0;width:100%}
   tbody td,thead th{padding:6px 4px;font-size:.78rem}
+  tbody td:first-child{padding-right:8px}
   .formula-panel{margin-left:8px;margin-right:4px}
   .fp-layout{flex-direction:column}
   .fp-right{width:100%;min-width:0}
@@ -192,18 +194,21 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   thead th:nth-child(3),thead th:nth-child(4),
   tbody td:nth-child(3),tbody td:nth-child(4),
   tr.cat-subheader td:nth-child(3),tr.cat-subheader td:nth-child(4){display:none}
-  /* Shrink toggle buttons so ITEM column has proportional space */
-  .toggle-btn{min-width:72px;padding:4px 8px;font-size:.72rem}
-  /* Item col: greedy (width:100% already set globally); text wraps normally */
-  tbody td:first-child,thead th:first-child{white-space:normal;overflow-wrap:break-word;word-break:break-word}
+  /* Shrink toggle buttons — item column gets priority width */
+  .toggle-btn{min-width:62px;padding:4px 6px;font-size:.72rem}
+  /* Item col: greedy; overflow-wrap prevents mid-word breaks */
+  tbody td:first-child,thead th:first-child{white-space:normal;overflow-wrap:break-word;word-break:normal}
+  .item-info>span:first-child{font-size:.86rem}
   .money-input{width:60px}
 }
 @media(max-width:400px){
-  .container{padding:8px 8px}
+  .container{padding:6px 2px}
+  .prop-card{padding-left:4px!important;padding-right:4px!important}
   table{min-width:0}
   thead th,tbody td{padding:5px 3px;font-size:.74rem}
+  tbody td:first-child{padding-right:6px}
   .money-input{width:54px;font-size:.75rem;padding:4px 3px}
-  .toggle-btn{padding:4px 6px;font-size:.71rem;min-height:48px;min-width:68px}
+  .toggle-btn{padding:4px 5px;font-size:.71rem;min-height:48px;min-width:56px}
 }
 
 /* Edit-defaults banner */
