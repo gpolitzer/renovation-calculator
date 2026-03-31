@@ -195,6 +195,8 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   /* Hide Mat/Labor columns on mobile */
   tbody td:nth-child(3),tbody td:nth-child(4){display:none}
   /* Grid layout for data rows — item col greedy, toggle+total fixed */
+  /* Override fixed height so rows can grow when item text wraps to multiple lines */
+  tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:auto;min-height:56px}
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%}
   tbody td:first-child{min-width:0;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
   /* Per-category mobile column headers */
