@@ -193,12 +193,12 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   /* הסתרת עמודות דסקטופ */
   thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none!important}
 
-  /* פקודה כירורגית: איחוד מבנה הגריד לכותרת ולשורות הנתונים */
+  /* איחוד מבנה הגריד לכותרת ולשורות הנתונים */
   tr.mobile-col-header,
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){
     display:grid!important;
-    grid-template-columns:1fr 95px 95px!important;
-    align-items:center;
+    grid-template-columns:minmax(0,1fr) 80px 85px!important;
+    align-items:start;
     width:100%;
     border-bottom:1px solid var(--border);
   }
@@ -212,13 +212,13 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tbody td.total-cell{text-align:right!important;padding-right:12px!important;justify-self:end;width:100%}
 
   /* מירכוז הכפתור וה-Toggle בטור האמצעי */
-  tbody tr td:nth-child(2),tr.mobile-col-header th:nth-child(2){text-align:center!important;justify-self:center}
+  tbody tr td:nth-child(2),tr.mobile-col-header th:nth-child(2){display:flex!important;justify-content:center!important;align-items:center}
 
   /* אחידות לכפתורי ה-Extend */
   .extend-btn{width:80px!important;min-width:80px!important;padding:4px 0!important;text-align:center}
 
-  /* מניעת קריסת הטקסט בטור הראשון */
-  tbody td:first-child{min-width:0;padding-left:8px!important;overflow:hidden}
+  /* טור ראשון — גלישת טקסט + Extend stack */
+  tbody td:first-child{min-width:0;padding-left:8px!important;overflow:hidden;word-break:break-word;display:flex!important;flex-direction:column}
 
   .toggle-btn{min-width:75px;min-height:40px}
 }
