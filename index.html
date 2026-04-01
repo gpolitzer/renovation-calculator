@@ -190,34 +190,32 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-right{width:100%;min-width:0}
   .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
   .param-input{width:55px;font-size:.78rem}
-  /* Hide global thead on mobile — per-category column headers replace it */
-  thead{display:none}
-  /* Hide Mat/Labor columns on mobile */
-  tbody td:nth-child(3),tbody td:nth-child(4){display:none}
-  /* Grid layout for data rows — item col greedy, toggle+total fixed */
-  /* Override fixed height so rows can grow when item text wraps to multiple lines */
+  /* Hide thead + Mat/Labor columns on mobile */
+  thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none}
+  /* SINGLE shared grid — header and data rows MUST use identical template */
+  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row),
+  tr.mobile-col-header{display:grid!important;grid-template-columns:1fr 90px 85px!important;align-items:center;width:100%}
+  /* Data row height */
   tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:auto;min-height:56px}
-  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%}
   tbody td:first-child{min-width:0;padding-right:6px;white-space:normal;overflow-wrap:break-word;word-break:normal}
+  /* TOTAL header + total-cell — SAME rule guarantees identical padding-right */
+  tr.mobile-col-header th:last-child,tbody td.total-cell{text-align:right!important;padding-right:4px!important}
   /* Per-category mobile column headers */
   tr.cat-header{border-top:2px solid var(--bg)}
   .cat-bar{padding:2px 8px}
-  tr.mobile-col-header{display:grid;grid-template-columns:1fr 90px 85px;align-items:center;width:100%;background:var(--card2);border-bottom:1px solid var(--border)}
-  tr.mobile-col-header th{padding:1px 4px;font-size:.56rem;line-height:1;text-transform:uppercase;letter-spacing:.3px;color:var(--orange2);text-align:left}
+  tr.mobile-col-header{background:var(--card2);border-bottom:1px solid var(--border)}
+  tr.mobile-col-header th{padding:1px 4px;font-size:.56rem;line-height:1;letter-spacing:0;text-transform:uppercase;color:var(--orange2);text-align:left}
   tr.mobile-col-header th:nth-child(2){text-align:center}
-  tr.mobile-col-header th:last-child{text-align:right;padding-right:4px;letter-spacing:0}
-  /* Force total-cell td to same right-padding as TOTAL header */
-  tbody td.total-cell{padding-right:4px;text-align:right}
   /* Center toggle in its grid column */
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) td:nth-child(2){text-align:center}
-  /* Uniform total-cell font size across all row types */
+  /* Uniform total-cell font size */
   .total-cell{font-size:.85rem}
   .total-cell input.money-input{font-size:.85rem}
-  /* Shrink toggle button — reduce height to avoid dominating tall rows */
+  /* Shrink toggle button */
   .toggle-btn{min-width:62px;min-height:38px;padding:4px 6px;font-size:.72rem}
   .item-info>span:first-child{font-size:.86rem}
-  /* Uniform Extend buttons on mobile */
-  .extend-btn{min-width:72px;text-align:center;box-sizing:border-box}
+  /* Uniform Extend buttons */
+  .extend-btn{min-width:72px;width:72px;text-align:center;box-sizing:border-box}
   /* Visual separation between item rows */
   tbody tr:not(.formula-row):not(.cat-header):not(.cat-subheader):not(.add-row):not(.mobile-col-header){margin-bottom:6px}
 }
