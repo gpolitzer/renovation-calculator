@@ -193,8 +193,11 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   /* Hide the desktop headers and columns */
   thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none!important}
 
+  /* Full-width reset — remove any margin/padding that squeezes the layout */
+  body,.container,table{width:100%!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}
+
   /* Force the table to behave like a strict layout */
-  table{width:100%!important;table-layout:fixed!important;border-collapse:collapse}
+  table{width:100vw!important;table-layout:fixed!important;border-collapse:collapse;margin:0!important}
 
   /* Define 3 rigid columns: Item (50%), Include (25%), Total (25%) */
   tr.mobile-col-header th:nth-child(1),tbody td:nth-child(1){width:50%!important}
@@ -211,7 +214,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .extend-btn{display:block!important;width:80px!important;margin-top:5px!important;text-align:center!important}
 
   /* Sub-header row styling */
-  tr.mobile-col-header{background:var(--card2);border-bottom:1px solid var(--border)}
+  tr.mobile-col-header{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;width:100%!important;padding:0!important;margin:0!important;background:var(--card2);border-bottom:1px solid var(--border)}
   tr.mobile-col-header th{padding:6px 4px!important;font-size:0.65rem!important;color:var(--orange2);text-transform:uppercase}
 
   /* Toggle button */
