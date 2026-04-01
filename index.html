@@ -184,11 +184,19 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     padding: 0 !important;
   }
 
+  /* Prevent table-wrap from allowing horizontal scroll (clips TOTAL column) */
+  .table-wrap {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   /* CRITICAL: must be display:block for display:grid on <tr> to work */
   table {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
   }
 
   thead { display: none !important; }
@@ -204,6 +212,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tr.add-row {
     display: block !important;
     width: 100% !important;
+    height: auto !important;
   }
 
   tr.cat-header td {
@@ -217,35 +226,50 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tr.mobile-col-header,
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) {
     display: grid !important;
-    grid-template-columns: 1fr 90px 80px !important;
+    /* minmax(0,1fr) prevents col 1 from forcing overflow when content is wide */
+    grid-template-columns: minmax(0, 1fr) 90px 80px !important;
     width: 100% !important;
-    box-sizing: border-box;
-    align-items: center;
-    padding: 8px 4px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    padding: 12px 6px !important;
+    height: auto !important;        /* override global height:60px */
+    min-height: 56px !important;
   }
 
+  /* Override global width:100% on td:first-child (would overflow grid) */
   tbody td:first-child {
     display: flex !important;
     flex-direction: column !important;
     gap: 6px !important;
     min-width: 0 !important;
-    padding-right: 6px !important;
-    align-self: start;
+    width: auto !important;
+    padding-right: 8px !important;
+    align-self: start !important;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   tbody td:nth-child(2) {
-    justify-self: center;
-    align-self: center;
+    justify-self: center !important;
+    align-self: center !important;
+    width: auto !important;
   }
 
   tbody td.total-cell {
-    justify-self: end;
+    justify-self: end !important;
+    align-self: center !important;
     padding-right: 8px !important;
+    width: auto !important;
     font-weight: bold;
-    align-self: center;
+    white-space: nowrap;
+    text-align: right;
   }
 
   tbody td:nth-child(3), tbody td:nth-child(4) { display: none !important; }
+
+  /* Align INCLUDE header centered, TOTAL header right (matches data cells) */
+  tr.mobile-col-header th:nth-child(2) { text-align: center; }
+  tr.mobile-col-header th:last-child { text-align: right; padding-right: 8px; }
 
   .extend-btn {
     width: fit-content !important;
