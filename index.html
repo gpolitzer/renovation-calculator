@@ -177,7 +177,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-notes{min-height:50px;width:100%}
 }
 @media(max-width:600px){
-  /* 1. Global Mobile Adjustments */
+  /* Global mobile adjustments */
   header h1{font-size:1.2rem}
   .container{padding:8px 4px}
   .prop-card{padding-left:6px!important;padding-right:6px!important}
@@ -190,58 +190,32 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-right{width:100%;min-width:0}
   .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
 
-  /* 2. Hide Desktop Columns */
+  /* Hide the desktop headers and columns */
   thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none!important}
 
-  /* 3. Strict Fixed Table Layout */
-  table{table-layout:fixed!important;width:100%!important}
+  /* Force the table to behave like a strict layout */
+  table{width:100%!important;table-layout:fixed!important;border-collapse:collapse}
 
-  /* Remove the buggy grid display */
-  tr.mobile-col-header,
-  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){
-    display:table-row!important;
-  }
+  /* Define 3 rigid columns: Item (50%), Include (25%), Total (25%) */
+  tr.mobile-col-header th:nth-child(1),tbody td:nth-child(1){width:50%!important}
+  tr.mobile-col-header th:nth-child(2),tbody td:nth-child(2){width:25%!important;text-align:center!important}
+  tr.mobile-col-header th:nth-child(3),tbody td.total-cell{width:25%!important;text-align:right!important;padding-right:15px!important}
 
-  /* 4. Define Exact Column Widths */
-  tbody td:first-child,
-  tr.mobile-col-header th:first-child{
-    width:calc(100% - 175px)!important;
-    padding-left:8px!important;
-    vertical-align:top!important;
-  }
-  tbody td:nth-child(2),
-  tr.mobile-col-header th:nth-child(2){
-    width:85px!important;
-    text-align:center!important;
-    vertical-align:middle!important;
-  }
-  tbody td:last-child,
-  tr.mobile-col-header th:last-child,
-  tbody td.total-cell{
-    width:90px!important;
-    text-align:right!important;
-    padding-right:12px!important;
-    vertical-align:middle!important;
-  }
+  /* Style the rows */
+  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:table-row!important}
 
-  /* 5. Force Text Wrapping internally */
-  .item-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-  .item-info{width:100%;min-width:0}
-  .item-info>span:first-child,
-  .item-cell>span{
-    display:block;
-    white-space:normal!important;
-    word-wrap:break-word!important;
-    line-height:1.2;
-  }
+  /* Force vertical alignment and fix the Item/Extend layout */
+  tbody td:nth-child(1){display:table-cell!important;vertical-align:top!important;padding:10px 5px!important;overflow-wrap:break-word}
 
-  /* 6. Fix Button & Toggle Layouts */
-  .extend-btn{width:70px!important;min-width:70px!important;padding:4px 0!important;text-align:center;margin:2px 0 0 0!important}
-  .toggle-btn{min-width:75px;min-height:40px;margin:0 auto}
+  /* Keep Extend button below text */
+  .extend-btn{display:block!important;width:80px!important;margin-top:5px!important;text-align:center!important}
 
-  /* 7. Header Styling */
+  /* Sub-header row styling */
   tr.mobile-col-header{background:var(--card2);border-bottom:1px solid var(--border)}
-  tr.mobile-col-header th{padding:6px 0!important;font-size:0.65rem!important;color:var(--orange2);text-transform:uppercase}
+  tr.mobile-col-header th{padding:6px 4px!important;font-size:0.65rem!important;color:var(--orange2);text-transform:uppercase}
+
+  /* Toggle button */
+  .toggle-btn{min-width:55px;min-height:40px;margin:0 auto}
 }
 @media(max-width:400px){
   .container{padding:6px 2px}
