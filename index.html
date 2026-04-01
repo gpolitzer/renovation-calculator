@@ -189,10 +189,14 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   tr.mobile-col-header,
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) {
     display: grid !important;
-    grid-template-columns: 1.5fr 70px 90px !important; /* שם פריט רחב יותר */
+    grid-template-columns: 60% 20% 20% !important;
     width: 100% !important;
-    align-items: start; /* יישור טקסט למעלה כדי שהכפתור לא יצוף באמצע */
+    align-items: start;
     padding: 12px 5px !important;
+  }
+
+  .cat-add-btn {
+    white-space: nowrap !important;
   }
 
   /* 3. סידור עמודת שם הפריט והכפתור */
