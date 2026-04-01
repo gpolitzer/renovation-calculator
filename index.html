@@ -190,37 +190,57 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
   .param-input{width:55px;font-size:.78rem}
 
-  /* הסתרת עמודות דסקטופ */
+  /* Hide desktop columns */
   thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none!important}
 
-  /* איחוד מבנה הגריד לכותרת ולשורות הנתונים */
+  /* Use fixed layout to force columns */
   tr.mobile-col-header,
   tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){
     display:grid!important;
-    grid-template-columns:minmax(0,1fr) 80px 85px!important;
-    align-items:start;
+    grid-template-columns:1fr 80px 85px!important;
     width:100%;
-    border-bottom:1px solid var(--border);
+    align-items:center;
+    padding:8px 0!important;
   }
 
-  /* טיפול בכותרת המשנית (הכתומה) */
-  tr.mobile-col-header{background:var(--card2);padding:0!important;min-height:28px!important}
+  /* Force the first column to wrap text and NOT overflow */
+  tbody td:first-child{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    padding-left:8px!important;
+  }
+
+  /* Ensure text wraps inside the first column */
+  tbody td:first-child span,
+  tbody td:first-child strong{
+    display:block;
+    width:100%;
+    white-space:normal!important;
+    word-break:break-word!important;
+    overflow-wrap:break-word!important;
+  }
+
+  /* Align Total column perfectly */
+  tbody td.total-cell,
+  tr.mobile-col-header th:last-child{
+    text-align:right!important;
+    padding-right:12px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Center the toggle */
+  tbody td:nth-child(2){display:flex!important;justify-content:center!important;}
+
+  /* Sub-header row styling */
+  tr.mobile-col-header{background:var(--card2);border-bottom:1px solid var(--border);min-height:28px!important}
   tr.mobile-col-header th{padding:4px!important;font-size:0.65rem!important;color:var(--orange2);text-transform:uppercase}
-
-  /* יישור ה-TOTAL והמספרים - הצמדה מוחלטת לימין עם אותו Padding */
-  tr.mobile-col-header th:last-child,
-  tbody td.total-cell{text-align:right!important;padding-right:12px!important;justify-self:end;width:100%}
-
-  /* מירכוז הכפתור וה-Toggle בטור האמצעי */
-  tbody tr td:nth-child(2),tr.mobile-col-header th:nth-child(2){display:flex!important;justify-content:center!important;align-items:center}
-
-  /* אחידות לכפתורי ה-Extend */
-  .extend-btn{width:80px!important;min-width:80px!important;padding:4px 0!important;text-align:center}
-
-  /* טור ראשון — גלישת טקסט + Extend stack */
-  tbody td:first-child{min-width:0;padding-left:8px!important;overflow:hidden;word-break:break-word;word-wrap:break-word;white-space:normal;display:flex!important;flex-direction:column}
+  tr.mobile-col-header th:nth-child(2){text-align:center}
 
   .toggle-btn{min-width:75px;min-height:40px}
+  .extend-btn{width:80px!important;min-width:80px!important;padding:4px 0!important;text-align:center}
 }
 @media(max-width:400px){
   .container{padding:6px 2px}
