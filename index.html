@@ -176,49 +176,62 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .fp-right{width:100%;min-width:0}
   .fp-notes{min-height:50px;width:100%}
 }
-@media(max-width:600px){
-  /* Global mobile adjustments */
-  header h1{font-size:1.2rem}
-  .container{padding:8px 4px}
-  .prop-card{padding-left:6px!important;padding-right:6px!important}
-  .prop-grid{grid-template-columns:1fr 1fr}
-  .money-input{width:60px;font-size:.8rem;padding:5px 4px}
-  .table-wrap{overflow-x:hidden}
-  .param-input{width:55px;font-size:.78rem}
-  .formula-panel{margin-left:8px;margin-right:4px}
-  .fp-layout{flex-direction:column}
-  .fp-right{width:100%;min-width:0}
-  .fp-notes{min-height:50px;width:100%;touch-action:pan-y;overscroll-behavior:contain;overflow-y:auto}
+@media (max-width: 600px) {
+  /* ביטול כל הגבלה על רוחב המסך */
+  body, #main-wrapper, .container, table {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden;
+  }
 
-  /* Hide the desktop headers and columns */
-  thead,tbody td:nth-child(3),tbody td:nth-child(4){display:none!important}
+  /* כפיית הטבלה למבנה טבלה קלאסי שמתרחב לכל רוחב המסך */
+  table {
+    display: table !important;
+    width: 100vw !important;
+    table-layout: fixed !important;
+  }
 
-  /* Full-width reset — remove any margin/padding that squeezes the layout */
-  body,.container,table{width:100%!important;max-width:100%!important;padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important}
+  /* הגדרת העמודות באחוזים קשיחים */
+  tr.mobile-col-header th:nth-child(1), tbody td:nth-child(1) { width: 55% !important; }
+  tr.mobile-col-header th:nth-child(2), tbody td:nth-child(2) { width: 20% !important; }
+  tr.mobile-col-header th:nth-child(3), tbody td.total-cell { width: 25% !important; }
 
-  /* Force the table to behave like a strict layout */
-  table{width:100vw!important;table-layout:fixed!important;border-collapse:collapse;margin:0!important}
+  /* הסתרת עמודות דסקטופ מיותרות */
+  thead, tbody td:nth-child(3), tbody td:nth-child(4) { display: none !important; }
 
-  /* Define 3 rigid columns: Item (50%), Include (25%), Total (25%) */
-  tr.mobile-col-header th:nth-child(1),tbody td:nth-child(1){width:50%!important}
-  tr.mobile-col-header th:nth-child(2),tbody td:nth-child(2){width:25%!important;text-align:center!important}
-  tr.mobile-col-header th:nth-child(3),tbody td.total-cell{width:25%!important;text-align:right!important;padding-right:15px!important}
+  /* עיצוב שורות */
+  tbody tr {
+    display: table-row !important;
+    width: 100vw !important;
+  }
 
-  /* Style the rows */
-  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:table-row!important}
+  tbody td {
+    display: table-cell !important;
+    vertical-align: top !important;
+    padding: 8px 4px !important;
+  }
 
-  /* Force vertical alignment and fix the Item/Extend layout */
-  tbody td:nth-child(1){display:table-cell!important;vertical-align:top!important;padding:10px 5px!important;overflow-wrap:break-word}
+  /* עיצוב שם הפריט והכפתור מתחתיו */
+  tbody td:first-child {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
 
-  /* Keep Extend button below text */
-  .extend-btn{display:block!important;width:80px!important;margin-top:5px!important;text-align:center!important}
+  .extend-btn {
+    display: block !important;
+    margin-top: 5px !important;
+    width: 70px !important;
+  }
 
-  /* Sub-header row styling */
-  tr.mobile-col-header{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;width:100%!important;padding:0!important;margin:0!important;background:var(--card2);border-bottom:1px solid var(--border)}
-  tr.mobile-col-header th{padding:6px 4px!important;font-size:0.65rem!important;color:var(--orange2);text-transform:uppercase}
-
-  /* Toggle button */
-  .toggle-btn{min-width:55px;min-height:40px;margin:0 auto}
+  /* יישור ה-Total לימין */
+  tbody td.total-cell {
+    text-align: right !important;
+    padding-right: 15px !important;
+  }
 }
 @media(max-width:400px){
   .container{padding:6px 2px}
