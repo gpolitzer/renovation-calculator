@@ -371,3 +371,5 @@ body.focus-mode tr.row-inactive+tr.formula-row{display:none!important}
 @media(max-width:600px){
   body.focus-mode tbody tr.row-inactive:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:none!important}
 }
+/* focus-hidden: hides empty cat headers — two-class specificity beats mobile display:block!important */
+tr.cat-header.focus-hidden,tr.mobile-col-header.focus-hidden{display:none!important}

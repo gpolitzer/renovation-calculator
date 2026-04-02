@@ -1480,7 +1480,7 @@ function toggleFocusMode(active){
   document.getElementById('seg-all').classList.toggle('active',!focusMode);
   document.getElementById('seg-active').classList.toggle('active',focusMode);
   if(focusMode) hideFocusEmptyCats();
-  else document.querySelectorAll('tbody tr.cat-header,tbody tr.mobile-col-header').forEach(tr=>tr.style.display='');
+  else document.querySelectorAll('tbody tr.focus-hidden').forEach(tr=>tr.classList.remove('focus-hidden'));
 }
 
 function hideFocusEmptyCats(){
@@ -1488,7 +1488,7 @@ function hideFocusEmptyCats(){
   let catTr=null,subTr=null,hasVisible=false;
   rows.forEach(tr=>{
     if(tr.classList.contains('cat-header')){
-      if(catTr&&!hasVisible){catTr.style.setProperty('display','none','important');if(subTr)subTr.style.setProperty('display','none','important');}
+      if(catTr&&!hasVisible){catTr.classList.add('focus-hidden');if(subTr)subTr.classList.add('focus-hidden');}
       catTr=tr;subTr=null;hasVisible=false;
     } else if(tr.classList.contains('mobile-col-header')){
       subTr=tr;
@@ -1496,7 +1496,7 @@ function hideFocusEmptyCats(){
       hasVisible=true;
     }
   });
-  if(catTr&&!hasVisible){catTr.style.setProperty('display','none','important');if(subTr)subTr.style.setProperty('display','none','important');}
+  if(catTr&&!hasVisible){catTr.classList.add('focus-hidden');if(subTr)subTr.classList.add('focus-hidden');}
 }
 
 function toggleBulkMenu(e){
