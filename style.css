@@ -157,7 +157,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .permits-section{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}
 .permits-section h3{font-size:.9rem;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .permits-table{width:100%;border-collapse:collapse}
-.permits-table thead th{background:var(--card2);padding:8px 10px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left;border-bottom:2px solid var(--orange)}
+.permits-table thead th{background:var(--card2);padding:8px 10px;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--orange2);text-align:left;border-bottom:2px solid var(--orange);position:static}
 .permits-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
 .permits-table tbody tr:hover{background:rgba(233,69,96,.04)}
 .permits-table td{padding:6px 8px;vertical-align:middle}
@@ -165,6 +165,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .permit-input:focus{outline:none;border-color:var(--orange)}
 .permit-name{color:var(--text);font-size:.85rem;font-weight:600}
 .permit-hint{font-size:.7rem;color:var(--muted);margin-top:2px}
+.permit-notes{resize:vertical;min-height:36px;line-height:1.4;vertical-align:top}
 .permit-status{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;margin-top:3px}
 .permit-status.ok{background:rgba(0,200,83,.15);color:var(--yes)}
 .permit-status.warn{background:rgba(255,165,0,.15);color:#ffa500}
@@ -200,7 +201,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     min-width: 0 !important;
   }
 
-  thead { display: none !important; }
+  table:not(.permits-table) thead { display: none !important; }
 
   tbody {
     display: block !important;
@@ -225,7 +226,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   .cat-add-btn { white-space: nowrap !important; }
 
   tr.mobile-col-header,
-  tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) {
+  table:not(.permits-table) tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) {
     display: grid !important;
     /* minmax(0,1fr) prevents col 1 from forcing overflow when content is wide */
     grid-template-columns: minmax(0, 1fr) 90px 80px !important;
@@ -238,7 +239,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   }
 
   /* Override global width:100% on td:first-child (would overflow grid) */
-  tbody td:first-child {
+  table:not(.permits-table) tbody td:first-child {
     display: flex !important;
     flex-direction: column !important;
     gap: 6px !important;
@@ -250,7 +251,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     overflow-wrap: break-word;
   }
 
-  tbody td:nth-child(2) {
+  table:not(.permits-table) tbody td:nth-child(2) {
     justify-self: center !important;
     align-self: center !important;
     width: auto !important;
@@ -266,7 +267,8 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     text-align: right;
   }
 
-  tbody td:nth-child(3), tbody td:nth-child(4) { display: none !important; }
+  table:not(.permits-table) tbody td:nth-child(3),
+  table:not(.permits-table) tbody td:nth-child(4) { display: none !important; }
 
   /* Align INCLUDE header centered, TOTAL header right (matches data cells) */
   tr.mobile-col-header th:nth-child(2) { text-align: center; }
@@ -281,6 +283,33 @@ tr.custom-row{background:rgba(233,69,96,.03)}
     background: rgba(255,255,255,0.1) !important;
     border: 1px solid rgba(255,255,255,0.2) !important;
     margin: 0 !important;
+  }
+}
+@media(max-width:600px){
+  /* Permits table — own mobile layout (not affected by main-table grid rules) */
+  .permits-table tbody tr {
+    display: block !important;
+    padding: 10px 8px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .permits-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+  .permits-table .permit-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important;
+  }
+  .permit-notes {
+    min-height: 64px !important;
+    resize: vertical !important;
+    line-height: 1.4 !important;
   }
 }
 @media(max-width:400px){

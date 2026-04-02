@@ -2559,7 +2559,7 @@ function buildPermits(){
     tr.innerHTML=`
       <td><div class="permit-name">${p.name}</div><div class="permit-hint">${p.hint}</div>${statusHtml}</td>
       <td><input class="permit-input" type="text" placeholder="e.g. 2025" value="${esc(ps.date)}" oninput="permitsState[${i}].date=this.value;saveState()" onblur="buildPermits()"></td>
-      <td><input class="permit-input" type="text" placeholder="Notes..." value="${esc(ps.notes)}" oninput="permitsState[${i}].notes=this.value;saveState()"></td>`;
+      <td><textarea class="permit-input permit-notes" placeholder="Notes..." rows="2" oninput="permitsState[${i}].notes=this.value;saveState()">${ps.notes.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></td>`;
     tb.appendChild(tr);
   });
 }
