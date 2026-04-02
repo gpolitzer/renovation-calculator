@@ -457,18 +457,17 @@ const ROWS=[
          Each row = [label, middleExpr, rightAmount, optionalSubtext]
          Pass the string 'hr' to insert a divider row.
       ────────────────────────────────────────────────────────────── */
-      const td=(s,style='')=>`<td style="padding:4px 6px;vertical-align:top;${style}">${s}</td>`;
-      const ledger=(rows)=>`<table style="width:100%;border-collapse:collapse;font-size:.82rem;font-family:'Courier New',monospace;table-layout:auto">${
+      const ledger=(rows)=>`<div style="font-size:.82rem;font-family:'Courier New',monospace">${
         rows.map(r=>{
-          if(r==='hr') return `<tr><td colspan="3"><div style="border-top:1px solid rgba(255,255,255,.12);margin:3px 0"></div></td></tr>`;
+          if(r==='hr') return `<div style="border-top:1px solid rgba(255,255,255,.12);margin:4px 0"></div>`;
           const[lbl,mid,right,sub]=r;
-          return `<tr>`+
-            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted);white-space:nowrap;display:inline-block;padding-right:6px">${lbl}</span>`,'')+
-            td(mid||'','text-align:center;color:var(--muted);overflow-wrap:break-word;word-break:break-word;width:99%')+
-            td(`${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}`,`text-align:right;overflow-wrap:break-word;word-break:break-word;white-space:nowrap`)+
-          `</tr>`;
+          return `<div style="display:flex;align-items:baseline;gap:6px;padding:3px 0;min-width:0">`+
+            `<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted);white-space:nowrap;flex-shrink:0">${lbl}</span>`+
+            `<span style="flex:1;text-align:center;color:var(--muted);overflow-wrap:break-word;word-break:break-word;min-width:0">${mid||''}</span>`+
+            `<span style="flex-shrink:0;text-align:right;overflow-wrap:break-word;word-break:break-word">${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}</span>`+
+          `</div>`;
         }).join('')
-      }</table>`;
+      }</div>`;
       /* card helper */
       const card=(bcolor,title,rows,tip)=>
         `<div style="background:rgba(0,0,0,.18);border-left:3px solid ${bcolor};border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">`+
