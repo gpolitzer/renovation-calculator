@@ -20,7 +20,9 @@
       "Bash(git commit:*)",
       "Bash(git add index.html CLAUDE.md)",
       "Bash(git checkout main)",
-      "Bash(git merge ארגון-כפתורים)"
+      "Bash(git merge ארגון-כפתורים)",
+      "Bash(cp index.html index.html.bak)",
+      "Bash(mv index_new.html index.html)"
     ]
   }
 }
