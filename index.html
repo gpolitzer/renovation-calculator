@@ -33,6 +33,14 @@ thead th:last-child{text-align:right}
 thead th:first-child,tbody td:first-child{width:100%}
 thead th:nth-child(2),thead th:nth-child(3),thead th:nth-child(4),thead th:nth-child(5),
 tbody td:nth-child(2),tbody td:nth-child(3),tbody td:nth-child(4),tbody td:nth-child(5){width:1%;white-space:nowrap}
+/* Desktop: cap item col at ~45%, spread remaining cols evenly */
+@media(min-width:601px){
+thead th:first-child,tbody td:first-child{width:45%}
+thead th:nth-child(2),tbody td:nth-child(2),
+thead th:nth-child(3),tbody td:nth-child(3),
+thead th:nth-child(4),tbody td:nth-child(4),
+thead th:nth-child(5),tbody td:nth-child(5){width:13.75%;white-space:nowrap}
+}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
 tbody tr:not(.formula-row):not(.cat-header):not(.add-row){height:60px}
 tbody tr:hover:not(.disabled):not(.row-inactive):not(.cat-header):not(.formula-row):not(.add-row){background:rgba(233,69,96,.04)}
