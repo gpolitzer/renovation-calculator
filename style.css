@@ -110,7 +110,7 @@ tr.row-inactive:hover td:first-child{border-left-color:rgba(136,192,208,.7)}
 .fp-left{flex:1;min-width:0;overflow:hidden}
 .fp-right{width:380px;flex-shrink:0;display:flex;flex-direction:column;min-width:0}
 .fp-right .fp-label{margin-bottom:6px}
-.fp-notes{flex:1;min-height:60px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:none;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow-x:hidden;overflow-y:auto;touch-action:pan-y;box-sizing:border-box}
+.fp-notes{flex:1;min-height:60px;width:100%;padding:8px 10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.8rem;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;resize:none;transition:border .2s;overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;overflow:hidden;touch-action:pan-y;box-sizing:border-box;field-sizing:content}
 .fp-notes:focus{outline:none;border-color:var(--orange);background:rgba(0,0,0,.35)}
 .fp-notes::placeholder{color:var(--muted);font-style:italic}
 .fp-desc{color:var(--muted);font-size:.78rem;margin-bottom:8px}
@@ -165,7 +165,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .permit-input:focus{outline:none;border-color:var(--orange)}
 .permit-name{color:var(--text);font-size:.85rem;font-weight:600}
 .permit-hint{font-size:.7rem;color:var(--muted);margin-top:2px}
-.permit-notes{resize:vertical;min-height:36px;line-height:1.4;vertical-align:top}
+.permit-notes{resize:none;min-height:36px;line-height:1.4;vertical-align:top;overflow:hidden;field-sizing:content;box-sizing:border-box}
 .permit-status{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;margin-top:3px}
 .permit-status.ok{background:rgba(0,200,83,.15);color:var(--yes)}
 .permit-status.warn{background:rgba(255,165,0,.15);color:#ffa500}
@@ -308,7 +308,8 @@ tr.custom-row{background:rgba(233,69,96,.03)}
   }
   .permit-notes {
     min-height: 64px !important;
-    resize: vertical !important;
+    resize: none !important;
+    overflow: hidden !important;
     line-height: 1.4 !important;
   }
 }
