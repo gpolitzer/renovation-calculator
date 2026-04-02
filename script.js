@@ -1743,7 +1743,7 @@ function esc(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
 
 /* ═══════ FORMULA ROW INTERACTIONS ═══════ */
 function togOn(i){st[i].on=!st[i].on;build();}
-function togExp(i){st[i].exp=!st[i].exp;build();const ta=document.getElementById('notes-'+i);if(ta)autoExpand(ta);}
+function togExp(i){st[i].exp=!st[i].exp;build();}
 function eF(i,f,v){
   st[i][f]=(v===''?'':v);
   calc();
@@ -1755,7 +1755,7 @@ function rstRow(i){st[i].oM='';st[i].oL='';st[i].oT='';st[i].k={...ROWS[i].dp};b
 
 /* ═══════ NOTES EDITING ═══════ */
 function eN(i,v){st[i].notes=v;saveState();}
-function autoExpand(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function autoExpand(el){el.style.height='auto';requestAnimationFrame(()=>{el.style.height=el.scrollHeight+'px';});}
 
 /* ═══════ PARAM EDITING ═══════ */
 function ePLite(i,name,v){
