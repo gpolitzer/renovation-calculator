@@ -497,7 +497,8 @@ const ROWS=[
         ],
         prevTip
       );
-      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
+      return `<div style="white-space:normal;word-break:normal;overflow-wrap:normal;line-height:1.4">`+
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px">`+
         `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Prevention Method</div>${mSel}</div>`+
         `<div><div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px">Active Infestation?</div>${tSel}</div>`+
         `</div>`+
@@ -512,6 +513,7 @@ const ROWS=[
         `<div style="font-size:.8rem;color:var(--orange);font-weight:700;margin-bottom:4px">⚠️ Annual Bond Renewal — recurring, not included in total</div>`+
         `<div style="font-size:.82rem">$${pIn(i,'annual',k.annual,65)} /year &nbsp;<span style="color:var(--muted);font-size:.75rem">range $350–$500/yr — required to keep warranty active</span></div>`+
         `<div style="font-size:.73rem;color:var(--muted);margin-top:4px">📋 Jacksonville: No termite bond = "high-risk" for lenders. Bond is transferrable to buyer — adds appraisal confidence.</div>`+
+        `</div>`+
         `</div>`;
     },
     h:(p,k)=>{const m=Math.min(1,Math.max(0,Math.round(k.method)));return`${m===0?'Sentricon (Green Stations)':'Liquid Injection (Termidor)'}  ·  ${k.tent?'+ Tent fumigation':'Prevention only'}`;},
