@@ -463,8 +463,8 @@ const ROWS=[
           if(r==='hr') return `<tr><td colspan="3"><div style="border-top:1px solid rgba(255,255,255,.12);margin:3px 0"></div></td></tr>`;
           const[lbl,mid,right,sub]=r;
           return `<tr>`+
-            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted)">${lbl}</span>`,'width:22%')+
-            td(mid||'','text-align:center;color:var(--muted);width:50%')+
+            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted)">${lbl}</span>`,'width:28%;word-break:normal;overflow-wrap:normal')+
+            td(mid||'','text-align:center;color:var(--muted);width:44%')+
             td(`${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}`,'text-align:right;width:28%')+
           `</tr>`;
         }).join('')
