@@ -457,15 +457,15 @@ const ROWS=[
          Each row = [label, middleExpr, rightAmount, optionalSubtext]
          Pass the string 'hr' to insert a divider row.
       ────────────────────────────────────────────────────────────── */
-      const td=(s,style='')=>`<td style="padding:4px 6px;vertical-align:middle;overflow-wrap:break-word;word-break:break-word;${style}">${s}</td>`;
-      const ledger=(rows)=>`<table style="width:100%;border-collapse:collapse;font-size:.82rem;font-family:'Courier New',monospace;table-layout:fixed">${
+      const td=(s,style='')=>`<td style="padding:4px 6px;vertical-align:top;${style}">${s}</td>`;
+      const ledger=(rows)=>`<table style="width:100%;border-collapse:collapse;font-size:.82rem;font-family:'Courier New',monospace;table-layout:auto">${
         rows.map(r=>{
           if(r==='hr') return `<tr><td colspan="3"><div style="border-top:1px solid rgba(255,255,255,.12);margin:3px 0"></div></td></tr>`;
           const[lbl,mid,right,sub]=r;
           return `<tr>`+
-            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted)">${lbl}</span>`,'width:28%;word-break:normal;overflow-wrap:normal')+
-            td(mid||'','text-align:center;color:var(--muted);width:44%')+
-            td(`${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}`,'text-align:right;width:28%')+
+            td(`<span style="font-family:'Segoe UI',system-ui,sans-serif;font-size:.78rem;color:var(--muted);white-space:nowrap;display:inline-block;padding-right:6px">${lbl}</span>`,'')+
+            td(mid||'','text-align:center;color:var(--muted);overflow-wrap:break-word;word-break:break-word;width:99%')+
+            td(`${right}${sub?`<div style="font-size:.72rem;color:var(--muted);margin-top:1px">${sub}</div>`:''}`,`text-align:right;overflow-wrap:break-word;word-break:break-word;white-space:nowrap`)+
           `</tr>`;
         }).join('')
       }</table>`;
