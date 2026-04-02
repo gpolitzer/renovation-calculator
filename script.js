@@ -1488,7 +1488,7 @@ function hideFocusEmptyCats(){
   let catTr=null,subTr=null,hasVisible=false;
   rows.forEach(tr=>{
     if(tr.classList.contains('cat-header')){
-      if(catTr&&!hasVisible){catTr.style.display='none';if(subTr)subTr.style.display='none';}
+      if(catTr&&!hasVisible){catTr.style.setProperty('display','none','important');if(subTr)subTr.style.setProperty('display','none','important');}
       catTr=tr;subTr=null;hasVisible=false;
     } else if(tr.classList.contains('mobile-col-header')){
       subTr=tr;
@@ -1496,7 +1496,7 @@ function hideFocusEmptyCats(){
       hasVisible=true;
     }
   });
-  if(catTr&&!hasVisible){catTr.style.display='none';if(subTr)subTr.style.display='none';}
+  if(catTr&&!hasVisible){catTr.style.setProperty('display','none','important');if(subTr)subTr.style.setProperty('display','none','important');}
 }
 
 function toggleBulkMenu(e){
