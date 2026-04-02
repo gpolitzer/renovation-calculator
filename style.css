@@ -367,3 +367,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 /* Focus mode — hide inactive rows and their formula expand panels */
 body.focus-mode tr.row-inactive{display:none!important}
 body.focus-mode tr.row-inactive+tr.formula-row{display:none!important}
+/* Mobile override: beat the display:grid!important specificity on regular rows */
+@media(max-width:600px){
+  body.focus-mode tbody tr.row-inactive:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row){display:none!important}
+}
