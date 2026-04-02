@@ -351,7 +351,7 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 .about-close:hover{background:rgba(233,69,96,.3)}
 
 /* ── Focus Toolbar ───────────────────────────────────────────────────────── */
-.focus-toolbar{position:sticky;top:0;z-index:100;background:rgba(30,38,54,.97);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:48px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.focus-toolbar{background:rgba(30,38,54,.97);border:1px solid var(--border);border-radius:12px;padding:0 16px;display:flex;align-items:center;gap:12px;height:48px}
 .seg-ctrl{display:flex;background:rgba(0,0,0,.3);border-radius:10px;padding:3px;height:38px;align-items:center;gap:0}
 .seg-btn{background:transparent;border:none;color:rgba(216,222,233,.55);border-radius:7px;padding:0 14px;height:32px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap}
 .seg-btn.active{background:#88c0d0;color:#2e3440;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.35)}

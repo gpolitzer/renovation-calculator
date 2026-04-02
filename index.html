@@ -39,21 +39,6 @@
   </div>
 </div>
 
-<!-- Focus Toolbar: View Toggle + Bulk Actions -->
-<div class="focus-toolbar" id="focus-toolbar">
-  <div class="seg-ctrl" role="group" aria-label="View filter">
-    <button class="seg-btn active" id="seg-all" onclick="toggleFocusMode(false)">Show All</button>
-    <button class="seg-btn" id="seg-active" onclick="toggleFocusMode(true)">Active Only</button>
-  </div>
-  <div class="bulk-wrap">
-    <button class="bulk-btn" id="bulk-btn" onclick="toggleBulkMenu(event)" aria-label="Bulk row actions">≡ Select</button>
-    <div class="bulk-menu" id="bulk-menu">
-      <button class="bulk-menu-item" onclick="selectAllRows(true)">✓ Enable All</button>
-      <button class="bulk-menu-item" onclick="selectAllRows(false)">✗ Reset All</button>
-    </div>
-  </div>
-</div>
-
 <div class="container">
   <div class="prop-card">
     <h2>📋 Property Details</h2>
@@ -98,6 +83,21 @@
             <tbody id="city-permits-tbody"></tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Focus Toolbar: View Toggle + Bulk Actions -->
+  <div class="focus-toolbar" id="focus-toolbar">
+    <div class="seg-ctrl" role="group" aria-label="View filter">
+      <button class="seg-btn active" id="seg-all" onclick="toggleFocusMode(false)">Show All</button>
+      <button class="seg-btn" id="seg-active" onclick="toggleFocusMode(true)">Active Only</button>
+    </div>
+    <div class="bulk-wrap">
+      <button class="bulk-btn" id="bulk-btn" onclick="toggleBulkMenu(event)" aria-label="Bulk row actions">≡ Select</button>
+      <div class="bulk-menu" id="bulk-menu">
+        <button class="bulk-menu-item" onclick="selectAllRows(true)">✓ Enable All</button>
+        <button class="bulk-menu-item" onclick="selectAllRows(false)">✗ Reset All</button>
       </div>
     </div>
   </div>
