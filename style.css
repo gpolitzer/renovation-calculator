@@ -225,8 +225,8 @@ tr.custom-row{background:rgba(233,69,96,.03)}
 
   .cat-add-btn { white-space: nowrap !important; }
 
-  tr.mobile-col-header,
-  table:not(.permits-table) tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row) {
+  tr.mobile-col-header:not(.focus-hidden),
+  table:not(.permits-table) tbody tr:not(.cat-header):not(.formula-row):not(.cat-subheader):not(.add-row):not(.focus-hidden) {
     display: grid !important;
     /* minmax(0,1fr) prevents col 1 from forcing overflow when content is wide */
     grid-template-columns: minmax(0, 1fr) 90px 80px !important;
