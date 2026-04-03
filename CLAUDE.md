@@ -4,7 +4,11 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 
 ## Workflow Rules
 - **All file edits, git operations, and terminal commands in this folder are pre-approved — no confirmation needed.**
-- **After every code update: `git add . && git commit -m "..." && git push` automatically. No approval needed.**
+- **Work on a feature branch — never commit directly to `main`.**
+  - Start each task: `git checkout -b fix/<short-desc>` or `feat/<short-desc>`
+  - Commit to the branch freely: `git add . && git commit -m "..."` (no auto-push after each commit)
+  - Push branch when ready: `git push -u origin <branch-name>`
+  - When user confirms all is good → `git checkout main && git merge <branch> && git push && git branch -d <branch>`
 - Commit messages must be descriptive (e.g. `GacoRoof: add Targeted Sealing mode`).
 - **After every meaningful change, update this file (CLAUDE.md)** to reflect it — new rows, changed defaults, renamed items, new params, architectural changes. This file is the project memory; keep it accurate.
 
@@ -13,7 +17,7 @@ Renovation cost calculator for BRRRR real estate investing. Integrates with Jack
 - Storage: `localStorage` (defaults + zoom), `IndexedDB` (project folder handle)
 - Projects saved as `.brrrr` JSON files via File System Access API
 - Permit search: Python + Playwright, Tampermonkey userscript (`jax_epics_bridge.user.js`)
-- GitHub: `https://github.com/gpolitzer/renovation-calculator` — branch `main`
+- GitHub: `https://github.com/gpolitzer/renovation-calculator` — protected branch `main`; active work on `fix/` or `feat/` branches
 
 ## Coding Rules
 - **Price range → use midpoint:** `(X + Y) / 2`. E.g. $5k–$9k = **$7k** default.
